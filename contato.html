@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato — CyberCity</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  .bg-glow{position:fixed;inset:0;pointer-events:none;}
+  .bg-glow::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(26,110,245,0.08) 0%,transparent 70%);border-radius:50%;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
+  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
+  .nav-links{display:flex;gap:20px;}
+  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--amarelo);}
+  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
+  .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
+  .nav-mobile.open{display:flex;}
+  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);}
+  .nav-mobile a:hover{color:var(--amarelo);}
+  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
+  .overlay.open{display:block;}
+
+  .page-wrap{max-width:900px;margin:0 auto;padding:100px 16px 60px;}
+
+  .page-hero{text-align:center;padding:40px 0 40px;position:relative;}
+  .page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .page-titulo{font-family:'Bangers',cursive;font-size:clamp(42px,10vw,72px);letter-spacing:4px;color:var(--amarelo);text-shadow:3px 3px 0 var(--azul),6px 6px 0 var(--azul-escuro);-webkit-text-stroke:1.5px var(--azul);animation:titlePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;}
+  @keyframes titlePop{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .page-sub{font-size:15px;color:#4a6fa5;margin-top:8px;font-weight:700;}
+
+  .grid{display:grid;grid-template-columns:1fr 1.4fr;gap:24px;margin-top:40px;align-items:start;}
+
+  /* cards de contato */
+  .contatos-col{display:flex;flex-direction:column;gap:14px;}
+
+  .contato-card{
+    background:var(--card);border:1px solid var(--borda);border-radius:14px;
+    padding:20px;display:flex;align-items:center;gap:14px;
+    text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;
+    animation:fadeUp 0.4s both;
+  }
+  .contato-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--azul);transform:scaleY(0);transition:transform 0.25s;transform-origin:bottom;}
+  .contato-card:hover{border-color:var(--azul);transform:translateX(4px);}
+  .contato-card:hover::before{transform:scaleY(1);}
+  .contato-card:hover .contato-nome{color:var(--amarelo);}
+  @keyframes fadeUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+  .contato-icon{font-size:32px;flex-shrink:0;}
+  .contato-info{}
+  .contato-tipo{font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+  .contato-nome{font-size:16px;font-weight:900;color:var(--texto);transition:color 0.2s;margin-top:2px;}
+  .contato-desc{font-size:12px;color:#4a6fa5;margin-top:2px;}
+
+  .info-box{
+    background:var(--card);border:1px solid var(--borda);border-radius:14px;
+    padding:20px;margin-top:0;animation:fadeUp 0.4s 0.2s both;
+  }
+  .info-titulo{font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;color:var(--ciano);margin-bottom:12px;}
+  .info-item{display:flex;gap:10px;margin-bottom:12px;font-size:14px;line-height:1.5;}
+  .info-item-icon{flex-shrink:0;font-size:18px;}
+  .info-item-text{color:#a0b8d8;}
+  .info-item-text strong{color:var(--texto);display:block;}
+
+  /* formulário */
+  .form-col{animation:fadeUp 0.4s 0.1s both;}
+  .form-card{background:var(--card);border:1px solid var(--borda);border-radius:18px;padding:28px 24px;position:relative;overflow:hidden;}
+  .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .form-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:var(--amarelo);margin-bottom:20px;}
+
+  .campo{margin-bottom:16px;}
+  .campo label{display:block;font-size:12px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+  .campo input,.campo select,.campo textarea{
+    width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;
+    padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:15px;
+    outline:none;transition:border-color 0.2s;
+  }
+  .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--azul);}
+  .campo input::placeholder,.campo textarea::placeholder{color:#2a4a7a;}
+  .campo select option{background:var(--card2);}
+  .campo textarea{resize:vertical;min-height:120px;}
+
+  .btn-enviar{
+    width:100%;background:var(--azul);color:#fff;border:none;border-radius:12px;
+    padding:14px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;
+    cursor:pointer;transition:all 0.2s;margin-top:4px;
+  }
+  .btn-enviar:hover{background:#0050cc;transform:translateY(-2px);}
+
+  .alerta{border-radius:10px;padding:12px 16px;font-size:14px;margin-top:14px;display:none;}
+  .alerta.visivel{display:block;}
+  .alerta.sucesso{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
+  .alerta.erro{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff8080;}
+
+  /* FAQ */
+  .faq-section{margin-top:40px;}
+  .faq-titulo{font-family:'Bangers',cursive;font-size:28px;letter-spacing:2px;color:var(--amarelo);text-align:center;margin-bottom:20px;}
+  .faq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .faq-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;}
+  .faq-q{font-size:15px;font-weight:900;color:var(--ciano);margin-bottom:8px;}
+  .faq-a{font-size:14px;color:#a0b8d8;line-height:1.6;}
+
+  footer{text-align:center;padding:30px;color:#4a6fa5;font-size:13px;border-top:1px solid var(--borda);margin-top:40px;}
+  footer a{color:var(--azul);text-decoration:none;}
+
+  @media(max-width:700px){
+    .grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .menu-btn{display:flex;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<nav>
+  <a href="index.html" class="logo-main">CyberCity</a>
+  <div class="nav-links">
+    <a href="index.html">Início</a>
+    <a href="todas.html">Todas</a>
+    <a href="categorias.html">Categorias</a>
+    <a href="cadastro.html">Entrar</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<nav class="nav-mobile" id="navMobile">
+  <button class="close-nav" onclick="toggleMenu()">✕</button>
+  <a href="index.html">🏠 Início</a>
+  <a href="todas.html">📖 Todas as Palavras</a>
+  <a href="categorias.html">🗂️ Categorias</a>
+  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-hero">
+    <h1 class="page-titulo">📬 CONTATO</h1>
+    <p class="page-sub">Fale com a gente — respondemos rápido!</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- coluna esquerda -->
+    <div class="contatos-col">
+
+      <a href="mailto:contato@cybercity.com.br" class="contato-card" style="animation-delay:0.1s">
+        <div class="contato-icon">📧</div>
+        <div class="contato-info">
+          <div class="contato-tipo">E-mail</div>
+          <div class="contato-nome">contato@cybercity.com.br</div>
+          <div class="contato-desc">Resposta em até 48h</div>
+        </div>
+      </a>
+
+      <a href="https://instagram.com/cybercitydic" target="_blank" class="contato-card" style="animation-delay:0.15s">
+        <div class="contato-icon">📸</div>
+        <div class="contato-info">
+          <div class="contato-tipo">Instagram</div>
+          <div class="contato-nome">@cybercitydic</div>
+          <div class="contato-desc">Nos siga e mande um DM</div>
+        </div>
+      </a>
+
+      <a href="https://tiktok.com/@cybercitydic" target="_blank" class="contato-card" style="animation-delay:0.2s">
+        <div class="contato-icon">🎵</div>
+        <div class="contato-info">
+          <div class="contato-tipo">TikTok</div>
+          <div class="contato-nome">@cybercitydic</div>
+          <div class="contato-desc">Conteúdo sobre gírias todo dia</div>
+        </div>
+      </a>
+
+      <div class="info-box" style="animation-delay:0.25s">
+        <div class="info-titulo">ℹ️ Informações</div>
+        <div class="info-item">
+          <span class="info-item-icon">⏱️</span>
+          <div class="info-item-text"><strong>Tempo de resposta</strong>Respondemos em até 2 dias úteis.</div>
+        </div>
+        <div class="info-item">
+          <span class="info-item-icon">🚫</span>
+          <div class="info-item-text"><strong>Denúncias de conteúdo</strong>Use o formulário ao lado e selecione "Denúncia".</div>
+        </div>
+        <div class="info-item">
+          <span class="info-item-icon">📖</span>
+          <div class="info-item-text"><strong>Sugestão de palavras</strong>Prefira usar a área de envio no site!</div>
+        </div>
+        <div class="info-item" style="margin-bottom:0">
+          <span class="info-item-icon">🤝</span>
+          <div class="info-item-text"><strong>Parcerias</strong>Adoramos colaborações! Mande uma mensagem.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- formulário -->
+    <div class="form-col">
+      <div class="form-card">
+        <div class="form-titulo">✉️ MANDE SUA MENSAGEM</div>
+
+        <div class="campo">
+          <label>Seu nome</label>
+          <input type="text" placeholder="Como devemos te chamar?" id="nome">
+        </div>
+        <div class="campo">
+          <label>E-mail</label>
+          <input type="email" placeholder="seu@email.com" id="email">
+        </div>
+        <div class="campo">
+          <label>Assunto</label>
+          <select id="assunto">
+            <option value="">Selecione um assunto</option>
+            <option>💡 Sugestão de melhoria</option>
+            <option>🐛 Reportar erro no site</option>
+            <option>🚫 Denúncia de conteúdo</option>
+            <option>🤝 Parceria / Publicidade</option>
+            <option>❓ Dúvida geral</option>
+            <option>📖 Sobre uma palavra</option>
+            <option>👤 Problema com minha conta</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Mensagem</label>
+          <textarea placeholder="Escreva sua mensagem aqui..." id="mensagem"></textarea>
+        </div>
+
+        <button class="btn-enviar" onclick="enviar()">ENVIAR MENSAGEM 🚀</button>
+        <div class="alerta" id="alerta"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-titulo">❓ PERGUNTAS FREQUENTES</div>
+    <div class="faq-grid">
+      <div class="faq-card">
+        <div class="faq-q">Como envio uma palavra nova?</div>
+        <div class="faq-a">Crie uma conta gratuita, clique em "Enviar uma definição" na página inicial e preencha o formulário. Sua palavra passa por aprovação antes de ser publicada.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">Posso editar uma palavra que enviei?</div>
+        <div class="faq-a">Sim! Entre na sua conta, vá em "Minhas palavras" e clique em editar. Palavras já aprovadas passam por uma nova revisão após a edição.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">Como denuncio um conteúdo inapropriado?</div>
+        <div class="faq-a">Use o formulário acima e selecione "Denúncia de conteúdo". Analisamos todas as denúncias em até 24h.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">O CyberCity é gratuito?</div>
+        <div class="faq-a">Sim, 100% gratuito! O site se mantém com publicidade discreta do Google AdSense. Nunca cobraremos para acessar o conteúdo.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">Posso usar o conteúdo do CyberCity?</div>
+        <div class="faq-a">O conteúdo pode ser usado com atribuição ao CyberCity. Para uso comercial ou em publicações, entre em contato antes.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">Como excluo minha conta?</div>
+        <div class="faq-a">Envie uma mensagem pelo formulário acima com o assunto "Problema com minha conta" e solicite a exclusão. Processamos em até 5 dias úteis.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 CyberCity · <a href="privacidade.html">Privacidade & Termos</a> · <a href="contato.html">Contato</a>
+</footer>
+
+<script>
+  function enviar(){
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const assunto = document.getElementById('assunto').value;
+    const mensagem = document.getElementById('mensagem').value.trim();
+    const alerta = document.getElementById('alerta');
+
+    if(!nome||!email||!assunto||!mensagem){
+      alerta.textContent='⚠️ Por favor preencha todos os campos.';
+      alerta.className='alerta visivel erro';
+      return;
+    }
+    if(!email.includes('@')){
+      alerta.textContent='⚠️ Digite um e-mail válido.';
+      alerta.className='alerta visivel erro';
+      return;
+    }
+    alerta.textContent='✅ Mensagem enviada! Responderemos em breve.';
+    alerta.className='alerta visivel sucesso';
+    document.getElementById('nome').value='';
+    document.getElementById('email').value='';
+    document.getElementById('assunto').value='';
+    document.getElementById('mensagem').value='';
+    // Aqui conecta com Supabase ou serviço de e-mail
+  }
+
+  function toggleMenu(){
+    document.getElementById('navMobile').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

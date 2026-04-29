@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aloha — CyberCity Dicionário</title>
+<meta name="description" content="Significado de Aloha: palavra havaiana usada como saudação tipo oi, aí, olá, alô, mas também como despedida, tchau, valeu, falou.">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
+    --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
+    --borda:#1a3a6e;--texto:#d0e4ff;
+  }
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;cursor:default;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
+  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
+  .nav-links{display:flex;gap:20px;align-items:center;}
+  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--amarelo);}
+  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
+  .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
+  .nav-mobile.open{display:flex;}
+  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;}
+  .nav-mobile a:hover{color:var(--amarelo);}
+  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
+  .overlay.open{display:block;}
+
+  .page-wrap{max-width:1100px;margin:0 auto;padding:90px 16px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+  .main-col{}
+
+  /* breadcrumb */
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;}
+  .breadcrumb a{color:#4a6fa5;text-decoration:none;transition:color 0.2s;}
+  .breadcrumb a:hover{color:var(--ciano);}
+  .breadcrumb span{color:#2a4a7a;}
+
+  /* ── TÍTULO AUTO-TAMANHO ── */
+  .palavra-titulo{
+    font-family:'Bangers',cursive;
+    /* clamp dinâmico: palavras curtas ficam grandes, longas ficam menores */
+    font-size:clamp(28px, 12vw, 100px);
+    line-height:1.05;
+    letter-spacing:3px;
+    color:var(--amarelo);
+    text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro),0 0 40px rgba(245,232,0,0.3);
+    -webkit-text-stroke:2px var(--azul);
+    animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    margin-bottom:16px;
+    word-break:break-word;
+  }
+  /* expressões longas ficam menores automaticamente via JS */
+  .palavra-titulo.curta  {font-size:clamp(60px,15vw,100px);}
+  .palavra-titulo.media  {font-size:clamp(40px,10vw,72px);}
+  .palavra-titulo.longa  {font-size:clamp(28px,7vw,52px);}
+  .palavra-titulo.muito-longa{font-size:clamp(22px,5vw,38px);letter-spacing:1px;}
+
+  @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+
+  /* pronuncia */
+  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;animation:fadeUp 0.5s 0.2s both;}
+  .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
+
+  /* meta */
+  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;animation:fadeUp 0.5s 0.25s both;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;}
+  .meta-text{font-size:13px;color:#4a6fa5;}
+  .meta-text strong{color:var(--ciano);font-weight:800;}
+
+  /* categorias */
+  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;animation:fadeUp 0.5s 0.3s both;}
+  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
+  .cat-tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
+
+  /* ── TAGS ── */
+  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;animation:fadeUp 0.5s 0.32s both;align-items:center;}
+  .tags-label{font-size:11px;color:#2a4a7a;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+  .hash-tag{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);color:#4ab8cc;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
+  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);border-color:var(--ciano);}
+
+  /* badges */
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;animation:fadeUp 0.5s 0.35s both;}
+  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:0.5px;}
+  .badge-nivel{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);color:var(--ciano);}
+  .badge-regiao{background:rgba(245,232,0,0.1);border:1px solid rgba(245,232,0,0.3);color:var(--amarelo);}
+  .badge-contexto{background:rgba(255,100,200,0.1);border:1px solid rgba(255,100,200,0.3);color:#ff64c8;}
+  .badge-epoca{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
+
+  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+  /* ── IMAGEM OPCIONAL ── */
+  .palavra-imagem{
+    width:100%;border-radius:14px;overflow:hidden;
+    margin-bottom:16px;border:1px solid var(--borda);
+    animation:fadeUp 0.5s 0.38s both;
+  }
+  .palavra-imagem img{width:100%;max-height:320px;object-fit:cover;display:block;}
+  .palavra-imagem-caption{padding:8px 14px;background:var(--card);font-size:12px;color:#4a6fa5;font-weight:700;}
+
+  /* ── CARDS ── */
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp 0.5s both;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .card-title{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+
+  /* ── MÚLTIPLOS SIGNIFICADOS ── */
+  .significado-bloco{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda);}
+  .significado-bloco:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .sig-numero{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;
+    background:var(--azul);color:#fff;
+    font-family:'Bangers',cursive;font-size:15px;
+    margin-bottom:10px;flex-shrink:0;
+  }
+  .sig-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .sig-tipo{font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:var(--card2);border:1px solid var(--borda);border-radius:20px;padding:3px 10px;}
+  .significado-text{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;}
+  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
+  .origem-text{font-size:15px;color:var(--texto);line-height:1.7;}
+
+  /* exemplos */
+  .exemplo{background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:10px;font-size:15px;font-style:italic;color:#b0ccff;line-height:1.6;}
+  .exemplo strong{color:var(--ciano);font-style:normal;}
+
+  /* tags list */
+  .tags-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;cursor:pointer;}
+  .tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
+
+  /* ── REAÇÕES + ENVIAR SIGNIFICADO ── */
+  .reacoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .reacao-btn{background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:10px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;min-width:70px;}
+  .reacao-btn:hover{border-color:var(--azul);transform:translateY(-3px);}
+  .reacao-btn.ativo{background:rgba(26,110,245,0.2);border-color:var(--azul);}
+  .reacao-emoji{font-size:26px;}
+  .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
+  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;letter-spacing:0.3px;}
+
+  /* botão enviar significado */
+  .btn-novo-sig{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(163,255,74,0.08);
+    border:1.5px dashed rgba(163,255,74,0.35);
+    color:#a3ff4a;border-radius:12px;
+    padding:11px 18px;font-size:14px;font-weight:800;
+    cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;
+    margin-top:4px;
+  }
+  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);border-color:#a3ff4a;}
+
+  /* form novo significado */
+  .novo-sig-form{
+    display:none;margin-top:14px;
+    background:rgba(163,255,74,0.04);
+    border:1px solid rgba(163,255,74,0.2);
+    border-radius:12px;padding:16px;
+  }
+  .novo-sig-form.aberto{display:block;}
+  .novo-sig-form textarea{
+    width:100%;background:var(--card2);border:1.5px solid var(--borda);
+    border-radius:10px;padding:12px;color:var(--texto);
+    font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;
+    outline:none;transition:border-color 0.2s;margin-bottom:10px;
+  }
+  .novo-sig-form textarea:focus{border-color:#a3ff4a;}
+  .novo-sig-form textarea::placeholder{color:#2a4a7a;}
+  .novo-sig-btns{display:flex;gap:8px;}
+  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+  .btn-enviar-sig:hover{background:#8fee2a;}
+  .btn-cancelar-sig{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:10px 16px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;transition:all 0.2s;}
+  .btn-cancelar-sig:hover{border-color:var(--borda);}
+  .sig-aviso{font-size:12px;color:#4a6fa5;margin-bottom:10px;}
+
+  /* nav alfabética */
+  .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
+  .alfa-grupo.direita{text-align:right;align-items:flex-end;}
+  .alfa-label{font-size:11px;color:#4a6fa5;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .alfa-link{color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;transition:color 0.2s;}
+  .alfa-link:hover{color:var(--amarelo);}
+  .alfa-sep{color:var(--borda);font-size:24px;}
+
+  /* compartilhar */
+  .share-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .share-btn{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .share-btn:hover{transform:translateY(-2px);}
+  .share-wpp{background:#25d366;color:#fff;}
+  .share-copy{background:var(--card2);border:1px solid var(--borda);color:var(--texto);}
+  .share-twitter{background:#1da1f2;color:#fff;}
+
+  /* comentários */
+  .comentario{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda);}
+  .com-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#f5e800,#f5a800);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;}
+  .com-meta{font-size:12px;color:#4a6fa5;margin-bottom:4px;}
+  .com-meta strong{color:var(--ciano);}
+  .com-text{font-size:14px;color:var(--texto);line-height:1.5;}
+  .comment-form{margin-top:16px;}
+  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;transition:border-color 0.2s;outline:none;}
+  .comment-form textarea:focus{border-color:var(--azul);}
+  .comment-form textarea::placeholder{color:#2a4a7a;}
+  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+  .btn-comentar:hover{background:#0050cc;transform:translateY(-2px);}
+
+  /* ── SIDEBAR ── */
+  .sidebar{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;}
+  .sidebar-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+  .sidebar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
+  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+  .top-item:last-child{border-bottom:none;}
+  .top-item:hover .top-word{color:var(--amarelo);}
+  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;flex-shrink:0;}
+  .top-rank.ouro{color:#ffd700;}.top-rank.prata{color:#c0c0c0;}.top-rank.bronze{color:#cd7f32;}
+  .top-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
+  .top-busca{font-size:11px;color:#4a6fa5;font-weight:700;}
+  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+  .recente-item:last-child{border-bottom:none;}
+  .recente-item:hover .recente-word{color:var(--ciano);}
+  .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);flex-shrink:0;}
+  .recente-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
+  .recente-data{font-size:11px;color:#4a6fa5;}
+  .sidebar-search{display:flex;gap:0;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
+  .sidebar-search input{flex:1;background:var(--card2);border:none;outline:none;padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;}
+  .sidebar-search input::placeholder{color:#2a4a7a;}
+  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;}
+  .sidebar-search button:hover{background:#0050cc;}
+
+  @media(max-width:768px){
+    .page-wrap{grid-template-columns:1fr;}
+    .sidebar{position:static;}
+    .nav-links{display:none;}
+    .menu-btn{display:flex;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo-main">CyberCity</a>
+  <div class="nav-links">
+    <a href="index.html">Início</a>
+    <a href="todas.html">Todas</a>
+    <a href="categorias.html">Categorias</a>
+    <a href="rimas.html">Rimas</a>
+    <a href="tarot.html">Tarot</a>
+    <a href="cadastro.html">Entrar</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<nav class="nav-mobile" id="navMobile">
+  <button class="close-nav" onclick="toggleMenu()">✕</button>
+  <a href="index.html">🏠 Início</a>
+  <a href="todas.html">📖 Todas as Palavras</a>
+  <a href="categorias.html">🗂️ Categorias</a>
+  <a href="rimas.html">🎵 Rimas</a>
+  <a href="tarot.html">🃏 Tarot de Gírias</a>
+  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
+</nav>
+
+<div class="page-wrap">
+<main class="main-col">
+
+  <div class="breadcrumb">
+    <a href="index.html">Início</a><span>›</span>
+    <a href="todas.html">Todas</a><span>›</span>
+    <span style="color:var(--ciano)">Aloha</span>
+  </div>
+
+  <!-- TÍTULO — tamanho automático via JS -->
+  <h1 class="palavra-titulo" id="palavraTitulo">ALOHA</h1>
+
+  <!-- PRONUNCIA -->
+  <div class="pronuncia">🔊 Como pronunciar: <span>A · LO · RRA</span></div>
+
+  <!-- META -->
+  <div class="meta-info">
+    <div class="avatar">R</div>
+    <div class="meta-text">Enviado por <strong>rodrigo_surf</strong> · 17 de abril de 2026</div>
+  </div>
+
+  <!-- CATEGORIAS -->
+  <div class="categorias">
+    <a href="categoria.html?c=girias-surf" class="cat-tag">🏄 Gírias de Surf</a>
+    <a href="categoria.html?c=girias-praia" class="cat-tag">🌊 Gírias da Praia</a>
+    <a href="categoria.html?c=cumprimentos" class="cat-tag">👋 Cumprimentos</a>
+    <a href="categoria.html?c=girias-havai" class="cat-tag">🌺 Gírias do Havaí</a>
+    <a href="categoria.html?c=interjeicoes" class="cat-tag">💬 Interjeições</a>
+    <a href="categoria.html?c=girias-amor" class="cat-tag">❤️ Gírias de Amor</a>
+  </div>
+
+  <!-- TAGS -->
+  <div class="tags-section">
+    <span class="tags-label">#</span>
+    <a href="busca.html?tag=praia" class="hash-tag">#praia</a>
+    <a href="busca.html?tag=surf" class="hash-tag">#surf</a>
+    <a href="busca.html?tag=havai" class="hash-tag">#havaí</a>
+    <a href="busca.html?tag=anos90" class="hash-tag">#anos90</a>
+    <a href="busca.html?tag=cumprimento" class="hash-tag">#cumprimento</a>
+    <a href="busca.html?tag=despedida" class="hash-tag">#despedida</a>
+    <a href="busca.html?tag=paz" class="hash-tag">#paz</a>
+  </div>
+
+  <!-- BADGES -->
+  <div class="badges">
+    <div class="badge badge-nivel">⚡ Muito usada</div>
+    <div class="badge badge-regiao">📍 SP · RJ · Litoral</div>
+    <div class="badge badge-contexto">🌐 Geral · Praia · Internet</div>
+    <div class="badge badge-epoca">📅 Anos 90 até hoje</div>
+  </div>
+
+  <!-- IMAGEM OPCIONAL — remova este bloco se a palavra não tiver imagem -->
+  <div class="palavra-imagem">
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" alt="Praia e cultura do surf — Aloha">
+    <div class="palavra-imagem-caption">🌊 A cultura do surf trouxe o "Aloha" para o Brasil nos anos 90</div>
+  </div>
+
+  <!-- SIGNIFICADOS -->
+  <div class="card" style="animation-delay:0.1s">
+    <div class="card-title">📖 Significado</div>
+
+    <!-- Significado 1 -->
+    <div class="significado-bloco">
+      <div class="sig-header">
+        <div class="sig-numero">1</div>
+        <span class="sig-tipo">Saudação / Despedida</span>
+      </div>
+      <p class="significado-text">
+        Palavra havaiana usada como saudação — tipo <em>oi, aí, olá, alô</em> — mas também como despedida: <em>tchau, valeu, falou</em>. Dá pra usar em qualquer momento do papo, na chegada ou na saída.
+      </p>
+      <div class="subtitulo">🌊 Origem e contexto</div>
+      <p class="origem-text">
+        No Havaí, <strong>Aloha</strong> vai muito além de um simples "oi". A palavra carrega o significado de <em>amor, paz, afeto e compaixão</em>. No Brasil, chegou junto com a cultura do surf nos anos 90 e virou gíria versátil no litoral e nas redes sociais.
+      </p>
+    </div>
+
+    <!-- Significado 2 — exemplo de múltiplo significado aprovado -->
+    <div class="significado-bloco">
+      <div class="sig-header">
+        <div class="sig-numero">2</div>
+        <span class="sig-tipo">Estado de espírito</span>
+      </div>
+      <p class="significado-text">
+        Também usado para descrever um estado de espírito de gratidão e paz. Quando alguém diz "tô no aloha", significa que está tranquilo, em harmonia, sem estresse.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- EXEMPLOS -->
+  <div class="card" style="animation-delay:0.15s">
+    <div class="card-title">💬 Exemplos em frases</div>
+    <div class="exemplo">— <strong>Aloha</strong>, galera! Chegamos! 🤙</div>
+    <div class="exemplo">— Foi demais a praia hoje, <strong>aloha</strong> pra todo mundo!</div>
+    <div class="exemplo">— Ei man, <strong>aloha</strong>! Faz quanto tempo!</div>
+    <div class="exemplo">— Tô indo, <strong>aloha</strong> pra vocês! 🌊</div>
+    <div class="exemplo">— Cara, tô no <strong>aloha</strong> total hoje. Sem estresse nenhum. ✌️</div>
+  </div>
+
+  <!-- SINÔNIMOS -->
+  <div class="card" style="animation-delay:0.2s">
+    <div class="card-title">🔄 Sinônimos</div>
+    <div class="tags-list">
+      <a href="palavra.html?w=oi" class="tag">Oi</a>
+      <a href="palavra.html?w=salve" class="tag">Salve</a>
+      <a href="palavra.html?w=eai" class="tag">E aí</a>
+      <a href="palavra.html?w=tchau" class="tag">Tchau</a>
+      <a href="palavra.html?w=valeu" class="tag">Valeu</a>
+      <a href="palavra.html?w=falou" class="tag">Falou</a>
+      <a href="palavra.html?w=abraco" class="tag">Abraço</a>
+      <a href="palavra.html?w=paz" class="tag">Paz ✌️</a>
+    </div>
+  </div>
+
+  <!-- RELACIONADAS -->
+  <div class="card" style="animation-delay:0.25s">
+    <div class="card-title">🔗 Palavras relacionadas</div>
+    <div class="tags-list">
+      <a href="palavra.html?w=surfe" class="tag">Surfe 🏄</a>
+      <a href="palavra.html?w=mana" class="tag">Mana</a>
+      <a href="palavra.html?w=dude" class="tag">Dude</a>
+      <a href="palavra.html?w=shaka" class="tag">Shaka 🤙</a>
+      <a href="palavra.html?w=vibe" class="tag">Vibe</a>
+      <a href="palavra.html?w=flow" class="tag">Flow</a>
+      <a href="palavra.html?w=curtiu" class="tag">Curtiu</a>
+    </div>
+  </div>
+
+  <!-- REAÇÕES + ENVIAR NOVO SIGNIFICADO -->
+  <div class="card" style="animation-delay:0.3s">
+    <div class="card-title">⚡ O que você achou?</div>
+    <div class="reacoes">
+      <button class="reacao-btn ativo" onclick="reagir(this)">
+        <span class="reacao-emoji">🔥</span><span class="reacao-count">247</span><span class="reacao-label">DAORA</span>
+      </button>
+      <button class="reacao-btn" onclick="reagir(this)">
+        <span class="reacao-emoji">😂</span><span class="reacao-count">89</span><span class="reacao-label">RACHEI</span>
+      </button>
+      <button class="reacao-btn" onclick="reagir(this)">
+        <span class="reacao-emoji">🤔</span><span class="reacao-count">34</span><span class="reacao-label">TENDI NÃO</span>
+      </button>
+      <button class="reacao-btn" onclick="reagir(this)">
+        <span class="reacao-emoji">👻</span><span class="reacao-count">156</span><span class="reacao-label">BIZARRO</span>
+      </button>
+      <button class="reacao-btn" onclick="reagir(this)">
+        <span class="reacao-emoji">😍</span><span class="reacao-count">312</span><span class="reacao-label">AMEI</span>
+      </button>
+    </div>
+
+    <!-- ENVIAR NOVO SIGNIFICADO -->
+    <button class="btn-novo-sig" onclick="toggleNovoSig()">
+      ✍️ Conhece outro significado? Envie o seu!
+    </button>
+    <div class="novo-sig-form" id="novoSigForm">
+      <p class="sig-aviso">⏳ Seu significado será revisado antes de aparecer no site.</p>
+      <textarea placeholder="Descreva o significado que você conhece, com contexto e exemplos..."></textarea>
+      <div class="novo-sig-btns">
+        <button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button>
+        <button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV ALFABÉTICA -->
+  <div class="card" style="animation-delay:0.35s">
+    <div class="card-title">🔤 Navegação alfabética</div>
+    <div class="alfa-nav">
+      <div class="alfa-grupo">
+        <span class="alfa-label">◀ Anterior</span>
+        <a href="palavra.html?w=aloba" class="alfa-link">Aloba</a>
+        <a href="palavra.html?w=aloco" class="alfa-link">Alocô</a>
+        <a href="palavra.html?w=aleto" class="alfa-link">Aleto</a>
+      </div>
+      <div class="alfa-sep">|</div>
+      <div class="alfa-grupo direita">
+        <span class="alfa-label">Próxima ▶</span>
+        <a href="palavra.html?w=altas" class="alfa-link">Altas</a>
+        <a href="palavra.html?w=amasso" class="alfa-link">Amasso</a>
+        <a href="palavra.html?w=amoeba" class="alfa-link">Amoeba</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARTILHAR -->
+  <div class="card" style="animation-delay:0.4s">
+    <div class="card-title">📤 Compartilhar</div>
+    <div class="share-btns">
+      <a href="https://wa.me/?text=Sabia%20o%20que%20significa%20Aloha%3F%20Veja%20no%20CyberCity!" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
+      <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>
+      <a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20Aloha%3F%20CyberCity!" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
+    </div>
+  </div>
+
+  <!-- COMENTÁRIOS -->
+  <div class="card" style="animation-delay:0.45s">
+    <div class="card-title">💬 Comentários <span style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;">(1)</span></div>
+    <div class="comentario">
+      <div class="com-avatar">M</div>
+      <div class="com-body">
+        <div class="com-meta"><strong>mari_carioca</strong> · 2 dias atrás</div>
+        <div class="com-text">Cresci ouvindo isso na praia de Ipanema! Clássico demais 🌊🤙</div>
+      </div>
+    </div>
+    <div class="comment-form">
+      <textarea placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
+      <button class="btn-comentar">COMENTAR</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-card">
+    <div class="sidebar-title">🔍 Buscar</div>
+    <div class="sidebar-search">
+      <input type="text" placeholder="Buscar palavra...">
+      <button>→</button>
+    </div>
+  </div>
+  <div class="sidebar-card">
+    <div class="sidebar-title">🏆 Top 10 Mais Buscadas</div>
+    <a href="#" class="top-item"><span class="top-rank ouro">1</span><span class="top-word">Simbora</span><span class="top-busca">12.4k</span></a>
+    <a href="#" class="top-item"><span class="top-rank prata">2</span><span class="top-word">Mió</span><span class="top-busca">9.8k</span></a>
+    <a href="#" class="top-item"><span class="top-rank bronze">3</span><span class="top-word">Vapo</span><span class="top-busca">8.1k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">4</span><span class="top-word">Calica</span><span class="top-busca">7.3k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">5</span><span class="top-word">Boh</span><span class="top-busca">6.9k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">6</span><span class="top-word">Cringe</span><span class="top-busca">6.2k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">7</span><span class="top-word">Din</span><span class="top-busca">5.8k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">8</span><span class="top-word">Tankar</span><span class="top-busca">5.1k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">9</span><span class="top-word">Loli</span><span class="top-busca">4.7k</span></a>
+    <a href="#" class="top-item"><span class="top-rank">10</span><span class="top-word">Meczada</span><span class="top-busca">4.2k</span></a>
+  </div>
+  <div class="sidebar-card">
+    <div class="sidebar-title">🆕 Últimas Adicionadas</div>
+    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Tchurma</span><span class="recente-data">hoje</span></a>
+    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Surtada</span><span class="recente-data">ontem</span></a>
+    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Fechou</span><span class="recente-data">2 dias</span></a>
+    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Aloha</span><span class="recente-data">3 dias</span></a>
+    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Bora</span><span class="recente-data">5 dias</span></a>
+  </div>
+</aside>
+</div>
+
+<script>
+  // ── TAMANHO DO TÍTULO AUTOMÁTICO ──
+  function ajustarTitulo(){
+    const el = document.getElementById('palavraTitulo');
+    const texto = el.textContent.trim();
+    const len = texto.length;
+    el.classList.remove('curta','media','longa','muito-longa');
+    if(len <= 6)       el.classList.add('curta');
+    else if(len <= 12) el.classList.add('media');
+    else if(len <= 20) el.classList.add('longa');
+    else               el.classList.add('muito-longa');
+  }
+  ajustarTitulo();
+
+  // ── MENU ──
+  function toggleMenu(){
+    document.getElementById('navMobile').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+
+  // ── REAÇÕES ──
+  function reagir(btn){
+    const ativo = btn.classList.contains('ativo');
+    document.querySelectorAll('.reacao-btn').forEach(b=>b.classList.remove('ativo'));
+    if(!ativo){
+      btn.classList.add('ativo');
+      const count = btn.querySelector('.reacao-count');
+      count.textContent = parseInt(count.textContent)+1;
+    }
+  }
+
+  // ── NOVO SIGNIFICADO ──
+  function toggleNovoSig(){
+    const form = document.getElementById('novoSigForm');
+    form.classList.toggle('aberto');
+  }
+  function enviarSig(){
+    const form = document.getElementById('novoSigForm');
+    const ta = form.querySelector('textarea');
+    if(!ta.value.trim()){ ta.style.borderColor='#ff5050'; return; }
+    ta.style.borderColor='';
+    form.classList.remove('aberto');
+    ta.value='';
+    // mostra confirmação
+    const btn = document.querySelector('.btn-novo-sig');
+    btn.textContent='✅ Significado enviado! Aguardando revisão.';
+    btn.style.color='#64ff96';
+    btn.style.borderColor='rgba(100,255,150,0.4)';
+    btn.style.background='rgba(100,255,150,0.08)';
+    btn.onclick = null;
+    // Aqui conecta com Supabase
+  }
+
+  // ── COPIAR LINK ──
+  function copiarLink(){
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      alert('Link copiado! 🔗');
+    });
+  }
+</script>
+</body>
+</html>

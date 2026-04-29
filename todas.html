@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todas as Palavras — CyberCity Dicionário</title>
+<meta name="description" content="Todas as gírias, expressões e palavras do CyberCity em ordem alfabética.">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
+    --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
+    --borda:#1a3a6e;--texto:#d0e4ff;
+  }
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
+  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
+  .nav-links{display:flex;gap:20px;align-items:center;}
+  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--amarelo);}
+  .nav-links a.ativo{color:var(--amarelo);}
+  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
+  .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
+  .nav-mobile.open{display:flex;}
+  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;}
+  .nav-mobile a:hover{color:var(--amarelo);}
+  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
+  .overlay.open{display:block;}
+
+  .page-wrap{max-width:900px;margin:0 auto;padding:90px 16px 60px;}
+
+  /* hero */
+  .page-hero{text-align:center;padding:40px 0 36px;position:relative;}
+  .page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .page-titulo{font-family:'Bangers',cursive;font-size:clamp(42px,10vw,72px);letter-spacing:4px;color:var(--amarelo);text-shadow:3px 3px 0 var(--azul),6px 6px 0 var(--azul-escuro);-webkit-text-stroke:1.5px var(--azul);animation:titlePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;}
+  @keyframes titlePop{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .page-sub{font-size:15px;color:#4a6fa5;margin-top:8px;font-weight:700;}
+
+  /* busca */
+  .busca-wrap{margin:28px 0 24px;}
+  .busca-row{display:flex;background:var(--card);border:1.5px solid var(--borda);border-radius:12px;overflow:hidden;transition:border-color 0.2s;}
+  .busca-row:focus-within{border-color:var(--azul);}
+  .busca-row input{flex:1;background:none;border:none;outline:none;padding:14px 18px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:15px;}
+  .busca-row input::placeholder{color:#2a4a7a;}
+  .busca-row button{background:var(--azul);border:none;padding:0 20px;color:#fff;font-size:18px;cursor:pointer;transition:background 0.2s;}
+  .busca-row button:hover{background:#0050cc;}
+
+  /* alfabeto fixo */
+  .alfa-sticky{position:sticky;top:60px;z-index:50;background:rgba(5,8,15,0.95);backdrop-filter:blur(10px);padding:12px 0;border-bottom:1px solid var(--borda);margin-bottom:28px;}
+  .alfa-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+  .alfa-btn{background:var(--card2);border:1px solid var(--borda);color:var(--texto);width:36px;height:36px;border-radius:8px;font-family:'Bangers',cursive;font-size:18px;cursor:pointer;transition:all 0.15s;text-decoration:none;display:flex;align-items:center;justify-content:center;}
+  .alfa-btn:hover,.alfa-btn.ativo{background:var(--azul);color:#fff;border-color:var(--azul);}
+  .alfa-btn.vazio{opacity:0.25;cursor:default;}
+  .alfa-btn.vazio:hover{background:var(--card2);color:var(--texto);border-color:var(--borda);}
+
+  /* contador */
+  .contador{text-align:center;font-size:13px;color:#4a6fa5;font-weight:700;margin-bottom:20px;}
+  .contador span{color:var(--ciano);}
+
+  /* grupo letra */
+  .letra-grupo{margin-bottom:32px;animation:fadeUp 0.4s both;}
+  @keyframes fadeUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+  .letra-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .letra-badge{font-family:'Bangers',cursive;font-size:42px;color:var(--amarelo);text-shadow:2px 2px 0 var(--azul);line-height:1;-webkit-text-stroke:1px var(--azul);}
+  .letra-linha{flex:1;height:1px;background:linear-gradient(90deg,var(--borda),transparent);}
+  .letra-count{font-size:12px;color:#4a6fa5;font-weight:700;}
+
+  .palavras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+  .palavra-item{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--borda);border-radius:10px;
+    padding:10px 14px;text-decoration:none;transition:all 0.2s;
+    position:relative;overflow:hidden;
+  }
+  .palavra-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--azul);transform:scaleY(0);transition:transform 0.2s;transform-origin:bottom;}
+  .palavra-item:hover{border-color:var(--azul);transform:translateY(-2px);}
+  .palavra-item:hover::before{transform:scaleY(1);}
+  .palavra-item:hover .palavra-nome{color:var(--amarelo);}
+  .palavra-nome{font-size:15px;font-weight:800;color:var(--texto);transition:color 0.2s;}
+  .palavra-seta{font-size:12px;color:#2a4a7a;transition:color 0.2s;}
+  .palavra-item:hover .palavra-seta{color:var(--ciano);}
+
+  /* nenhum resultado */
+  .sem-resultado{text-align:center;padding:60px 20px;display:none;}
+  .sem-resultado.visivel{display:block;}
+  .sem-emoji{font-size:48px;margin-bottom:12px;}
+  .sem-texto{font-family:'Fredoka One',cursive;font-size:20px;color:#4a6fa5;}
+
+  @media(max-width:600px){
+    .palavras-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+    .nav-links{display:none;}
+    .menu-btn{display:flex;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo-main">CyberCity</a>
+  <div class="nav-links">
+    <a href="index.html">Início</a>
+    <a href="todas.html" class="ativo">Todas</a>
+    <a href="categorias.html">Categorias</a>
+    <a href="rimas.html">Rimas</a>
+    <a href="tarot.html">Tarot</a>
+    <a href="cadastro.html">Entrar</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<nav class="nav-mobile" id="navMobile">
+  <button class="close-nav" onclick="toggleMenu()">✕</button>
+  <a href="index.html">🏠 Início</a>
+  <a href="todas.html">📖 Todas as Palavras</a>
+  <a href="categorias.html">🗂️ Categorias</a>
+  <a href="rimas.html">🎵 Rimas</a>
+  <a href="tarot.html">🃏 Tarot de Gírias</a>
+  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-hero">
+    <h1 class="page-titulo">📖 TODAS AS PALAVRAS</h1>
+    <p class="page-sub">Explore o dicionário completo em ordem alfabética</p>
+  </div>
+
+  <div class="busca-wrap">
+    <div class="busca-row">
+      <input type="text" id="buscaInput" placeholder="Filtrar palavras..." oninput="filtrar()">
+      <button>🔍</button>
+    </div>
+  </div>
+
+  <div class="alfa-sticky">
+    <div class="alfa-grid" id="alfaGrid"></div>
+  </div>
+
+  <div class="contador">Mostrando <span id="contadorNum">42</span> palavras</div>
+
+  <div id="listagem"></div>
+
+  <div class="sem-resultado" id="semResultado">
+    <div class="sem-emoji">🤔</div>
+    <div class="sem-texto">Nenhuma palavra encontrada...</div>
+  </div>
+
+</div>
+
+<script>
+  // Dados de exemplo — virão do Supabase futuramente
+  const palavras = [
+    {palavra:'Aloha',slug:'aloha'},{palavra:'Alocô',slug:'aloco'},
+    {palavra:'Aloba',slug:'aloba'},{palavra:'Arregou',slug:'arregou'},
+    {palavra:'Boh',slug:'boh'},{palavra:'Bora',slug:'bora'},
+    {palavra:'Brabo',slug:'brabo'},{palavra:'Brolha',slug:'brolha'},
+    {palavra:'Calica',slug:'calica'},{palavra:'Cabuloso',slug:'cabuloso'},
+    {palavra:'Cringe',slug:'cringe'},{palavra:'Confia',slug:'confia'},
+    {palavra:'Din',slug:'din'},{palavra:'Daora',slug:'daora'},
+    {palavra:'Fechou',slug:'fechou'},{palavra:'Flow',slug:'flow'},
+    {palavra:'Gato',slug:'gato'},{palavra:'Goró',slug:'goro'},
+    {palavra:'Hype',slug:'hype'},{palavra:'Humilhação',slug:'humilhacao'},
+    {palavra:'Irado',slug:'irado'},{palavra:'Isso aí',slug:'isso-ai'},
+    {palavra:'Jaba',slug:'jaba'},{palavra:'Joga fora',slug:'joga-fora'},
+    {palavra:'Loli',slug:'loli'},{palavra:'Lendário',slug:'lendario'},
+    {palavra:'Meczada',slug:'meczada'},{palavra:'Mió',slug:'mio'},
+    {palavra:'Nóia',slug:'noia'},{palavra:'Na moral',slug:'na-moral'},
+    {palavra:'Ostentação',slug:'ostentacao'},{palavra:'Ok né',slug:'ok-ne'},
+    {palavra:'Patifaria',slug:'patifaria'},{palavra:'Pesado',slug:'pesado'},
+    {palavra:'Queimou',slug:'queimou'},{palavra:'Que que é',slug:'que-que-e'},
+    {palavra:'Rolê',slug:'role'},{palavra:'Racha',slug:'racha'},
+    {palavra:'Simbora',slug:'simbora'},{palavra:'Salve',slug:'salve'},
+    {palavra:'Tankar',slug:'tankar'},{palavra:'Treta',slug:'treta'},
+    {palavra:'Uó',slug:'uo'},{palavra:'Uhul',slug:'uhul'},
+    {palavra:'Vapo',slug:'vapo'},{palavra:'Vibe',slug:'vibe'},
+    {palavra:'Xaveco',slug:'xaveco'},{palavra:'Xandão',slug:'xandao'},
+    {palavra:'Zoar',slug:'zoar'},{palavra:'Zueira',slug:'zueira'},
+  ];
+
+  let filtrado = [...palavras];
+
+  function agruparPorLetra(lista){
+    const grupos = {};
+    lista.forEach(p=>{
+      const l = p.palavra[0].toUpperCase();
+      if(!grupos[l]) grupos[l]=[];
+      grupos[l].push(p);
+    });
+    return grupos;
+  }
+
+  function renderizar(lista){
+    const listagem = document.getElementById('listagem');
+    const sem = document.getElementById('semResultado');
+    document.getElementById('contadorNum').textContent = lista.length;
+
+    if(lista.length===0){
+      listagem.innerHTML='';
+      sem.classList.add('visivel');
+      return;
+    }
+    sem.classList.remove('visivel');
+
+    const grupos = agruparPorLetra(lista);
+    const letras = Object.keys(grupos).sort();
+
+    listagem.innerHTML = letras.map((l,i)=>`
+      <div class="letra-grupo" style="animation-delay:${i*0.04}s" id="grupo-${l}">
+        <div class="letra-header">
+          <div class="letra-badge">${l}</div>
+          <div class="letra-linha"></div>
+          <div class="letra-count">${grupos[l].length} palavra${grupos[l].length>1?'s':''}</div>
+        </div>
+        <div class="palavras-grid">
+          ${grupos[l].map(p=>`
+            <a href="palavra.html?w=${p.slug}" class="palavra-item">
+              <span class="palavra-nome">${p.palavra}</span>
+              <span class="palavra-seta">→</span>
+            </a>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filtrar(){
+    const q = document.getElementById('buscaInput').value.toLowerCase().trim();
+    filtrado = q ? palavras.filter(p=>p.palavra.toLowerCase().includes(q)) : [...palavras];
+    renderizar(filtrado);
+    renderAlfa();
+  }
+
+  function renderAlfa(){
+    const grid = document.getElementById('alfaGrid');
+    const letrasComPalavras = new Set(filtrado.map(p=>p.palavra[0].toUpperCase()));
+    const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    grid.innerHTML = todasLetras.map(l=>`
+      <a href="#grupo-${l}" class="alfa-btn ${letrasComPalavras.has(l)?'':'vazio'}" onclick="irPara('${l}',event)">${l}</a>
+    `).join('');
+  }
+
+  function irPara(letra, e){
+    e.preventDefault();
+    const el = document.getElementById('grupo-'+letra);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function toggleMenu(){
+    document.getElementById('navMobile').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+
+  // init
+  renderizar(palavras);
+  renderAlfa();
+</script>
+</body>
+</html>
