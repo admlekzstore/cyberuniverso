@@ -386,11 +386,32 @@ async function init() {
     return
   }
 
-  const { data: perfil } = await sb.from('perfis').select('username, is_admin').eq('id', session.user.id).single()
+  // tenta buscar perfil — se der erro de RLS, tenta sem o .single()
+  let perfil = null
+  try {
+    const { data, error } = await sb
+      .from('perfis')
+      .select('username, is_admin')
+      .eq('id', session.user.id)
+      .maybeSingle()
+
+    if (!error) perfil = data
+  } catch(e) {}
+
+  // se não achou perfil via RLS, verifica via user_metadata
+  if (!perfil) {
+    // tenta inserir o perfil caso não exista
+    const { data: inserted } = await sb
+      .from('perfis')
+      .upsert({ id: session.user.id, username: session.user.email?.split('@')[0], is_admin: false })
+      .select('username, is_admin')
+      .maybeSingle()
+    perfil = inserted
+  }
 
   if (!perfil || !perfil.is_admin) {
     document.querySelector('.acesso-negado-titulo').textContent = 'ACESSO NEGADO'
-    document.querySelector('.acesso-negado-sub').textContent = 'Você não tem permissão de administrador.'
+    document.querySelector('.acesso-negado-sub').textContent = 'Você não tem permissão de administrador. ID: ' + session.user.id
     return
   }
 
