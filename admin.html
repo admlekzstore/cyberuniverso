@@ -451,7 +451,7 @@ async function carregarPendentes() {
       <td>${formatarData(p.criado_em)}</td>
       <td><div class="acoes-cell">
         <button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓ Aprovar</button>
-        <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', 'pendente')">✏️ Editar</button>
+        <button class="btn-mini btn-editar" onclick="window.location.href='editar-palavra.html?id=${p.id}'">✏️ Editar</button>
         <button class="btn-mini btn-rejeitar" onclick="mudarStatus('${p.id}', 'rejeitada', this)">✗ Rejeitar</button>
       </div></td>
     </tr>`).join('')
@@ -476,7 +476,7 @@ async function carregarPalavras() {
       <td>${formatarData(p.criado_em)}</td>
       <td><div class="acoes-cell">
         ${p.status === 'pendente' ? `<button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓</button>` : ''}
-        <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', '${p.status}')">✏️</button>
+        <button class="btn-mini btn-editar" onclick="window.location.href='editar-palavra.html?id=${p.id}'">✏️</button>
         <button class="btn-mini btn-excluir" onclick="excluirPalavra('${p.id}', this)">🗑️</button>
       </div></td>
     </tr>`).join('')
@@ -662,14 +662,7 @@ function abrirModalNovaPalavra() {
   document.getElementById('modal-palavra').classList.add('aberto')
 }
 
-function abrirModalEditarPalavra(id, termo, slug, status) {
-  document.getElementById('mp-id').value = id
-  document.getElementById('mp-termo').value = termo
-  document.getElementById('mp-slug').value = slug
-  document.getElementById('mp-status').value = status
-  document.getElementById('modal-palavra-titulo').textContent = '✏️ EDITAR PALAVRA'
-  document.getElementById('modal-palavra').classList.add('aberto')
-}
+// editar palavra — redireciona para página dedicada
 
 function abrirModalSubcat(catId) {
   document.getElementById('ns-cat-id').value = catId
