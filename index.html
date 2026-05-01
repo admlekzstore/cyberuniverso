@@ -131,7 +131,6 @@
     overflow: hidden;
   }
 
-  /* city background via CSS gradient layers */
   .hero::before {
     content: '';
     position: absolute;
@@ -143,7 +142,6 @@
       linear-gradient(to bottom, #000010 0%, #000820 40%, #001040 100%);
   }
 
-  /* city silhouette */
   .city-silhouette {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -151,7 +149,6 @@
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 400' preserveAspectRatio='none'%3E%3Cpath fill='%23000820' d='M0,400 L0,280 L40,280 L40,200 L60,200 L60,150 L80,150 L80,180 L100,180 L100,120 L110,120 L110,100 L130,100 L130,140 L150,140 L150,160 L170,160 L170,100 L180,100 L180,80 L195,80 L195,100 L210,100 L210,130 L230,130 L230,160 L250,160 L250,120 L260,120 L260,90 L275,90 L275,60 L285,60 L285,90 L300,90 L300,120 L320,120 L320,140 L340,140 L340,100 L355,100 L355,70 L365,70 L365,50 L378,50 L378,70 L390,70 L390,100 L410,100 L410,130 L430,130 L430,110 L445,110 L445,80 L455,80 L455,60 L468,60 L468,80 L480,80 L480,110 L500,110 L500,140 L520,140 L520,100 L535,100 L535,75 L548,75 L548,55 L560,55 L560,75 L575,75 L575,100 L595,100 L595,130 L615,130 L615,110 L628,110 L628,85 L640,85 L640,65 L652,65 L652,85 L665,85 L665,110 L685,110 L685,140 L705,140 L705,120 L718,120 L718,95 L730,95 L730,75 L742,75 L742,95 L755,95 L755,120 L775,120 L775,150 L795,150 L795,120 L810,120 L810,90 L823,90 L823,70 L835,70 L835,90 L848,90 L848,120 L868,120 L868,150 L888,150 L888,120 L902,120 L902,95 L915,95 L915,75 L928,75 L928,95 L942,95 L942,120 L962,120 L962,150 L982,150 L982,130 L995,130 L995,105 L1007,105 L1007,85 L1018,85 L1018,105 L1030,105 L1030,130 L1050,130 L1050,160 L1070,160 L1070,130 L1082,130 L1082,105 L1095,105 L1095,85 L1107,85 L1107,105 L1120,105 L1120,130 L1140,130 L1140,160 L1160,160 L1160,140 L1175,140 L1175,110 L1188,110 L1188,90 L1200,90 L1200,110 L1215,110 L1215,140 L1235,140 L1235,170 L1255,170 L1255,140 L1270,140 L1270,115 L1283,115 L1283,95 L1295,95 L1295,115 L1308,115 L1308,140 L1328,140 L1328,165 L1348,165 L1348,140 L1362,140 L1362,120 L1375,120 L1375,140 L1390,140 L1390,170 L1410,170 L1410,200 L1440,200 L1440,400 Z'/%3E%3C/svg%3E") no-repeat bottom center / 100% auto;
   }
 
-  /* city lights glow */
   .city-lights {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -163,7 +160,6 @@
     pointer-events: none;
   }
 
-  /* water reflection */
   .water {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -242,6 +238,35 @@
   }
   .search-row button:hover { background: #0050cc; }
 
+  /* ── AUTOCOMPLETE ── */
+  .autocomplete-box {
+    background: #0a1628;
+    border: 2px solid #1a3a6e;
+    border-radius: 10px;
+    margin-top: 4px;
+    overflow: hidden;
+    display: none;
+    text-align: left;
+  }
+  .autocomplete-box.open { display: block; }
+  .autocomplete-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid #1a3a6e;
+    transition: background 0.15s;
+  }
+  .autocomplete-item:last-child { border-bottom: none; }
+  .autocomplete-item:hover { background: #1a3a6e; color: var(--amarelo); }
+  .autocomplete-item span { font-size: 12px; color: #88aacc; font-weight: 400; margin-left: 8px; }
+  .autocomplete-empty {
+    padding: 12px 16px;
+    color: #88aacc;
+    font-size: 14px;
+  }
+
   .btn-enviar {
     display: block;
     width: 100%;
@@ -255,6 +280,7 @@
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s, background 0.2s;
+    margin-top: 8px;
   }
   .btn-enviar:hover { background: #0050cc; transform: scale(1.02); }
 
@@ -297,8 +323,8 @@
 
   /* ── CARD ── */
   .card {
-    background: var(--azul);
-    border: 3px solid var(--amarelo);
+    background: #0a1628;
+    border: 2px solid #1a3a6e;
     border-radius: 20px;
     padding: 28px 20px;
     margin-bottom: 20px;
@@ -324,17 +350,32 @@
   .word-list li a {
     display: block;
     text-align: center;
-    color: #000;
+    color: #00eaff;
     text-decoration: none;
     font-size: 17px;
     font-weight: 800;
-    padding: 6px 0;
+    padding: 8px 0;
     border-radius: 6px;
     transition: background 0.15s, color 0.15s;
   }
   .word-list li a:hover {
-    background: rgba(0,0,0,0.15);
+    background: rgba(26,110,245,0.2);
     color: var(--amarelo);
+  }
+
+  /* skeleton loading */
+  .skeleton {
+    background: linear-gradient(90deg, #0a1628 25%, #1a3a6e 50%, #0a1628 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    border-radius: 6px;
+    height: 22px;
+    margin: 6px auto;
+    width: 60%;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   /* ── ALPHABET ── */
@@ -359,8 +400,8 @@
   }
 
   .alpha-btn {
-    background: var(--azul);
-    border: 2px solid var(--amarelo);
+    background: #0a1628;
+    border: 2px solid #1a3a6e;
     color: #fff;
     width: 40px;
     height: 40px;
@@ -375,8 +416,9 @@
     justify-content: center;
   }
   .alpha-btn:hover {
-    background: var(--amarelo);
-    color: #000;
+    background: var(--azul);
+    border-color: var(--azul);
+    color: #fff;
   }
 
   /* ── FOOTER ── */
@@ -438,10 +480,15 @@
 
     <div class="search-box">
       <div class="search-row">
-        <input type="text" placeholder="Buscar uma palavra..." id="searchInput" onkeydown="handleSearch(event)">
+        <input type="text" placeholder="Buscar uma palavra..." id="searchInput"
+               onkeydown="handleSearch(event)"
+               oninput="handleInput(this.value)"
+               autocomplete="off">
         <button onclick="doSearch()">🔍</button>
       </div>
-      <button class="btn-enviar">OU ENVIAR UMA DEFINIÇÃO</button>
+      <!-- autocomplete -->
+      <div class="autocomplete-box" id="autocompleteBox"></div>
+      <button class="btn-enviar" onclick="window.location.href='cadastro.html'">OU ENVIAR UMA DEFINIÇÃO</button>
     </div>
   </div>
 </section>
@@ -469,76 +516,157 @@
   <!-- Gírias em Alta -->
   <div class="card">
     <h2 class="card-title">🔥 GÍRIAS EM ALTA</h2>
-    <ul class="word-list">
-      <li><a href="palavra.html?w=calica">Calica</a></li>
-      <li><a href="palavra.html?w=vapo">Vapo</a></li>
-      <li><a href="palavra.html?w=meczada">Meczada</a></li>
-      <li><a href="palavra.html?w=loli">Loli</a></li>
-      <li><a href="palavra.html?w=boh">Boh</a></li>
-      <li><a href="palavra.html?w=tankar">Tankar</a></li>
-      <li><a href="palavra.html?w=din">Din</a></li>
-    </ul>
-  </div>
-
-  <!-- Memes em Alta -->
-  <div class="card" style="animation-delay:0.1s">
-    <h2 class="card-title">😂 MEMES EM ALTA</h2>
-    <ul class="word-list">
-      <li><a href="palavra.html?w=mo-paz">Mó Paz</a></li>
-      <li><a href="palavra.html?w=droga-e-o-brian">Droga é o Brian</a></li>
-      <li><a href="palavra.html?w=cringe">Cringe</a></li>
-      <li><a href="palavra.html?w=ai-calica">Ai Calica</a></li>
-      <li><a href="palavra.html?w=confia">Confia</a></li>
-      <li><a href="palavra.html?w=a-mimir">A mimir</a></li>
-      <li><a href="palavra.html?w=surtada">Surtada</a></li>
+    <ul class="word-list" id="listEmAlta">
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
     </ul>
   </div>
 
   <!-- Adicionadas Recentemente -->
-  <div class="card" style="animation-delay:0.2s">
+  <div class="card" style="animation-delay:0.1s">
     <h2 class="card-title">🆕 ADICIONADAS RECENTEMENTE</h2>
-    <ul class="word-list">
-      <li><a href="palavra.html?w=simbora">Simbora</a></li>
-      <li><a href="palavra.html?w=tche">Tchê</a></li>
-      <li><a href="palavra.html?w=ta-bao">Tá bão</a></li>
-      <li><a href="palavra.html?w=fechou">Fechou</a></li>
-      <li><a href="palavra.html?w=bora">Bora</a></li>
+    <ul class="word-list" id="listRecentes">
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
+      <li><div class="skeleton"></div></li>
     </ul>
   </div>
 
 </main>
 
 <footer>
-  <p>© 2024 Dicionário Moderno — Seu guia na evolução da linguagem</p>
-  <p style="margin-top:8px"><a href="privacidade.html">Termos de Uso</a> · <a href="privacidade.html">Privacidade</a> · <a href="contato.html">Contato</a></p>
+  <p>© 2025 CyberUniverso — Seu guia na evolução da linguagem</p>
+  <p style="margin-top:8px">
+    <a href="privacidade.html">Termos de Uso</a> ·
+    <a href="privacidade.html">Privacidade</a> ·
+    <a href="contato.html">Contato</a>
+  </p>
 </footer>
 
-<script>
-  // Alphabet
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  const grid = document.getElementById('alphabetGrid');
+<script type="module">
+  import { supabase } from './supabase.js'
+
+  // ── ALPHABET ──
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  const grid = document.getElementById('alphabetGrid')
   letters.forEach(l => {
-    const a = document.createElement('a');
-    a.className = 'alpha-btn';
-    a.href = '#';
-    a.textContent = l;
-    grid.appendChild(a);
-  });
+    const a = document.createElement('a')
+    a.className = 'alpha-btn'
+    a.href = `todas.html?letra=${l}`
+    a.textContent = l
+    grid.appendChild(a)
+  })
 
-  // Menu
-  function toggleMenu() {
-    document.getElementById('navMenu').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
+  // ── MENU ──
+  window.toggleMenu = function() {
+    document.getElementById('navMenu').classList.toggle('open')
+    document.getElementById('overlay').classList.toggle('open')
   }
 
-  // Search
-  function handleSearch(e) {
-    if (e.key === 'Enter') doSearch();
+  // ── BUSCA ──
+  window.handleSearch = function(e) {
+    if (e.key === 'Enter') window.doSearch()
   }
-  function doSearch() {
-    const val = document.getElementById('searchInput').value.trim();
-    if (val) alert('Buscar: ' + val); // substituir pela lógica real
+
+  window.doSearch = function() {
+    const val = document.getElementById('searchInput').value.trim()
+    if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
   }
+
+  // ── AUTOCOMPLETE ──
+  let debounceTimer
+  window.handleInput = async function(val) {
+    clearTimeout(debounceTimer)
+    const box = document.getElementById('autocompleteBox')
+
+    if (val.length < 2) {
+      box.classList.remove('open')
+      box.innerHTML = ''
+      return
+    }
+
+    debounceTimer = setTimeout(async () => {
+      const { data, error } = await supabase
+        .from('palavras')
+        .select('termo, slug')
+        .ilike('termo', `${val}%`)
+        .eq('status', 'aprovada')
+        .limit(6)
+
+      box.innerHTML = ''
+
+      if (error || !data || data.length === 0) {
+        box.innerHTML = `<div class="autocomplete-empty">Nenhuma palavra encontrada</div>`
+        box.classList.add('open')
+        return
+      }
+
+      data.forEach(p => {
+        const div = document.createElement('div')
+        div.className = 'autocomplete-item'
+        div.innerHTML = `${p.termo}`
+        div.onclick = () => window.location.href = `palavra.html?w=${p.slug}`
+        box.appendChild(div)
+      })
+
+      box.classList.add('open')
+    }, 300)
+  }
+
+  // fecha autocomplete ao clicar fora
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-box')) {
+      document.getElementById('autocompleteBox').classList.remove('open')
+    }
+  })
+
+  // ── CARREGAR PALAVRAS EM ALTA ──
+  async function carregarEmAlta() {
+    const { data, error } = await supabase
+      .from('palavras')
+      .select('termo, slug')
+      .eq('status', 'aprovada')
+      .order('criado_em', { ascending: false })
+      .limit(7)
+
+    const list = document.getElementById('listEmAlta')
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<li style="text-align:center;color:#88aacc;padding:10px">Nenhuma palavra ainda</li>'
+      return
+    }
+
+    list.innerHTML = data.map(p =>
+      `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`
+    ).join('')
+  }
+
+  // ── CARREGAR RECENTES ──
+  async function carregarRecentes() {
+    const { data, error } = await supabase
+      .from('palavras')
+      .select('termo, slug')
+      .eq('status', 'aprovada')
+      .order('criado_em', { ascending: false })
+      .limit(5)
+
+    const list = document.getElementById('listRecentes')
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<li style="text-align:center;color:#88aacc;padding:10px">Nenhuma palavra ainda</li>'
+      return
+    }
+
+    list.innerHTML = data.map(p =>
+      `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`
+    ).join('')
+  }
+
+  carregarEmAlta()
+  carregarRecentes()
 </script>
 </body>
 </html>
