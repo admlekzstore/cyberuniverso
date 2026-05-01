@@ -418,7 +418,7 @@ async function carregarStats() {
 // ── PENDENTES ──
 async function carregarPendentes() {
   const { data } = await sb.from('palavras')
-    .select('id, termo, slug, criado_em, perfis(username)')
+    .select('id, termo, slug, criado_em, usuario_id')
     .eq('status', 'pendente')
     .order('criado_em', { ascending: false })
 
@@ -447,7 +447,7 @@ async function carregarPendentes() {
     <tr id="row-${p.id}">
       <td><strong>${p.termo}</strong></td>
       <td style="max-width:200px;color:#4a6fa5;">—</td>
-      <td>${p.perfis?.username || '—'}</td>
+      <td>—</td>
       <td>${formatarData(p.criado_em)}</td>
       <td><div class="acoes-cell">
         <button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓ Aprovar</button>
@@ -460,7 +460,7 @@ async function carregarPendentes() {
 // ── TODAS AS PALAVRAS ──
 async function carregarPalavras() {
   const { data } = await sb.from('palavras')
-    .select('id, termo, slug, status, criado_em, perfis(username)')
+    .select('id, termo, slug, status, criado_em')
     .order('criado_em', { ascending: false })
 
   const tbody = document.getElementById('tbody-palavras')
@@ -471,7 +471,7 @@ async function carregarPalavras() {
   tbody.innerHTML = data.map(p => `
     <tr id="row-p-${p.id}">
       <td><strong>${p.termo}</strong></td>
-      <td>${p.perfis?.username || '—'}</td>
+      <td>—</td>
       <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
       <td>${formatarData(p.criado_em)}</td>
       <td><div class="acoes-cell">
