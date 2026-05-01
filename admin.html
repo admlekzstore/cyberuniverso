@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Admin — CyberCity</title>
+<title>Painel Admin — CyberUniverso</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -11,54 +11,40 @@
   body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
 
-  /* ── SIDEBAR ── */
-  .sidebar{
-    position:fixed;left:0;top:0;bottom:0;width:240px;
-    background:rgba(5,8,15,0.97);border-right:1px solid var(--borda);
-    display:flex;flex-direction:column;z-index:100;
-    transition:transform 0.3s;
-  }
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:rgba(5,8,15,0.97);border-right:1px solid var(--borda);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s;}
   .sidebar-logo{padding:20px;border-bottom:1px solid var(--borda);}
   .sidebar-logo-text{font-family:'Bangers',cursive;font-size:24px;color:var(--ciano);text-shadow:0 0 10px var(--ciano);letter-spacing:2px;}
   .sidebar-logo-sub{font-size:11px;color:#4a6fa5;font-weight:700;letter-spacing:1px;}
-
   .sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
   .nav-section{font-size:10px;color:#2a4a7a;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:12px 20px 6px;}
-  .nav-item{
-    display:flex;align-items:center;gap:10px;
-    padding:10px 20px;cursor:pointer;transition:all 0.2s;
-    text-decoration:none;color:var(--texto);font-size:14px;font-weight:700;
-    border-left:3px solid transparent;
-  }
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;color:var(--texto);font-size:14px;font-weight:700;border-left:3px solid transparent;}
   .nav-item:hover{background:rgba(26,110,245,0.08);color:var(--amarelo);}
   .nav-item.ativo{background:rgba(26,110,245,0.12);border-left-color:var(--azul);color:var(--ciano);}
   .nav-item-icon{font-size:18px;width:22px;text-align:center;}
   .nav-badge{background:var(--vermelho);color:#fff;border-radius:10px;padding:2px 7px;font-size:11px;font-weight:800;margin-left:auto;}
-
   .sidebar-footer{padding:16px 20px;border-top:1px solid var(--borda);}
   .btn-voltar-site{display:flex;align-items:center;gap:8px;color:#4a6fa5;text-decoration:none;font-size:13px;font-weight:700;transition:color 0.2s;}
   .btn-voltar-site:hover{color:var(--ciano);}
 
-  /* ── MAIN ── */
   .main{margin-left:240px;min-height:100vh;}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(5,8,15,0.8);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
   .topbar-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:var(--amarelo);}
   .topbar-right{display:flex;align-items:center;gap:12px;}
-  .admin-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;cursor:pointer;}
+  .admin-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;}
   .hamburger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;}
-
   .content{padding:24px;}
 
-  /* ── SEÇÕES ── */
   .secao{display:none;}
   .secao.ativa{display:block;}
 
-  /* ── STATS ── */
+  /* acesso negado */
+  .acesso-negado{text-align:center;padding:80px 20px;}
+  .acesso-negado-emoji{font-size:64px;margin-bottom:16px;}
+  .acesso-negado-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho);letter-spacing:2px;}
+  .acesso-negado-sub{color:#4a6fa5;font-size:15px;margin-top:8px;}
+
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
-  .stat-card{
-    background:var(--card);border:1px solid var(--borda);border-radius:14px;
-    padding:20px;position:relative;overflow:hidden;
-  }
+  .stat-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
   .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
   .stat-card.azul::before{background:linear-gradient(90deg,var(--azul),var(--ciano));}
   .stat-card.verde::before{background:linear-gradient(90deg,var(--verde),#00cc66);}
@@ -67,13 +53,10 @@
   .stat-icon{font-size:28px;margin-bottom:8px;}
   .stat-num{font-family:'Bangers',cursive;font-size:36px;color:var(--amarelo);line-height:1;}
   .stat-label{font-size:13px;color:#4a6fa5;font-weight:700;margin-top:4px;}
-  .stat-delta{font-size:12px;color:var(--verde);font-weight:700;margin-top:2px;}
 
-  /* ── TABELA ── */
   .tabela-wrap{background:var(--card);border:1px solid var(--borda);border-radius:14px;overflow:hidden;margin-bottom:20px;}
-  .tabela-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--borda);}
+  .tabela-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--borda);flex-wrap:wrap;gap:10px;}
   .tabela-titulo{font-family:'Bangers',cursive;font-size:20px;letter-spacing:1px;color:var(--ciano);}
-  .tabela-acoes{display:flex;gap:8px;}
 
   table{width:100%;border-collapse:collapse;}
   thead tr{background:rgba(26,110,245,0.08);}
@@ -95,42 +78,33 @@
   .btn-rejeitar:hover{background:var(--vermelho);color:#fff;}
   .btn-excluir{background:rgba(255,80,80,0.12);color:var(--vermelho);border:1px solid rgba(255,80,80,0.3);}
   .btn-excluir:hover{background:var(--vermelho);color:#fff;}
-
   .acoes-cell{display:flex;gap:6px;flex-wrap:wrap;}
 
-  /* input busca tabela */
   .busca-tabela{background:var(--card2);border:1.5px solid var(--borda);border-radius:8px;padding:7px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;width:180px;}
   .busca-tabela:focus{border-color:var(--azul);}
   .busca-tabela::placeholder{color:#2a4a7a;}
 
-  /* ── CATEGORIAS ── */
   .cats-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px;}
-
   .cat-admin-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;overflow:hidden;}
   .cat-admin-header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--borda);}
   .cat-admin-emoji{font-size:24px;}
   .cat-admin-nome{font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;color:var(--amarelo);flex:1;}
   .cat-admin-count{font-size:12px;color:#4a6fa5;font-weight:700;}
   .cat-admin-btns{display:flex;gap:6px;}
-
   .subcats-admin{padding:10px 14px;}
   .subcat-admin-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(26,58,110,0.3);}
   .subcat-admin-item:last-child{border-bottom:none;}
-  .subcat-admin-emoji{font-size:16px;}
   .subcat-admin-nome{font-size:13px;font-weight:800;color:var(--texto);flex:1;}
-  .subcat-admin-count{font-size:11px;color:#4a6fa5;margin-right:6px;}
 
-  /* botão adicionar */
-  .btn-adicionar{
-    display:flex;align-items:center;gap:8px;
-    background:rgba(26,110,245,0.1);border:1.5px dashed rgba(26,110,245,0.4);
-    color:#4a8aff;border-radius:12px;padding:12px 18px;
-    font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;
-    justify-content:center;margin-bottom:16px;
-  }
+  .btn-adicionar{display:flex;align-items:center;gap:8px;background:rgba(26,110,245,0.1);border:1.5px dashed rgba(26,110,245,0.4);color:#4a8aff;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-bottom:16px;}
   .btn-adicionar:hover{background:rgba(26,110,245,0.2);border-color:var(--azul);}
 
-  /* ── MODAL ── */
+  /* toast */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;}
+  .toast.visivel{transform:translateY(0);opacity:1;}
+  .toast.sucesso{border-color:rgba(100,255,150,0.4);color:var(--verde);}
+  .toast.erro{border-color:rgba(255,80,80,0.4);color:var(--vermelho);}
+
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:16px;}
   .modal-overlay.aberto{display:flex;}
   .modal{background:var(--card);border:1px solid var(--borda);border-radius:18px;width:100%;max-width:480px;position:relative;overflow:hidden;animation:modalIn 0.3s both;}
@@ -138,7 +112,7 @@
   .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
   .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--borda);}
   .modal-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:1px;color:var(--amarelo);}
-  .modal-fechar{background:none;border:none;color:#4a6fa5;font-size:22px;cursor:pointer;transition:color 0.2s;}
+  .modal-fechar{background:none;border:none;color:#4a6fa5;font-size:22px;cursor:pointer;}
   .modal-fechar:hover{color:#fff;}
   .modal-body{padding:24px;}
   .modal-campo{margin-bottom:16px;}
@@ -151,11 +125,11 @@
   .modal-footer{display:flex;gap:10px;padding:0 24px 24px;}
   .btn-salvar{flex:1;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
   .btn-salvar:hover{background:#0050cc;}
-  .btn-cancelar{background:var(--card2);color:var(--texto);border:1px solid var(--borda);border-radius:10px;padding:12px 20px;font-family:'Bangers',cursive;font-size:18px;cursor:pointer;transition:all 0.2s;}
-  .btn-cancelar:hover{border-color:var(--azul);}
+  .btn-salvar:disabled{background:#1a3a6e;cursor:not-allowed;opacity:0.7;}
+  .btn-cancelar{background:var(--card2);color:var(--texto);border:1px solid var(--borda);border-radius:10px;padding:12px 20px;font-family:'Bangers',cursive;font-size:18px;cursor:pointer;}
 
-  /* overflow table mobile */
   .table-scroll{overflow-x:auto;}
+  .vazio-msg{text-align:center;padding:40px;color:#4a6fa5;font-size:14px;font-weight:700;}
 
   @media(max-width:768px){
     .sidebar{transform:translateX(-100%);}
@@ -172,7 +146,7 @@
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="sidebar-logo-text">CyberCity</div>
+    <div class="sidebar-logo-text">CyberUniverso</div>
     <div class="sidebar-logo-sub">⚙️ PAINEL ADMIN</div>
   </div>
   <nav class="sidebar-nav">
@@ -183,7 +157,7 @@
     <div class="nav-section">Conteúdo</div>
     <a class="nav-item" onclick="irPara('pendentes')">
       <span class="nav-item-icon">⏳</span> Pendentes
-      <span class="nav-badge">7</span>
+      <span class="nav-badge" id="badge-pendentes">0</span>
     </a>
     <a class="nav-item" onclick="irPara('palavras')">
       <span class="nav-item-icon">📖</span> Todas as Palavras
@@ -212,43 +186,31 @@
       <div class="topbar-titulo" id="topbarTitulo">📊 DASHBOARD</div>
     </div>
     <div class="topbar-right">
-      <div style="font-size:13px;color:#4a6fa5;font-weight:700;">Olá, <strong style="color:var(--ciano)">Admin</strong></div>
-      <div class="admin-avatar">A</div>
+      <div style="font-size:13px;color:#4a6fa5;font-weight:700;">Olá, <strong style="color:var(--ciano)" id="nomeAdmin">Admin</strong></div>
+      <div class="admin-avatar" id="avatarAdmin">A</div>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ── DASHBOARD ── -->
-    <div class="secao ativa" id="sec-dashboard">
+    <!-- ACESSO NEGADO -->
+    <div class="secao ativa" id="sec-acesso-negado">
+      <div class="acesso-negado">
+        <div class="acesso-negado-emoji">🚫</div>
+        <div class="acesso-negado-titulo">ACESSO NEGADO</div>
+        <div class="acesso-negado-sub">Verificando permissões...</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="secao" id="sec-dashboard">
       <div class="stats-grid">
-        <div class="stat-card azul">
-          <div class="stat-icon">📖</div>
-          <div class="stat-num">1.247</div>
-          <div class="stat-label">Palavras publicadas</div>
-          <div class="stat-delta">+12 esta semana</div>
-        </div>
-        <div class="stat-card verde">
-          <div class="stat-icon">👥</div>
-          <div class="stat-num">3.841</div>
-          <div class="stat-label">Usuários cadastrados</div>
-          <div class="stat-delta">+89 este mês</div>
-        </div>
-        <div class="stat-card amarelo">
-          <div class="stat-icon">🔍</div>
-          <div class="stat-num">28.4k</div>
-          <div class="stat-label">Buscas hoje</div>
-          <div class="stat-delta">↑ 15% vs ontem</div>
-        </div>
-        <div class="stat-card vermelho">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-num">7</div>
-          <div class="stat-label">Pendentes de aprovação</div>
-          <div class="stat-delta" style="color:var(--laranja)">Aguardando revisão</div>
-        </div>
+        <div class="stat-card azul"><div class="stat-icon">📖</div><div class="stat-num" id="stat-aprovadas">—</div><div class="stat-label">Palavras publicadas</div></div>
+        <div class="stat-card verde"><div class="stat-icon">👥</div><div class="stat-num" id="stat-usuarios">—</div><div class="stat-label">Usuários cadastrados</div></div>
+        <div class="stat-card amarelo"><div class="stat-icon">💬</div><div class="stat-num" id="stat-comentarios">—</div><div class="stat-label">Comentários</div></div>
+        <div class="stat-card vermelho"><div class="stat-icon">⏳</div><div class="stat-num" id="stat-pendentes">—</div><div class="stat-label">Pendentes de aprovação</div></div>
       </div>
 
-      <!-- Pendentes recentes -->
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">⏳ Pendentes Recentes</div>
@@ -256,238 +218,122 @@
         </div>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Palavra</th><th>Enviado por</th><th>Data</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Tchurma</strong></td><td>surf_lover</td><td>hoje</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar">✓ Aprovar</button><button class="btn-mini btn-editar">✏️</button><button class="btn-mini btn-rejeitar">✗</button></div></td></tr>
-              <tr><td><strong>Manézão</strong></td><td>gaúcho_99</td><td>ontem</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar">✓ Aprovar</button><button class="btn-mini btn-editar">✏️</button><button class="btn-mini btn-rejeitar">✗</button></div></td></tr>
-              <tr><td><strong>Zureta</strong></td><td>mari_sp</td><td>2 dias</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar">✓ Aprovar</button><button class="btn-mini btn-editar">✏️</button><button class="btn-mini btn-rejeitar">✗</button></div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Top buscas -->
-      <div class="tabela-wrap">
-        <div class="tabela-header"><div class="tabela-titulo">🔥 Top Buscas de Hoje</div></div>
-        <div class="table-scroll">
-          <table>
-            <thead><tr><th>#</th><th>Palavra</th><th>Buscas</th><th>Tendência</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td><strong>Simbora</strong></td><td>2.847</td><td style="color:var(--verde)">↑ +23%</td></tr>
-              <tr><td>2</td><td><strong>Vapo</strong></td><td>1.932</td><td style="color:var(--verde)">↑ +8%</td></tr>
-              <tr><td>3</td><td><strong>Calica</strong></td><td>1.541</td><td style="color:var(--vermelho)">↓ -3%</td></tr>
-              <tr><td>4</td><td><strong>Aloha</strong></td><td>1.203</td><td style="color:var(--verde)">↑ +45%</td></tr>
-              <tr><td>5</td><td><strong>Cringe</strong></td><td>987</td><td style="color:#4a6fa5">→ 0%</td></tr>
-            </tbody>
+            <thead><tr><th>Palavra</th><th>Usuário</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody id="tbody-dash-pendentes"><tr><td colspan="4" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── PENDENTES ── -->
+    <!-- PENDENTES -->
     <div class="secao" id="sec-pendentes">
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">⏳ PALAVRAS PENDENTES</div>
-          <input class="busca-tabela" placeholder="Buscar...">
+          <input class="busca-tabela" placeholder="Buscar..." oninput="filtrarTabela('tbody-pendentes', this.value)">
         </div>
         <div class="table-scroll">
           <table>
             <thead><tr><th>Palavra</th><th>Definição</th><th>Usuário</th><th>Data</th><th>Ações</th></tr></thead>
-            <tbody id="tbody-pendentes">
-              <tr><td><strong>Tchurma</strong></td><td style="max-width:200px;color:#4a6fa5;">Turma, galera, grupo de amigos...</td><td>surf_lover</td><td>hoje</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓ Aprovar</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗ Rejeitar</button></div></td></tr>
-              <tr><td><strong>Manézão</strong></td><td style="max-width:200px;color:#4a6fa5;">Pessoa ingênua, caipira, sem malícia...</td><td>gaúcho_99</td><td>ontem</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓ Aprovar</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗ Rejeitar</button></div></td></tr>
-              <tr><td><strong>Zureta</strong></td><td style="max-width:200px;color:#4a6fa5;">Pessoa louca, agitada, fora do comum...</td><td>mari_sp</td><td>2 dias</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓ Aprovar</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗ Rejeitar</button></div></td></tr>
-              <tr><td><strong>Pivete</strong></td><td style="max-width:200px;color:#4a6fa5;">Criança ou adolescente malandro...</td><td>carioca_top</td><td>3 dias</td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓ Aprovar</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗ Rejeitar</button></div></td></tr>
-            </tbody>
+            <tbody id="tbody-pendentes"><tr><td colspan="5" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── TODAS AS PALAVRAS ── -->
+    <!-- TODAS AS PALAVRAS -->
     <div class="secao" id="sec-palavras">
       <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
-        <button class="btn-adicionar" style="width:auto;padding:10px 20px;" onclick="abrirModal('nova-palavra')">➕ Adicionar Palavra</button>
+        <button class="btn-adicionar" style="width:auto;padding:10px 20px;" onclick="abrirModalNovaPalavra()">➕ Adicionar Palavra</button>
       </div>
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">📖 TODAS AS PALAVRAS</div>
-          <input class="busca-tabela" placeholder="Buscar palavra...">
+          <input class="busca-tabela" placeholder="Buscar palavra..." oninput="filtrarTabela('tbody-palavras', this.value)">
         </div>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Palavra</th><th>Categoria</th><th>Usuário</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Aloha</strong></td><td>Surf</td><td>rodrigo_surf</td><td><span class="badge-status badge-aprovado">Aprovado</span></td><td><div class="acoes-cell"><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-excluir">🗑️</button></div></td></tr>
-              <tr><td><strong>Simbora</strong></td><td>Geral</td><td>mari_sp</td><td><span class="badge-status badge-aprovado">Aprovado</span></td><td><div class="acoes-cell"><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Editar</button><button class="btn-mini btn-excluir">🗑️</button></div></td></tr>
-              <tr><td><strong>Tchurma</strong></td><td>—</td><td>surf_lover</td><td><span class="badge-status badge-pendente">Pendente</span></td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗</button></div></td></tr>
-              <tr><td><strong>Zureta</strong></td><td>—</td><td>mari_sp</td><td><span class="badge-status badge-pendente">Pendente</span></td><td><div class="acoes-cell"><button class="btn-mini btn-aprovar" onclick="aprovar(this)">✓</button><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️</button><button class="btn-mini btn-rejeitar" onclick="rejeitar(this)">✗</button></div></td></tr>
-              <tr><td><strong>Babaca</strong></td><td>Xingamentos</td><td>joao_rj</td><td><span class="badge-status badge-rejeitado">Rejeitado</span></td><td><div class="acoes-cell"><button class="btn-mini btn-editar" onclick="abrirModal('editar-palavra')">✏️ Revisar</button><button class="btn-mini btn-excluir">🗑️</button></div></td></tr>
-            </tbody>
+            <thead><tr><th>Palavra</th><th>Usuário</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody id="tbody-palavras"><tr><td colspan="5" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── CATEGORIAS ── -->
+    <!-- CATEGORIAS -->
     <div class="secao" id="sec-categorias">
       <button class="btn-adicionar" onclick="abrirModal('nova-categoria')">➕ Adicionar Nova Categoria</button>
       <div class="cats-admin-grid" id="catsAdminGrid">
-
-        <div class="cat-admin-card">
-          <div class="cat-admin-header">
-            <span class="cat-admin-emoji">🌐</span>
-            <span class="cat-admin-nome">Gírias da Internet</span>
-            <span class="cat-admin-count">134</span>
-            <div class="cat-admin-btns">
-              <button class="btn-mini btn-editar" onclick="abrirModal('editar-categoria')">✏️</button>
-              <button class="btn-mini btn-excluir">🗑️</button>
-            </div>
-          </div>
-          <div class="subcats-admin">
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">🎵</span><span class="subcat-admin-nome">TikTok</span><span class="subcat-admin-count">41</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">💬</span><span class="subcat-admin-nome">WhatsApp</span><span class="subcat-admin-count">35</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">📸</span><span class="subcat-admin-nome">Instagram</span><span class="subcat-admin-count">28</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item" style="border:none;">
-              <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModal('nova-subcat')">➕ Adicionar subcategoria</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cat-admin-card">
-          <div class="cat-admin-header">
-            <span class="cat-admin-emoji">⏳</span>
-            <span class="cat-admin-nome">Por Época</span>
-            <span class="cat-admin-count">220</span>
-            <div class="cat-admin-btns">
-              <button class="btn-mini btn-editar" onclick="abrirModal('editar-categoria')">✏️</button>
-              <button class="btn-mini btn-excluir">🗑️</button>
-            </div>
-          </div>
-          <div class="subcats-admin">
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">📼</span><span class="subcat-admin-nome">Anos 80</span><span class="subcat-admin-count">31</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">💿</span><span class="subcat-admin-nome">Anos 90</span><span class="subcat-admin-count">44</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">📀</span><span class="subcat-admin-nome">Anos 2000</span><span class="subcat-admin-count">38</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item" style="border:none;">
-              <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModal('nova-subcat')">➕ Adicionar subcategoria</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cat-admin-card">
-          <div class="cat-admin-header">
-            <span class="cat-admin-emoji">📍</span>
-            <span class="cat-admin-nome">Gírias Locais</span>
-            <span class="cat-admin-count">148</span>
-            <div class="cat-admin-btns">
-              <button class="btn-mini btn-editar" onclick="abrirModal('editar-categoria')">✏️</button>
-              <button class="btn-mini btn-excluir">🗑️</button>
-            </div>
-          </div>
-          <div class="subcats-admin">
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">🏙️</span><span class="subcat-admin-nome">São Paulo</span><span class="subcat-admin-count">45</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">🌊</span><span class="subcat-admin-nome">Rio de Janeiro</span><span class="subcat-admin-count">38</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item"><span class="subcat-admin-emoji">🌸</span><span class="subcat-admin-nome">Japão</span><span class="subcat-admin-count">11</span><button class="btn-mini btn-editar" onclick="abrirModal('editar-subcat')">✏️</button><button class="btn-mini btn-excluir">🗑️</button></div>
-            <div class="subcat-admin-item" style="border:none;">
-              <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModal('nova-subcat')">➕ Adicionar subcategoria</button>
-            </div>
-          </div>
-        </div>
-
+        <div class="vazio-msg">Carregando...</div>
       </div>
     </div>
 
-    <!-- ── USUÁRIOS ── -->
+    <!-- USUÁRIOS -->
     <div class="secao" id="sec-usuarios">
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">👥 USUÁRIOS</div>
-          <input class="busca-tabela" placeholder="Buscar usuário...">
+          <input class="busca-tabela" placeholder="Buscar usuário..." oninput="filtrarTabela('tbody-usuarios', this.value)">
         </div>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Usuário</th><th>E-mail</th><th>Palavras</th><th>Cadastro</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr><td><strong>rodrigo_surf</strong></td><td>rodrigo@email.com</td><td>24</td><td>jan/2026</td><td><div class="acoes-cell"><button class="btn-mini btn-editar">👁️ Ver</button><button class="btn-mini btn-rejeitar">🚫 Banir</button></div></td></tr>
-              <tr><td><strong>mari_carioca</strong></td><td>mari@email.com</td><td>18</td><td>fev/2026</td><td><div class="acoes-cell"><button class="btn-mini btn-editar">👁️ Ver</button><button class="btn-mini btn-rejeitar">🚫 Banir</button></div></td></tr>
-              <tr><td><strong>gaúcho_99</strong></td><td>gau@email.com</td><td>12</td><td>mar/2026</td><td><div class="acoes-cell"><button class="btn-mini btn-editar">👁️ Ver</button><button class="btn-mini btn-rejeitar">🚫 Banir</button></div></td></tr>
-              <tr><td><strong>surf_lover</strong></td><td>surf@email.com</td><td>7</td><td>abr/2026</td><td><div class="acoes-cell"><button class="btn-mini btn-editar">👁️ Ver</button><button class="btn-mini btn-rejeitar">🚫 Banir</button></div></td></tr>
-            </tbody>
+            <thead><tr><th>Usuário</th><th>Admin</th><th>Cadastro</th><th>Ações</th></tr></thead>
+            <tbody id="tbody-usuarios"><tr><td colspan="4" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── COMENTÁRIOS ── -->
+    <!-- COMENTÁRIOS -->
     <div class="secao" id="sec-comentarios">
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">💬 COMENTÁRIOS</div>
-          <input class="busca-tabela" placeholder="Buscar...">
+          <input class="busca-tabela" placeholder="Buscar..." oninput="filtrarTabela('tbody-comentarios', this.value)">
         </div>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Comentário</th><th>Palavra</th><th>Usuário</th><th>Data</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr><td style="max-width:220px;color:#4a6fa5;">"Cresci ouvindo isso na praia!"</td><td>Aloha</td><td>mari_carioca</td><td>2 dias</td><td><div class="acoes-cell"><button class="btn-mini btn-excluir">🗑️</button></div></td></tr>
-              <tr><td style="max-width:220px;color:#4a6fa5;">"Mó paz galera 🤙"</td><td>Simbora</td><td>surf_lover</td><td>3 dias</td><td><div class="acoes-cell"><button class="btn-mini btn-excluir">🗑️</button></div></td></tr>
-            </tbody>
+            <thead><tr><th>Comentário</th><th>Palavra</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody id="tbody-comentarios"><tr><td colspan="4" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- ── MODAIS ── -->
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-<!-- Modal editar/nova palavra -->
-<div class="modal-overlay" id="modal-editar-palavra">
+<!-- MODAL NOVA/EDITAR PALAVRA -->
+<div class="modal-overlay" id="modal-palavra">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-titulo">✏️ EDITAR PALAVRA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-editar-palavra')">✕</button>
+      <div class="modal-titulo" id="modal-palavra-titulo">➕ NOVA PALAVRA</div>
+      <button class="modal-fechar" onclick="fecharModal('modal-palavra')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-campo"><label>Palavra</label><input type="text" value="Tchurma" placeholder="Digite a palavra"></div>
-      <div class="modal-campo"><label>Significado</label><textarea placeholder="Significado da palavra...">Turma, galera, grupo de amigos próximos.</textarea></div>
-      <div class="modal-campo"><label>Origem</label><textarea placeholder="Origem e contexto..." style="min-height:60px;"></textarea></div>
-      <div class="modal-campo"><label>Categoria</label>
-        <select><option>Gírias Locais</option><option>Internet</option><option>Geral</option><option>Funk</option><option>Surf</option></select>
+      <input type="hidden" id="mp-id">
+      <div class="modal-campo"><label>Palavra</label><input type="text" id="mp-termo" placeholder="Digite a palavra"></div>
+      <div class="modal-campo"><label>Slug (URL)</label><input type="text" id="mp-slug" placeholder="ex: minha-palavra"></div>
+      <div class="modal-campo"><label>Significado principal</label><textarea id="mp-significado" placeholder="Significado da palavra..."></textarea></div>
+      <div class="modal-campo"><label>Status</label>
+        <select id="mp-status">
+          <option value="pendente">Pendente</option>
+          <option value="aprovada">Aprovada</option>
+          <option value="rejeitada">Rejeitada</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-editar-palavra')">CANCELAR</button>
-      <button class="btn-salvar">SALVAR ✓</button>
+      <button class="btn-cancelar" onclick="fecharModal('modal-palavra')">CANCELAR</button>
+      <button class="btn-salvar" id="btn-salvar-palavra" onclick="salvarPalavra()">SALVAR ✓</button>
     </div>
   </div>
 </div>
 
-<!-- Modal nova palavra -->
-<div class="modal-overlay" id="modal-nova-palavra">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-titulo">➕ NOVA PALAVRA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-nova-palavra')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-campo"><label>Palavra</label><input type="text" placeholder="Digite a palavra"></div>
-      <div class="modal-campo"><label>Significado</label><textarea placeholder="Significado da palavra..."></textarea></div>
-      <div class="modal-campo"><label>Origem</label><textarea placeholder="Origem e contexto..." style="min-height:60px;"></textarea></div>
-      <div class="modal-campo"><label>Categoria</label>
-        <select><option>Gírias Locais</option><option>Internet</option><option>Geral</option><option>Funk</option><option>Surf</option></select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-nova-palavra')">CANCELAR</button>
-      <button class="btn-salvar">PUBLICAR ✓</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal nova/editar categoria -->
+<!-- MODAL NOVA CATEGORIA -->
 <div class="modal-overlay" id="modal-nova-categoria">
   <div class="modal">
     <div class="modal-header">
@@ -495,43 +341,18 @@
       <button class="modal-fechar" onclick="fecharModal('modal-nova-categoria')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-campo"><label>Emoji</label><input type="text" placeholder="ex: 🎵" maxlength="2"></div>
-      <div class="modal-campo"><label>Nome da Categoria</label><input type="text" placeholder="ex: Gírias do Funk"></div>
-      <div class="modal-campo"><label>Descrição</label><input type="text" placeholder="Breve descrição da categoria"></div>
-      <div class="modal-campo"><label>Grupo</label>
-        <select><option>Por Região</option><option>Por Plataforma</option><option>Por Época</option><option>Por Cultura</option><option>Por Situação</option><option>Por Origem</option></select>
-      </div>
+      <div class="modal-campo"><label>Emoji</label><input type="text" id="nc-icone" placeholder="ex: 🎵" maxlength="2"></div>
+      <div class="modal-campo"><label>Nome da Categoria</label><input type="text" id="nc-nome" placeholder="ex: Gírias do Funk"></div>
+      <div class="modal-campo"><label>Descrição</label><input type="text" id="nc-desc" placeholder="Breve descrição"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancelar" onclick="fecharModal('modal-nova-categoria')">CANCELAR</button>
-      <button class="btn-salvar">SALVAR ✓</button>
+      <button class="btn-salvar" onclick="salvarCategoria()">SALVAR ✓</button>
     </div>
   </div>
 </div>
 
-<!-- Modal editar categoria -->
-<div class="modal-overlay" id="modal-editar-categoria">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-titulo">✏️ EDITAR CATEGORIA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-editar-categoria')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-campo"><label>Emoji</label><input type="text" value="🌐" maxlength="2"></div>
-      <div class="modal-campo"><label>Nome</label><input type="text" value="Gírias da Internet"></div>
-      <div class="modal-campo"><label>Descrição</label><input type="text" value="Expressões que nasceram no mundo digital"></div>
-      <div class="modal-campo"><label>Grupo</label>
-        <select><option selected>Por Plataforma</option><option>Por Região</option><option>Por Época</option><option>Por Cultura</option></select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-editar-categoria')">CANCELAR</button>
-      <button class="btn-salvar">SALVAR ✓</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal nova/editar subcategoria -->
+<!-- MODAL NOVA SUBCATEGORIA -->
 <div class="modal-overlay" id="modal-nova-subcat">
   <div class="modal">
     <div class="modal-header">
@@ -539,90 +360,436 @@
       <button class="modal-fechar" onclick="fecharModal('modal-nova-subcat')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-campo"><label>Emoji</label><input type="text" placeholder="ex: 🎵" maxlength="2"></div>
-      <div class="modal-campo"><label>Nome da Subcategoria</label><input type="text" placeholder="ex: TikTok"></div>
-      <div class="modal-campo"><label>Categoria Principal</label>
-        <select><option>Gírias da Internet</option><option>Por Época</option><option>Gírias Locais</option><option>Gírias do Funk</option></select>
-      </div>
+      <input type="hidden" id="ns-cat-id">
+      <div class="modal-campo"><label>Nome da Subcategoria</label><input type="text" id="ns-nome" placeholder="ex: TikTok"></div>
+      <div class="modal-campo"><label>Descrição</label><input type="text" id="ns-desc" placeholder="Breve descrição"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancelar" onclick="fecharModal('modal-nova-subcat')">CANCELAR</button>
-      <button class="btn-salvar">SALVAR ✓</button>
+      <button class="btn-salvar" onclick="salvarSubcategoria()">SALVAR ✓</button>
     </div>
   </div>
 </div>
 
-<!-- Modal editar subcategoria -->
-<div class="modal-overlay" id="modal-editar-subcat">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-titulo">✏️ EDITAR SUBCATEGORIA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-editar-subcat')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-campo"><label>Emoji</label><input type="text" value="🎵" maxlength="2"></div>
-      <div class="modal-campo"><label>Nome</label><input type="text" value="TikTok"></div>
-      <div class="modal-campo"><label>Categoria Principal</label>
-        <select><option selected>Gírias da Internet</option><option>Por Época</option><option>Gírias Locais</option></select>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+
+// ── INIT: verificar se é admin ──
+async function init() {
+  const { data: { session } } = await sb.auth.getSession()
+
+  if (!session) {
+    document.querySelector('.acesso-negado-sub').textContent = 'Você precisa estar logado.'
+    setTimeout(() => window.location.href = 'cadastro.html', 2000)
+    return
+  }
+
+  const { data: perfil } = await sb.from('perfis').select('username, is_admin').eq('id', session.user.id).single()
+
+  if (!perfil || !perfil.is_admin) {
+    document.querySelector('.acesso-negado-titulo').textContent = 'ACESSO NEGADO'
+    document.querySelector('.acesso-negado-sub').textContent = 'Você não tem permissão de administrador.'
+    return
+  }
+
+  // é admin — mostrar painel
+  document.getElementById('nomeAdmin').textContent = perfil.username || 'Admin'
+  document.getElementById('avatarAdmin').textContent = (perfil.username || 'A')[0].toUpperCase()
+  irPara('dashboard')
+  carregarTudo()
+}
+
+// ── CARREGAR TUDO ──
+async function carregarTudo() {
+  await Promise.all([
+    carregarStats(),
+    carregarPendentes(),
+    carregarPalavras(),
+    carregarCategorias(),
+    carregarUsuarios(),
+    carregarComentarios(),
+  ])
+}
+
+// ── STATS ──
+async function carregarStats() {
+  const [{ count: aprovadas }, { count: pendentes }, { count: usuarios }, { count: comentarios }] = await Promise.all([
+    sb.from('palavras').select('*', { count: 'exact', head: true }).eq('status', 'aprovada'),
+    sb.from('palavras').select('*', { count: 'exact', head: true }).eq('status', 'pendente'),
+    sb.from('perfis').select('*', { count: 'exact', head: true }),
+    sb.from('comentarios').select('*', { count: 'exact', head: true }),
+  ])
+  document.getElementById('stat-aprovadas').textContent = aprovadas || 0
+  document.getElementById('stat-pendentes').textContent = pendentes || 0
+  document.getElementById('stat-usuarios').textContent = usuarios || 0
+  document.getElementById('stat-comentarios').textContent = comentarios || 0
+  document.getElementById('badge-pendentes').textContent = pendentes || 0
+}
+
+// ── PENDENTES ──
+async function carregarPendentes() {
+  const { data } = await sb.from('palavras')
+    .select('id, termo, slug, criado_em, usuario_id, perfis(username)')
+    .eq('status', 'pendente')
+    .order('criado_em', { ascending: false })
+
+  // dashboard
+  const dashTbody = document.getElementById('tbody-dash-pendentes')
+  if (!data || data.length === 0) {
+    dashTbody.innerHTML = '<tr><td colspan="4" class="vazio-msg">Nenhuma palavra pendente 🎉</td></tr>'
+  } else {
+    dashTbody.innerHTML = data.slice(0, 5).map(p => `
+      <tr>
+        <td><strong>${p.termo}</strong></td>
+        <td>${p.perfis?.username || '—'}</td>
+        <td>${formatarData(p.criado_em)}</td>
+        <td><div class="acoes-cell">
+          <button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓ Aprovar</button>
+          <button class="btn-mini btn-rejeitar" onclick="mudarStatus('${p.id}', 'rejeitada', this)">✗ Rejeitar</button>
+        </div></td>
+      </tr>
+    `).join('')
+  }
+
+  // seção pendentes
+  const tbody = document.getElementById('tbody-pendentes')
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhuma palavra pendente 🎉</td></tr>'
+    return
+  }
+  tbody.innerHTML = data.map(p => `
+    <tr id="row-${p.id}">
+      <td><strong>${p.termo}</strong></td>
+      <td style="max-width:200px;color:#4a6fa5;">—</td>
+      <td>${p.perfis?.username || '—'}</td>
+      <td>${formatarData(p.criado_em)}</td>
+      <td><div class="acoes-cell">
+        <button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓ Aprovar</button>
+        <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', 'pendente')">✏️ Editar</button>
+        <button class="btn-mini btn-rejeitar" onclick="mudarStatus('${p.id}', 'rejeitada', this)">✗ Rejeitar</button>
+      </div></td>
+    </tr>
+  `).join('')
+}
+
+// ── TODAS AS PALAVRAS ──
+async function carregarPalavras() {
+  const { data } = await sb.from('palavras')
+    .select('id, termo, slug, status, criado_em, perfis(username)')
+    .order('criado_em', { ascending: false })
+
+  const tbody = document.getElementById('tbody-palavras')
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhuma palavra cadastrada ainda</td></tr>'
+    return
+  }
+  tbody.innerHTML = data.map(p => `
+    <tr id="row-p-${p.id}">
+      <td><strong>${p.termo}</strong></td>
+      <td>${p.perfis?.username || '—'}</td>
+      <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
+      <td>${formatarData(p.criado_em)}</td>
+      <td><div class="acoes-cell">
+        ${p.status === 'pendente' ? `<button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓</button>` : ''}
+        <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', '${p.status}')">✏️</button>
+        <button class="btn-mini btn-excluir" onclick="excluirPalavra('${p.id}', this)">🗑️</button>
+      </div></td>
+    </tr>
+  `).join('')
+}
+
+// ── CATEGORIAS ──
+async function carregarCategorias() {
+  const { data: cats } = await sb.from('categorias').select('id, nome, icone, subcategorias(id, nome)').order('nome')
+  const grid = document.getElementById('catsAdminGrid')
+
+  if (!cats || cats.length === 0) {
+    grid.innerHTML = '<div class="vazio-msg">Nenhuma categoria cadastrada ainda</div>'
+    return
+  }
+
+  grid.innerHTML = cats.map(c => `
+    <div class="cat-admin-card">
+      <div class="cat-admin-header">
+        <span class="cat-admin-emoji">${c.icone || '📁'}</span>
+        <span class="cat-admin-nome">${c.nome}</span>
+        <span class="cat-admin-count">${c.subcategorias?.length || 0} sub</span>
+        <div class="cat-admin-btns">
+          <button class="btn-mini btn-excluir" onclick="excluirCategoria('${c.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="subcats-admin">
+        ${(c.subcategorias || []).map(s => `
+          <div class="subcat-admin-item">
+            <span class="subcat-admin-nome">${s.nome}</span>
+            <button class="btn-mini btn-excluir" onclick="excluirSubcategoria('${s.id}')">🗑️</button>
+          </div>
+        `).join('')}
+        <div class="subcat-admin-item" style="border:none;">
+          <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModalSubcat('${c.id}')">➕ Adicionar subcategoria</button>
+        </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-editar-subcat')">CANCELAR</button>
-      <button class="btn-salvar">SALVAR ✓</button>
-    </div>
-  </div>
-</div>
+  `).join('')
+}
 
-<script>
-  const titulos = {
-    dashboard:'📊 DASHBOARD',
-    pendentes:'⏳ PENDENTES',
-    palavras:'📖 TODAS AS PALAVRAS',
-    categorias:'🗂️ CATEGORIAS',
-    usuarios:'👥 USUÁRIOS',
-    comentarios:'💬 COMENTÁRIOS',
-  };
+// ── USUÁRIOS ──
+async function carregarUsuarios() {
+  const { data } = await sb.from('perfis').select('id, username, is_admin, criado_em').order('criado_em', { ascending: false })
+  const tbody = document.getElementById('tbody-usuarios')
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="vazio-msg">Nenhum usuário ainda</td></tr>'
+    return
+  }
+  tbody.innerHTML = data.map(u => `
+    <tr>
+      <td><strong>${u.username || '—'}</strong></td>
+      <td>${u.is_admin ? '<span class="badge-status badge-aprovado">Admin</span>' : '—'}</td>
+      <td>${formatarData(u.criado_em)}</td>
+      <td><div class="acoes-cell">
+        <button class="btn-mini btn-editar" onclick="toggleAdmin('${u.id}', ${u.is_admin})">${u.is_admin ? '👑 Remover admin' : '👑 Tornar admin'}</button>
+      </div></td>
+    </tr>
+  `).join('')
+}
 
-  function irPara(secao){
-    document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('ativo'));
-    document.getElementById('sec-'+secao).classList.add('ativa');
-    document.querySelectorAll('.nav-item').forEach(n=>{
-      if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(secao)) n.classList.add('ativo');
-    });
-    document.getElementById('topbarTitulo').textContent = titulos[secao]||secao;
-    if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('aberta');
+// ── COMENTÁRIOS ──
+async function carregarComentarios() {
+  const { data } = await sb.from('comentarios')
+    .select('id, texto, criado_em, palavras(termo)')
+    .order('criado_em', { ascending: false })
+  const tbody = document.getElementById('tbody-comentarios')
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="vazio-msg">Nenhum comentário ainda</td></tr>'
+    return
+  }
+  tbody.innerHTML = data.map(c => `
+    <tr>
+      <td style="max-width:220px;color:#4a6fa5;">"${c.texto}"</td>
+      <td>${c.palavras?.termo || '—'}</td>
+      <td>${formatarData(c.criado_em)}</td>
+      <td><div class="acoes-cell">
+        <button class="btn-mini btn-excluir" onclick="excluirComentario('${c.id}', this)">🗑️</button>
+      </div></td>
+    </tr>
+  `).join('')
+}
+
+// ── MUDAR STATUS PALAVRA ──
+async function mudarStatus(id, novoStatus, btn) {
+  btn.disabled = true
+  btn.textContent = '...'
+  const { error } = await sb.from('palavras').update({ status: novoStatus }).eq('id', id)
+  if (error) { mostrarToast('Erro ao atualizar', 'erro'); btn.disabled = false; return }
+  mostrarToast(novoStatus === 'aprovada' ? '✅ Palavra aprovada!' : '✗ Palavra rejeitada!', novoStatus === 'aprovada' ? 'sucesso' : 'erro')
+  await carregarPendentes()
+  await carregarPalavras()
+  await carregarStats()
+}
+
+// ── EXCLUIR PALAVRA ──
+async function excluirPalavra(id, btn) {
+  if (!confirm('Tem certeza que quer excluir esta palavra?')) return
+  btn.disabled = true
+  const { error } = await sb.from('palavras').delete().eq('id', id)
+  if (error) { mostrarToast('Erro ao excluir', 'erro'); btn.disabled = false; return }
+  mostrarToast('🗑️ Palavra excluída!', 'sucesso')
+  document.getElementById('row-p-' + id)?.remove()
+  await carregarStats()
+}
+
+// ── SALVAR PALAVRA (nova ou editar) ──
+async function salvarPalavra() {
+  const id = document.getElementById('mp-id').value
+  const termo = document.getElementById('mp-termo').value.trim()
+  const slug = document.getElementById('mp-slug').value.trim()
+  const status = document.getElementById('mp-status').value
+
+  if (!termo || !slug) { mostrarToast('⚠️ Preencha palavra e slug', 'erro'); return }
+
+  const btn = document.getElementById('btn-salvar-palavra')
+  btn.disabled = true
+  btn.textContent = 'Salvando...'
+
+  let error
+  if (id) {
+    ({ error } = await sb.from('palavras').update({ termo, slug, status }).eq('id', id))
+  } else {
+    ({ error } = await sb.from('palavras').insert({ termo, slug, status }))
   }
 
-  function abrirModal(id){
-    document.getElementById('modal-'+id).classList.add('aberto');
-  }
-  function fecharModal(id){
-    document.getElementById(id).classList.remove('aberto');
-  }
+  btn.disabled = false
+  btn.textContent = 'SALVAR ✓'
 
-  // fechar modal clicando fora
-  document.querySelectorAll('.modal-overlay').forEach(m=>{
-    m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('aberto'); });
-  });
+  if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Palavra salva!', 'sucesso')
+  fecharModal('modal-palavra')
+  await carregarPalavras()
+  await carregarStats()
+}
 
-  function aprovar(btn){
-    const tr = btn.closest('tr');
-    const badge = tr.querySelector('.badge-status');
-    if(badge){ badge.className='badge-status badge-aprovado'; badge.textContent='Aprovado'; }
-    btn.closest('.acoes-cell').innerHTML='<button class="btn-mini btn-editar" onclick="abrirModal(\'editar-palavra\')">✏️ Editar</button><button class="btn-mini btn-excluir">🗑️</button>';
-  }
+// ── SALVAR CATEGORIA ──
+async function salvarCategoria() {
+  const nome = document.getElementById('nc-nome').value.trim()
+  const icone = document.getElementById('nc-icone').value.trim()
+  const descricao = document.getElementById('nc-desc').value.trim()
+  if (!nome) { mostrarToast('⚠️ Digite o nome da categoria', 'erro'); return }
+  const { error } = await sb.from('categorias').insert({ nome, icone, descricao })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Categoria criada!', 'sucesso')
+  fecharModal('modal-nova-categoria')
+  document.getElementById('nc-nome').value = ''
+  document.getElementById('nc-icone').value = ''
+  document.getElementById('nc-desc').value = ''
+  await carregarCategorias()
+}
 
-  function rejeitar(btn){
-    const tr = btn.closest('tr');
-    const badge = tr.querySelector('.badge-status');
-    if(badge){ badge.className='badge-status badge-rejeitado'; badge.textContent='Rejeitado'; }
-    btn.closest('tr').style.opacity='0.5';
-  }
+// ── SALVAR SUBCATEGORIA ──
+async function salvarSubcategoria() {
+  const nome = document.getElementById('ns-nome').value.trim()
+  const descricao = document.getElementById('ns-desc').value.trim()
+  const categoria_id = document.getElementById('ns-cat-id').value
+  if (!nome) { mostrarToast('⚠️ Digite o nome', 'erro'); return }
+  const { error } = await sb.from('subcategorias').insert({ nome, descricao, categoria_id })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Subcategoria criada!', 'sucesso')
+  fecharModal('modal-nova-subcat')
+  document.getElementById('ns-nome').value = ''
+  document.getElementById('ns-desc').value = ''
+  await carregarCategorias()
+}
 
-  function toggleSidebar(){
-    document.getElementById('sidebar').classList.toggle('aberta');
+// ── EXCLUIR CATEGORIA ──
+async function excluirCategoria(id) {
+  if (!confirm('Excluir esta categoria?')) return
+  const { error } = await sb.from('categorias').delete().eq('id', id)
+  if (error) { mostrarToast('Erro ao excluir', 'erro'); return }
+  mostrarToast('🗑️ Categoria excluída!', 'sucesso')
+  await carregarCategorias()
+}
+
+// ── EXCLUIR SUBCATEGORIA ──
+async function excluirSubcategoria(id) {
+  if (!confirm('Excluir esta subcategoria?')) return
+  const { error } = await sb.from('subcategorias').delete().eq('id', id)
+  if (error) { mostrarToast('Erro ao excluir', 'erro'); return }
+  mostrarToast('🗑️ Subcategoria excluída!', 'sucesso')
+  await carregarCategorias()
+}
+
+// ── EXCLUIR COMENTÁRIO ──
+async function excluirComentario(id, btn) {
+  if (!confirm('Excluir este comentário?')) return
+  btn.disabled = true
+  const { error } = await sb.from('comentarios').delete().eq('id', id)
+  if (error) { mostrarToast('Erro ao excluir', 'erro'); btn.disabled = false; return }
+  mostrarToast('🗑️ Comentário excluído!', 'sucesso')
+  btn.closest('tr').remove()
+}
+
+// ── TOGGLE ADMIN ──
+async function toggleAdmin(id, isAdmin) {
+  const { error } = await sb.from('perfis').update({ is_admin: !isAdmin }).eq('id', id)
+  if (error) { mostrarToast('Erro ao atualizar', 'erro'); return }
+  mostrarToast('✅ Permissão atualizada!', 'sucesso')
+  await carregarUsuarios()
+}
+
+// ── MODAIS ──
+function abrirModalNovaPalavra() {
+  document.getElementById('mp-id').value = ''
+  document.getElementById('mp-termo').value = ''
+  document.getElementById('mp-slug').value = ''
+  document.getElementById('mp-significado').value = ''
+  document.getElementById('mp-status').value = 'aprovada'
+  document.getElementById('modal-palavra-titulo').textContent = '➕ NOVA PALAVRA'
+  abrirModal('modal-palavra')
+}
+
+function abrirModalEditarPalavra(id, termo, slug, status) {
+  document.getElementById('mp-id').value = id
+  document.getElementById('mp-termo').value = termo
+  document.getElementById('mp-slug').value = slug
+  document.getElementById('mp-status').value = status
+  document.getElementById('modal-palavra-titulo').textContent = '✏️ EDITAR PALAVRA'
+  abrirModal('modal-palavra')
+}
+
+function abrirModalSubcat(catId) {
+  document.getElementById('ns-cat-id').value = catId
+  document.getElementById('ns-nome').value = ''
+  abrirModal('modal-nova-subcat')
+}
+
+function abrirModal(id) {
+  document.getElementById('modal-' + id).classList.add('aberto')
+}
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('aberto')
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('aberto') })
+})
+
+// ── NAVEGAÇÃO ──
+const titulos = {
+  dashboard: '📊 DASHBOARD', pendentes: '⏳ PENDENTES',
+  palavras: '📖 TODAS AS PALAVRAS', categorias: '🗂️ CATEGORIAS',
+  usuarios: '👥 USUÁRIOS', comentarios: '💬 COMENTÁRIOS',
+}
+
+function irPara(secao) {
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'))
+  document.getElementById('sec-' + secao).classList.add('ativa')
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(secao)) n.classList.add('ativo')
+  })
+  document.getElementById('topbarTitulo').textContent = titulos[secao] || secao
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('aberta')
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('aberta')
+}
+
+// ── FILTRAR TABELA ──
+function filtrarTabela(tbodyId, q) {
+  const tbody = document.getElementById(tbodyId)
+  const rows = tbody.querySelectorAll('tr')
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'
+  })
+}
+
+// ── TOAST ──
+function mostrarToast(msg, tipo = 'sucesso') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = `toast visivel ${tipo}`
+  setTimeout(() => t.classList.remove('visivel'), 3000)
+}
+
+// ── HELPERS ──
+function formatarData(str) {
+  if (!str) return '—'
+  return new Date(str).toLocaleDateString('pt-BR')
+}
+
+// ── AUTO SLUG ──
+document.getElementById('mp-termo')?.addEventListener('input', function() {
+  if (!document.getElementById('mp-id').value) {
+    document.getElementById('mp-slug').value = this.value.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   }
+})
+
+// ── INIT ──
+init()
 </script>
 </body>
 </html>
