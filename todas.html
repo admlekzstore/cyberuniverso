@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todas as Palavras — CyberCity Dicionário</title>
-<meta name="description" content="Todas as gírias, expressões e palavras do CyberCity em ordem alfabética.">
+<title>Todas as Palavras — CyberUniverso</title>
+<meta name="description" content="Todas as gírias, expressões e palavras do CyberUniverso em ordem alfabética.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -34,14 +34,12 @@
 
   .page-wrap{max-width:900px;margin:0 auto;padding:90px 16px 60px;}
 
-  /* hero */
   .page-hero{text-align:center;padding:40px 0 36px;position:relative;}
   .page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
   .page-titulo{font-family:'Bangers',cursive;font-size:clamp(42px,10vw,72px);letter-spacing:4px;color:var(--amarelo);text-shadow:3px 3px 0 var(--azul),6px 6px 0 var(--azul-escuro);-webkit-text-stroke:1.5px var(--azul);animation:titlePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;}
   @keyframes titlePop{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
   .page-sub{font-size:15px;color:#4a6fa5;margin-top:8px;font-weight:700;}
 
-  /* busca */
   .busca-wrap{margin:28px 0 24px;}
   .busca-row{display:flex;background:var(--card);border:1.5px solid var(--borda);border-radius:12px;overflow:hidden;transition:border-color 0.2s;}
   .busca-row:focus-within{border-color:var(--azul);}
@@ -50,7 +48,6 @@
   .busca-row button{background:var(--azul);border:none;padding:0 20px;color:#fff;font-size:18px;cursor:pointer;transition:background 0.2s;}
   .busca-row button:hover{background:#0050cc;}
 
-  /* alfabeto fixo */
   .alfa-sticky{position:sticky;top:60px;z-index:50;background:rgba(5,8,15,0.95);backdrop-filter:blur(10px);padding:12px 0;border-bottom:1px solid var(--borda);margin-bottom:28px;}
   .alfa-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
   .alfa-btn{background:var(--card2);border:1px solid var(--borda);color:var(--texto);width:36px;height:36px;border-radius:8px;font-family:'Bangers',cursive;font-size:18px;cursor:pointer;transition:all 0.15s;text-decoration:none;display:flex;align-items:center;justify-content:center;}
@@ -58,26 +55,18 @@
   .alfa-btn.vazio{opacity:0.25;cursor:default;}
   .alfa-btn.vazio:hover{background:var(--card2);color:var(--texto);border-color:var(--borda);}
 
-  /* contador */
   .contador{text-align:center;font-size:13px;color:#4a6fa5;font-weight:700;margin-bottom:20px;}
   .contador span{color:var(--ciano);}
 
-  /* grupo letra */
   .letra-grupo{margin-bottom:32px;animation:fadeUp 0.4s both;}
   @keyframes fadeUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
   .letra-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
   .letra-badge{font-family:'Bangers',cursive;font-size:42px;color:var(--amarelo);text-shadow:2px 2px 0 var(--azul);line-height:1;-webkit-text-stroke:1px var(--azul);}
   .letra-linha{flex:1;height:1px;background:linear-gradient(90deg,var(--borda),transparent);}
   .letra-count{font-size:12px;color:#4a6fa5;font-weight:700;}
 
   .palavras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
-  .palavra-item{
-    display:flex;align-items:center;justify-content:space-between;
-    background:var(--card);border:1px solid var(--borda);border-radius:10px;
-    padding:10px 14px;text-decoration:none;transition:all 0.2s;
-    position:relative;overflow:hidden;
-  }
+  .palavra-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--borda);border-radius:10px;padding:10px 14px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;}
   .palavra-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--azul);transform:scaleY(0);transition:transform 0.2s;transform-origin:bottom;}
   .palavra-item:hover{border-color:var(--azul);transform:translateY(-2px);}
   .palavra-item:hover::before{transform:scaleY(1);}
@@ -86,11 +75,18 @@
   .palavra-seta{font-size:12px;color:#2a4a7a;transition:color 0.2s;}
   .palavra-item:hover .palavra-seta{color:var(--ciano);}
 
-  /* nenhum resultado */
+  /* skeleton */
+  .skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:32px;}
+  .skeleton-item{height:44px;background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px;}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
   .sem-resultado{text-align:center;padding:60px 20px;display:none;}
   .sem-resultado.visivel{display:block;}
   .sem-emoji{font-size:48px;margin-bottom:12px;}
   .sem-texto{font-family:'Fredoka One',cursive;font-size:20px;color:#4a6fa5;}
+
+  /* loading inicial */
+  .loading-msg{text-align:center;padding:40px;color:#4a6fa5;font-size:15px;font-weight:700;}
 
   @media(max-width:600px){
     .palavras-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
@@ -102,7 +98,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="logo-main">CyberCity</a>
+  <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html" class="ativo">Todas</a>
@@ -135,7 +131,7 @@
   <div class="busca-wrap">
     <div class="busca-row">
       <input type="text" id="buscaInput" placeholder="Filtrar palavras..." oninput="filtrar()">
-      <button>🔍</button>
+      <button onclick="filtrar()">🔍</button>
     </div>
   </div>
 
@@ -143,9 +139,14 @@
     <div class="alfa-grid" id="alfaGrid"></div>
   </div>
 
-  <div class="contador">Mostrando <span id="contadorNum">42</span> palavras</div>
+  <div class="contador">Mostrando <span id="contadorNum">0</span> palavras</div>
 
-  <div id="listagem"></div>
+  <div id="listagem">
+    <!-- skeleton enquanto carrega -->
+    <div class="skeleton-grid">
+      ${Array(12).fill('<div class="skeleton-item"></div>').join('')}
+    </div>
+  </div>
 
   <div class="sem-resultado" id="semResultado">
     <div class="sem-emoji">🤔</div>
@@ -154,72 +155,79 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 <script>
-  // Dados de exemplo — virão do Supabase futuramente
-  const palavras = [
-    {palavra:'Aloha',slug:'aloha'},{palavra:'Alocô',slug:'aloco'},
-    {palavra:'Aloba',slug:'aloba'},{palavra:'Arregou',slug:'arregou'},
-    {palavra:'Boh',slug:'boh'},{palavra:'Bora',slug:'bora'},
-    {palavra:'Brabo',slug:'brabo'},{palavra:'Brolha',slug:'brolha'},
-    {palavra:'Calica',slug:'calica'},{palavra:'Cabuloso',slug:'cabuloso'},
-    {palavra:'Cringe',slug:'cringe'},{palavra:'Confia',slug:'confia'},
-    {palavra:'Din',slug:'din'},{palavra:'Daora',slug:'daora'},
-    {palavra:'Fechou',slug:'fechou'},{palavra:'Flow',slug:'flow'},
-    {palavra:'Gato',slug:'gato'},{palavra:'Goró',slug:'goro'},
-    {palavra:'Hype',slug:'hype'},{palavra:'Humilhação',slug:'humilhacao'},
-    {palavra:'Irado',slug:'irado'},{palavra:'Isso aí',slug:'isso-ai'},
-    {palavra:'Jaba',slug:'jaba'},{palavra:'Joga fora',slug:'joga-fora'},
-    {palavra:'Loli',slug:'loli'},{palavra:'Lendário',slug:'lendario'},
-    {palavra:'Meczada',slug:'meczada'},{palavra:'Mió',slug:'mio'},
-    {palavra:'Nóia',slug:'noia'},{palavra:'Na moral',slug:'na-moral'},
-    {palavra:'Ostentação',slug:'ostentacao'},{palavra:'Ok né',slug:'ok-ne'},
-    {palavra:'Patifaria',slug:'patifaria'},{palavra:'Pesado',slug:'pesado'},
-    {palavra:'Queimou',slug:'queimou'},{palavra:'Que que é',slug:'que-que-e'},
-    {palavra:'Rolê',slug:'role'},{palavra:'Racha',slug:'racha'},
-    {palavra:'Simbora',slug:'simbora'},{palavra:'Salve',slug:'salve'},
-    {palavra:'Tankar',slug:'tankar'},{palavra:'Treta',slug:'treta'},
-    {palavra:'Uó',slug:'uo'},{palavra:'Uhul',slug:'uhul'},
-    {palavra:'Vapo',slug:'vapo'},{palavra:'Vibe',slug:'vibe'},
-    {palavra:'Xaveco',slug:'xaveco'},{palavra:'Xandão',slug:'xandao'},
-    {palavra:'Zoar',slug:'zoar'},{palavra:'Zueira',slug:'zueira'},
-  ];
+  const sb = window._supabase
+  let todasPalavras = []
+  let filtrado = []
 
-  let filtrado = [...palavras];
+  // ── CARREGAR DO SUPABASE ──
+  async function carregarPalavras() {
+    const { data, error } = await sb
+      .from('palavras')
+      .select('termo, slug')
+      .eq('status', 'aprovada')
+      .order('termo', { ascending: true })
 
-  function agruparPorLetra(lista){
-    const grupos = {};
-    lista.forEach(p=>{
-      const l = p.palavra[0].toUpperCase();
-      if(!grupos[l]) grupos[l]=[];
-      grupos[l].push(p);
-    });
-    return grupos;
+    if (error || !data) {
+      document.getElementById('listagem').innerHTML =
+        '<div class="loading-msg">Erro ao carregar palavras. Tente recarregar a página.</div>'
+      return
+    }
+
+    todasPalavras = data.map(p => ({ palavra: p.termo, slug: p.slug }))
+    filtrado = [...todasPalavras]
+
+    // verificar se veio busca pela URL (ex: vindo do index.html)
+    const params = new URLSearchParams(window.location.search)
+    const buscaURL = params.get('busca')
+    const letraURL = params.get('letra')
+
+    if (buscaURL) {
+      document.getElementById('buscaInput').value = buscaURL
+      filtrado = todasPalavras.filter(p => p.palavra.toLowerCase().includes(buscaURL.toLowerCase()))
+    } else if (letraURL) {
+      filtrado = todasPalavras.filter(p => p.palavra[0].toUpperCase() === letraURL.toUpperCase())
+    }
+
+    renderizar(filtrado)
+    renderAlfa()
+
+    // scroll para a letra se veio da URL
+    if (letraURL) {
+      setTimeout(() => {
+        const el = document.getElementById('grupo-' + letraURL.toUpperCase())
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 300)
+    }
   }
 
-  function renderizar(lista){
-    const listagem = document.getElementById('listagem');
-    const sem = document.getElementById('semResultado');
-    document.getElementById('contadorNum').textContent = lista.length;
+  // ── RENDERIZAR LISTA ──
+  function renderizar(lista) {
+    const listagem = document.getElementById('listagem')
+    const sem = document.getElementById('semResultado')
+    document.getElementById('contadorNum').textContent = lista.length
 
-    if(lista.length===0){
-      listagem.innerHTML='';
-      sem.classList.add('visivel');
-      return;
+    if (lista.length === 0) {
+      listagem.innerHTML = ''
+      sem.classList.add('visivel')
+      return
     }
-    sem.classList.remove('visivel');
+    sem.classList.remove('visivel')
 
-    const grupos = agruparPorLetra(lista);
-    const letras = Object.keys(grupos).sort();
+    const grupos = agruparPorLetra(lista)
+    const letras = Object.keys(grupos).sort()
 
-    listagem.innerHTML = letras.map((l,i)=>`
-      <div class="letra-grupo" style="animation-delay:${i*0.04}s" id="grupo-${l}">
+    listagem.innerHTML = letras.map((l, i) => `
+      <div class="letra-grupo" style="animation-delay:${i * 0.04}s" id="grupo-${l}">
         <div class="letra-header">
           <div class="letra-badge">${l}</div>
           <div class="letra-linha"></div>
-          <div class="letra-count">${grupos[l].length} palavra${grupos[l].length>1?'s':''}</div>
+          <div class="letra-count">${grupos[l].length} palavra${grupos[l].length > 1 ? 's' : ''}</div>
         </div>
         <div class="palavras-grid">
-          ${grupos[l].map(p=>`
+          ${grupos[l].map(p => `
             <a href="palavra.html?w=${p.slug}" class="palavra-item">
               <span class="palavra-nome">${p.palavra}</span>
               <span class="palavra-seta">→</span>
@@ -227,39 +235,55 @@
           `).join('')}
         </div>
       </div>
-    `).join('');
+    `).join('')
   }
 
-  function filtrar(){
-    const q = document.getElementById('buscaInput').value.toLowerCase().trim();
-    filtrado = q ? palavras.filter(p=>p.palavra.toLowerCase().includes(q)) : [...palavras];
-    renderizar(filtrado);
-    renderAlfa();
+  // ── AGRUPAR POR LETRA ──
+  function agruparPorLetra(lista) {
+    const grupos = {}
+    lista.forEach(p => {
+      const l = p.palavra[0].toUpperCase()
+      if (!grupos[l]) grupos[l] = []
+      grupos[l].push(p)
+    })
+    return grupos
   }
 
-  function renderAlfa(){
-    const grid = document.getElementById('alfaGrid');
-    const letrasComPalavras = new Set(filtrado.map(p=>p.palavra[0].toUpperCase()));
-    const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    grid.innerHTML = todasLetras.map(l=>`
-      <a href="#grupo-${l}" class="alfa-btn ${letrasComPalavras.has(l)?'':'vazio'}" onclick="irPara('${l}',event)">${l}</a>
-    `).join('');
+  // ── FILTRAR ──
+  function filtrar() {
+    const q = document.getElementById('buscaInput').value.toLowerCase().trim()
+    filtrado = q
+      ? todasPalavras.filter(p => p.palavra.toLowerCase().includes(q))
+      : [...todasPalavras]
+    renderizar(filtrado)
+    renderAlfa()
   }
 
-  function irPara(letra, e){
-    e.preventDefault();
-    const el = document.getElementById('grupo-'+letra);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  // ── ALFABETO ──
+  function renderAlfa() {
+    const grid = document.getElementById('alfaGrid')
+    const letrasComPalavras = new Set(filtrado.map(p => p.palavra[0].toUpperCase()))
+    const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+    grid.innerHTML = todasLetras.map(l => `
+      <a href="#grupo-${l}" class="alfa-btn ${letrasComPalavras.has(l) ? '' : 'vazio'}"
+         onclick="irPara('${l}', event)">${l}</a>
+    `).join('')
   }
 
-  function toggleMenu(){
-    document.getElementById('navMobile').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
+  function irPara(letra, e) {
+    e.preventDefault()
+    const el = document.getElementById('grupo-' + letra)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  // init
-  renderizar(palavras);
-  renderAlfa();
+  function toggleMenu() {
+    document.getElementById('navMobile').classList.toggle('open')
+    document.getElementById('overlay').classList.toggle('open')
+  }
+
+  // ── INIT ──
+  renderAlfa()
+  carregarPalavras()
 </script>
 </body>
 </html>
