@@ -84,7 +84,6 @@
   .alerta.erro{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.3);color:#ff8080;}
   .alerta.sucesso{background:rgba(100,255,150,0.1);border-color:rgba(100,255,150,0.3);color:#64ff96;}
 
-  /* área do usuário logado */
   .logado-card{text-align:center;padding:20px 0;}
   .logado-avatar{font-size:60px;margin-bottom:12px;}
   .logado-nome{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);letter-spacing:2px;}
@@ -216,17 +215,20 @@
   </div>
 </div>
 
-<script type="module">
-  import { supabase } from './supabase.js'
+<!-- SDK do Supabase carregado primeiro -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+
+<script>
+  const sb = window._supabase
 
   // ── VERIFICAR SE JÁ ESTÁ LOGADO ──
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session) {
-    mostrarAreaLogado(session.user)
-  }
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) mostrarAreaLogado(session.user)
+  })
 
   // ── ENTRAR ──
-  window.entrar = async function() {
+  async function entrar() {
     const email = document.getElementById('login-email').value.trim()
     const senha = document.getElementById('login-senha').value
     if (!email || !senha) { mostrarAlerta('⚠️ Preencha todos os campos.', 'erro'); return }
@@ -235,7 +237,7 @@
     btn.disabled = true
     btn.textContent = 'Entrando...'
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha })
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: senha })
 
     if (error) {
       mostrarAlerta('❌ ' + traduzirErro(error.message), 'erro')
@@ -249,7 +251,7 @@
   }
 
   // ── CADASTRAR ──
-  window.cadastrar = async function() {
+  async function cadastrar() {
     const usuario = document.getElementById('cad-usuario').value.trim()
     const email = document.getElementById('cad-email').value.trim()
     const senha = document.getElementById('cad-senha').value
@@ -263,8 +265,7 @@
     btn.disabled = true
     btn.textContent = 'Criando conta...'
 
-    // cria o usuário no Supabase Auth
-    const { data, error } = await supabase.auth.signUp({ email, password: senha })
+    const { data, error } = await sb.auth.signUp({ email, password: senha })
 
     if (error) {
       mostrarAlerta('❌ ' + traduzirErro(error.message), 'erro')
@@ -273,12 +274,8 @@
       return
     }
 
-    // salva o perfil na tabela perfis
     if (data.user) {
-      await supabase.from('perfis').insert({
-        id: data.user.id,
-        username: usuario
-      })
+      await sb.from('perfis').insert({ id: data.user.id, username: usuario })
     }
 
     mostrarAlerta('✅ Conta criada com sucesso! Bem-vindo ao CyberUniverso!', 'sucesso')
@@ -286,16 +283,16 @@
   }
 
   // ── SAIR ──
-  window.sair = async function() {
-    await supabase.auth.signOut()
+  async function sair() {
+    await sb.auth.signOut()
     window.location.reload()
   }
 
   // ── ESQUECEU SENHA ──
-  window.esqueceuSenha = async function() {
+  async function esqueceuSenha() {
     const email = document.getElementById('login-email').value.trim()
     if (!email) { mostrarAlerta('⚠️ Digite seu e-mail no campo acima primeiro.', 'erro'); return }
-    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    const { error } = await sb.auth.resetPasswordForEmail(email)
     if (error) { mostrarAlerta('❌ Erro ao enviar e-mail.', 'erro'); return }
     mostrarAlerta('✅ E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'sucesso')
   }
@@ -305,11 +302,10 @@
     document.getElementById('areaAuth').style.display = 'none'
     document.getElementById('areaLogado').style.display = 'block'
     document.getElementById('logadoEmail').textContent = user.email
-
-    // busca o username do perfil
-    supabase.from('perfis').select('username').eq('id', user.id).single()
+    sb.from('perfis').select('username').eq('id', user.id).single()
       .then(({ data }) => {
-        document.getElementById('logadoNome').textContent = data?.username ? `Olá, ${data.username}! 👋` : 'Olá! 👋'
+        document.getElementById('logadoNome').textContent =
+          data?.username ? `Olá, ${data.username}! 👋` : 'Olá! 👋'
       })
   }
 
@@ -322,7 +318,7 @@
     return msg
   }
 
-  window.trocarTab = function(tab) {
+  function trocarTab(tab) {
     document.querySelectorAll('.tab').forEach((t, i) => {
       t.classList.toggle('ativo', (i===0&&tab==='entrar')||(i===1&&tab==='cadastrar'))
     })
@@ -336,17 +332,18 @@
     a.textContent = msg
     a.className = `alerta visivel ${tipo}`
   }
+
   function esconderAlerta() {
     document.getElementById('alerta').classList.remove('visivel')
   }
 
-  window.verSenha = function(id, btn) {
+  function verSenha(id, btn) {
     const inp = document.getElementById(id)
     if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈' }
     else { inp.type = 'password'; btn.textContent = '👁️' }
   }
 
-  window.verificarForca = function(senha) {
+  function verificarForca(senha) {
     const fill = document.getElementById('forcaFill')
     const texto = document.getElementById('forcaTexto')
     let forca = 0
@@ -369,11 +366,11 @@
     texto.style.color = n.cor
   }
 
-  window.validarUsuario = function(inp) {
+  function validarUsuario(inp) {
     inp.value = inp.value.replace(/[^a-z0-9_]/gi, '').toLowerCase()
   }
 
-  window.toggleMenu = function() {
+  function toggleMenu() {
     document.getElementById('navMobile').classList.toggle('open')
     document.getElementById('overlay').classList.toggle('open')
   }
