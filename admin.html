@@ -37,7 +37,6 @@
   .secao{display:none;}
   .secao.ativa{display:block;}
 
-  /* acesso negado */
   .acesso-negado{text-align:center;padding:80px 20px;}
   .acesso-negado-emoji{font-size:64px;margin-bottom:16px;}
   .acesso-negado-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho);letter-spacing:2px;}
@@ -99,7 +98,6 @@
   .btn-adicionar{display:flex;align-items:center;gap:8px;background:rgba(26,110,245,0.1);border:1.5px dashed rgba(26,110,245,0.4);color:#4a8aff;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-bottom:16px;}
   .btn-adicionar:hover{background:rgba(26,110,245,0.2);border-color:var(--azul);}
 
-  /* toast */
   .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;}
   .toast.visivel{transform:translateY(0);opacity:1;}
   .toast.sucesso{border-color:rgba(100,255,150,0.4);color:var(--verde);}
@@ -143,7 +141,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="sidebar-logo-text">CyberUniverso</div>
@@ -178,7 +175,6 @@
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:12px;">
@@ -193,7 +189,6 @@
 
   <div class="content">
 
-    <!-- ACESSO NEGADO -->
     <div class="secao ativa" id="sec-acesso-negado">
       <div class="acesso-negado">
         <div class="acesso-negado-emoji">🚫</div>
@@ -202,7 +197,6 @@
       </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div class="secao" id="sec-dashboard">
       <div class="stats-grid">
         <div class="stat-card azul"><div class="stat-icon">📖</div><div class="stat-num" id="stat-aprovadas">—</div><div class="stat-label">Palavras publicadas</div></div>
@@ -210,7 +204,6 @@
         <div class="stat-card amarelo"><div class="stat-icon">💬</div><div class="stat-num" id="stat-comentarios">—</div><div class="stat-label">Comentários</div></div>
         <div class="stat-card vermelho"><div class="stat-icon">⏳</div><div class="stat-num" id="stat-pendentes">—</div><div class="stat-label">Pendentes de aprovação</div></div>
       </div>
-
       <div class="tabela-wrap">
         <div class="tabela-header">
           <div class="tabela-titulo">⏳ Pendentes Recentes</div>
@@ -225,7 +218,6 @@
       </div>
     </div>
 
-    <!-- PENDENTES -->
     <div class="secao" id="sec-pendentes">
       <div class="tabela-wrap">
         <div class="tabela-header">
@@ -241,7 +233,6 @@
       </div>
     </div>
 
-    <!-- TODAS AS PALAVRAS -->
     <div class="secao" id="sec-palavras">
       <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
         <button class="btn-adicionar" style="width:auto;padding:10px 20px;" onclick="abrirModalNovaPalavra()">➕ Adicionar Palavra</button>
@@ -260,15 +251,13 @@
       </div>
     </div>
 
-    <!-- CATEGORIAS -->
     <div class="secao" id="sec-categorias">
-      <button class="btn-adicionar" onclick="abrirModal('nova-categoria')">➕ Adicionar Nova Categoria</button>
+      <button class="btn-adicionar" onclick="document.getElementById('modal-nova-categoria').classList.add('aberto')">➕ Adicionar Nova Categoria</button>
       <div class="cats-admin-grid" id="catsAdminGrid">
         <div class="vazio-msg">Carregando...</div>
       </div>
     </div>
 
-    <!-- USUÁRIOS -->
     <div class="secao" id="sec-usuarios">
       <div class="tabela-wrap">
         <div class="tabela-header">
@@ -284,7 +273,6 @@
       </div>
     </div>
 
-    <!-- COMENTÁRIOS -->
     <div class="secao" id="sec-comentarios">
       <div class="tabela-wrap">
         <div class="tabela-header">
@@ -303,15 +291,13 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MODAL NOVA/EDITAR PALAVRA -->
 <div class="modal-overlay" id="modal-palavra">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-titulo" id="modal-palavra-titulo">➕ NOVA PALAVRA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-palavra')">✕</button>
+      <button class="modal-fechar" onclick="document.getElementById('modal-palavra').classList.remove('aberto')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="mp-id">
@@ -327,18 +313,17 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-palavra')">CANCELAR</button>
+      <button class="btn-cancelar" onclick="document.getElementById('modal-palavra').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" id="btn-salvar-palavra" onclick="salvarPalavra()">SALVAR ✓</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL NOVA CATEGORIA -->
 <div class="modal-overlay" id="modal-nova-categoria">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-titulo">➕ NOVA CATEGORIA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-nova-categoria')">✕</button>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-categoria').classList.remove('aberto')">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-campo"><label>Emoji</label><input type="text" id="nc-icone" placeholder="ex: 🎵" maxlength="2"></div>
@@ -346,18 +331,17 @@
       <div class="modal-campo"><label>Descrição</label><input type="text" id="nc-desc" placeholder="Breve descrição"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-nova-categoria')">CANCELAR</button>
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-categoria').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" onclick="salvarCategoria()">SALVAR ✓</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL NOVA SUBCATEGORIA -->
 <div class="modal-overlay" id="modal-nova-subcat">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-titulo">➕ NOVA SUBCATEGORIA</div>
-      <button class="modal-fechar" onclick="fecharModal('modal-nova-subcat')">✕</button>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-subcat').classList.remove('aberto')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="ns-cat-id">
@@ -365,7 +349,7 @@
       <div class="modal-campo"><label>Descrição</label><input type="text" id="ns-desc" placeholder="Breve descrição"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancelar" onclick="fecharModal('modal-nova-subcat')">CANCELAR</button>
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-subcat').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" onclick="salvarSubcategoria()">SALVAR ✓</button>
     </div>
   </div>
@@ -376,7 +360,7 @@
 <script>
 const sb = window._supabase
 
-// ── INIT: verificar se é admin ──
+// ── INIT ──
 async function init() {
   const { data: { session } } = await sb.auth.getSession()
 
@@ -386,36 +370,18 @@ async function init() {
     return
   }
 
-  // tenta buscar perfil — se der erro de RLS, tenta sem o .single()
-  let perfil = null
-  try {
-    const { data, error } = await sb
-      .from('perfis')
-      .select('username, is_admin')
-      .eq('id', session.user.id)
-      .maybeSingle()
-
-    if (!error) perfil = data
-  } catch(e) {}
-
-  // se não achou perfil via RLS, verifica via user_metadata
-  if (!perfil) {
-    // tenta inserir o perfil caso não exista
-    const { data: inserted } = await sb
-      .from('perfis')
-      .upsert({ id: session.user.id, username: session.user.email?.split('@')[0], is_admin: false })
-      .select('username, is_admin')
-      .maybeSingle()
-    perfil = inserted
-  }
+  const { data: perfil, error } = await sb
+    .from('perfis')
+    .select('username, is_admin')
+    .eq('id', session.user.id)
+    .maybeSingle()
 
   if (!perfil || !perfil.is_admin) {
     document.querySelector('.acesso-negado-titulo').textContent = 'ACESSO NEGADO'
-    document.querySelector('.acesso-negado-sub').textContent = 'Você não tem permissão de administrador. ID: ' + session.user.id
+    document.querySelector('.acesso-negado-sub').textContent = 'Sem permissão de admin. ID: ' + session.user.id
     return
   }
 
-  // é admin — mostrar painel
   document.getElementById('nomeAdmin').textContent = perfil.username || 'Admin'
   document.getElementById('avatarAdmin').textContent = (perfil.username || 'A')[0].toUpperCase()
   irPara('dashboard')
@@ -452,11 +418,10 @@ async function carregarStats() {
 // ── PENDENTES ──
 async function carregarPendentes() {
   const { data } = await sb.from('palavras')
-    .select('id, termo, slug, criado_em, usuario_id, perfis(username)')
+    .select('id, termo, slug, criado_em, perfis(username)')
     .eq('status', 'pendente')
     .order('criado_em', { ascending: false })
 
-  // dashboard
   const dashTbody = document.getElementById('tbody-dash-pendentes')
   if (!data || data.length === 0) {
     dashTbody.innerHTML = '<tr><td colspan="4" class="vazio-msg">Nenhuma palavra pendente 🎉</td></tr>'
@@ -470,11 +435,9 @@ async function carregarPendentes() {
           <button class="btn-mini btn-aprovar" onclick="mudarStatus('${p.id}', 'aprovada', this)">✓ Aprovar</button>
           <button class="btn-mini btn-rejeitar" onclick="mudarStatus('${p.id}', 'rejeitada', this)">✗ Rejeitar</button>
         </div></td>
-      </tr>
-    `).join('')
+      </tr>`).join('')
   }
 
-  // seção pendentes
   const tbody = document.getElementById('tbody-pendentes')
   if (!data || data.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhuma palavra pendente 🎉</td></tr>'
@@ -491,8 +454,7 @@ async function carregarPendentes() {
         <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', 'pendente')">✏️ Editar</button>
         <button class="btn-mini btn-rejeitar" onclick="mudarStatus('${p.id}', 'rejeitada', this)">✗ Rejeitar</button>
       </div></td>
-    </tr>
-  `).join('')
+    </tr>`).join('')
 }
 
 // ── TODAS AS PALAVRAS ──
@@ -517,20 +479,17 @@ async function carregarPalavras() {
         <button class="btn-mini btn-editar" onclick="abrirModalEditarPalavra('${p.id}', '${p.termo}', '${p.slug}', '${p.status}')">✏️</button>
         <button class="btn-mini btn-excluir" onclick="excluirPalavra('${p.id}', this)">🗑️</button>
       </div></td>
-    </tr>
-  `).join('')
+    </tr>`).join('')
 }
 
 // ── CATEGORIAS ──
 async function carregarCategorias() {
   const { data: cats } = await sb.from('categorias').select('id, nome, icone, subcategorias(id, nome)').order('nome')
   const grid = document.getElementById('catsAdminGrid')
-
   if (!cats || cats.length === 0) {
-    grid.innerHTML = '<div class="vazio-msg">Nenhuma categoria cadastrada ainda</div>'
+    grid.innerHTML = '<div class="vazio-msg">Nenhuma categoria ainda</div>'
     return
   }
-
   grid.innerHTML = cats.map(c => `
     <div class="cat-admin-card">
       <div class="cat-admin-header">
@@ -546,14 +505,12 @@ async function carregarCategorias() {
           <div class="subcat-admin-item">
             <span class="subcat-admin-nome">${s.nome}</span>
             <button class="btn-mini btn-excluir" onclick="excluirSubcategoria('${s.id}')">🗑️</button>
-          </div>
-        `).join('')}
+          </div>`).join('')}
         <div class="subcat-admin-item" style="border:none;">
-          <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModalSubcat('${c.id}')">➕ Adicionar subcategoria</button>
+          <button class="btn-adicionar" style="margin:0;padding:6px 12px;font-size:12px;" onclick="abrirModalSubcat('${c.id}')">➕ Subcategoria</button>
         </div>
       </div>
-    </div>
-  `).join('')
+    </div>`).join('')
 }
 
 // ── USUÁRIOS ──
@@ -572,15 +529,12 @@ async function carregarUsuarios() {
       <td><div class="acoes-cell">
         <button class="btn-mini btn-editar" onclick="toggleAdmin('${u.id}', ${u.is_admin})">${u.is_admin ? '👑 Remover admin' : '👑 Tornar admin'}</button>
       </div></td>
-    </tr>
-  `).join('')
+    </tr>`).join('')
 }
 
 // ── COMENTÁRIOS ──
 async function carregarComentarios() {
-  const { data } = await sb.from('comentarios')
-    .select('id, texto, criado_em, palavras(termo)')
-    .order('criado_em', { ascending: false })
+  const { data } = await sb.from('comentarios').select('id, texto, criado_em, palavras(termo)').order('criado_em', { ascending: false })
   const tbody = document.getElementById('tbody-comentarios')
   if (!data || data.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" class="vazio-msg">Nenhum comentário ainda</td></tr>'
@@ -594,80 +548,64 @@ async function carregarComentarios() {
       <td><div class="acoes-cell">
         <button class="btn-mini btn-excluir" onclick="excluirComentario('${c.id}', this)">🗑️</button>
       </div></td>
-    </tr>
-  `).join('')
+    </tr>`).join('')
 }
 
-// ── MUDAR STATUS PALAVRA ──
+// ── AÇÕES ──
 async function mudarStatus(id, novoStatus, btn) {
-  btn.disabled = true
-  btn.textContent = '...'
+  btn.disabled = true; btn.textContent = '...'
   const { error } = await sb.from('palavras').update({ status: novoStatus }).eq('id', id)
   if (error) { mostrarToast('Erro ao atualizar', 'erro'); btn.disabled = false; return }
-  mostrarToast(novoStatus === 'aprovada' ? '✅ Palavra aprovada!' : '✗ Palavra rejeitada!', novoStatus === 'aprovada' ? 'sucesso' : 'erro')
-  await carregarPendentes()
-  await carregarPalavras()
-  await carregarStats()
+  mostrarToast(novoStatus === 'aprovada' ? '✅ Palavra aprovada!' : '✗ Rejeitada!', novoStatus === 'aprovada' ? 'sucesso' : 'erro')
+  carregarPendentes(); carregarPalavras(); carregarStats()
 }
 
-// ── EXCLUIR PALAVRA ──
 async function excluirPalavra(id, btn) {
-  if (!confirm('Tem certeza que quer excluir esta palavra?')) return
+  if (!confirm('Excluir esta palavra?')) return
   btn.disabled = true
   const { error } = await sb.from('palavras').delete().eq('id', id)
   if (error) { mostrarToast('Erro ao excluir', 'erro'); btn.disabled = false; return }
   mostrarToast('🗑️ Palavra excluída!', 'sucesso')
   document.getElementById('row-p-' + id)?.remove()
-  await carregarStats()
+  carregarStats()
 }
 
-// ── SALVAR PALAVRA (nova ou editar) ──
 async function salvarPalavra() {
   const id = document.getElementById('mp-id').value
   const termo = document.getElementById('mp-termo').value.trim()
   const slug = document.getElementById('mp-slug').value.trim()
   const status = document.getElementById('mp-status').value
-
   if (!termo || !slug) { mostrarToast('⚠️ Preencha palavra e slug', 'erro'); return }
-
   const btn = document.getElementById('btn-salvar-palavra')
-  btn.disabled = true
-  btn.textContent = 'Salvando...'
-
+  btn.disabled = true; btn.textContent = 'Salvando...'
   let error
   if (id) {
     ({ error } = await sb.from('palavras').update({ termo, slug, status }).eq('id', id))
   } else {
     ({ error } = await sb.from('palavras').insert({ termo, slug, status }))
   }
-
-  btn.disabled = false
-  btn.textContent = 'SALVAR ✓'
-
-  if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); return }
+  btn.disabled = false; btn.textContent = 'SALVAR ✓'
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
   mostrarToast('✅ Palavra salva!', 'sucesso')
-  fecharModal('modal-palavra')
-  await carregarPalavras()
-  await carregarStats()
+  document.getElementById('modal-palavra').classList.remove('aberto')
+  carregarPalavras(); carregarStats()
 }
 
-// ── SALVAR CATEGORIA ──
 async function salvarCategoria() {
   const nome = document.getElementById('nc-nome').value.trim()
   const icone = document.getElementById('nc-icone').value.trim()
   const descricao = document.getElementById('nc-desc').value.trim()
-  if (!nome) { mostrarToast('⚠️ Digite o nome da categoria', 'erro'); return }
+  if (!nome) { mostrarToast('⚠️ Digite o nome', 'erro'); return }
   const { error } = await sb.from('categorias').insert({ nome, icone, descricao })
   if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
   mostrarToast('✅ Categoria criada!', 'sucesso')
-  fecharModal('modal-nova-categoria')
+  document.getElementById('modal-nova-categoria').classList.remove('aberto')
   document.getElementById('nc-nome').value = ''
   document.getElementById('nc-icone').value = ''
   document.getElementById('nc-desc').value = ''
-  await carregarCategorias()
+  carregarCategorias()
 }
 
-// ── SALVAR SUBCATEGORIA ──
 async function salvarSubcategoria() {
   const nome = document.getElementById('ns-nome').value.trim()
   const descricao = document.getElementById('ns-desc').value.trim()
@@ -676,31 +614,27 @@ async function salvarSubcategoria() {
   const { error } = await sb.from('subcategorias').insert({ nome, descricao, categoria_id })
   if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
   mostrarToast('✅ Subcategoria criada!', 'sucesso')
-  fecharModal('modal-nova-subcat')
+  document.getElementById('modal-nova-subcat').classList.remove('aberto')
   document.getElementById('ns-nome').value = ''
-  document.getElementById('ns-desc').value = ''
-  await carregarCategorias()
+  carregarCategorias()
 }
 
-// ── EXCLUIR CATEGORIA ──
 async function excluirCategoria(id) {
   if (!confirm('Excluir esta categoria?')) return
   const { error } = await sb.from('categorias').delete().eq('id', id)
   if (error) { mostrarToast('Erro ao excluir', 'erro'); return }
   mostrarToast('🗑️ Categoria excluída!', 'sucesso')
-  await carregarCategorias()
+  carregarCategorias()
 }
 
-// ── EXCLUIR SUBCATEGORIA ──
 async function excluirSubcategoria(id) {
   if (!confirm('Excluir esta subcategoria?')) return
   const { error } = await sb.from('subcategorias').delete().eq('id', id)
   if (error) { mostrarToast('Erro ao excluir', 'erro'); return }
   mostrarToast('🗑️ Subcategoria excluída!', 'sucesso')
-  await carregarCategorias()
+  carregarCategorias()
 }
 
-// ── EXCLUIR COMENTÁRIO ──
 async function excluirComentario(id, btn) {
   if (!confirm('Excluir este comentário?')) return
   btn.disabled = true
@@ -710,12 +644,11 @@ async function excluirComentario(id, btn) {
   btn.closest('tr').remove()
 }
 
-// ── TOGGLE ADMIN ──
 async function toggleAdmin(id, isAdmin) {
   const { error } = await sb.from('perfis').update({ is_admin: !isAdmin }).eq('id', id)
   if (error) { mostrarToast('Erro ao atualizar', 'erro'); return }
   mostrarToast('✅ Permissão atualizada!', 'sucesso')
-  await carregarUsuarios()
+  carregarUsuarios()
 }
 
 // ── MODAIS ──
@@ -744,22 +677,16 @@ function abrirModalSubcat(catId) {
   document.getElementById('modal-nova-subcat').classList.add('aberto')
 }
 
-function abrirModal(id) {
-  document.getElementById('modal-' + id).classList.add('aberto')
-}
-function fecharModal(id) {
-  document.getElementById(id).classList.remove('aberto')
-}
-
+// fechar modal clicando fora
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('aberto') })
 })
 
 // ── NAVEGAÇÃO ──
 const titulos = {
-  dashboard: '📊 DASHBOARD', pendentes: '⏳ PENDENTES',
-  palavras: '📖 TODAS AS PALAVRAS', categorias: '🗂️ CATEGORIAS',
-  usuarios: '👥 USUÁRIOS', comentarios: '💬 COMENTÁRIOS',
+  dashboard:'📊 DASHBOARD', pendentes:'⏳ PENDENTES',
+  palavras:'📖 TODAS AS PALAVRAS', categorias:'🗂️ CATEGORIAS',
+  usuarios:'👥 USUÁRIOS', comentarios:'💬 COMENTÁRIOS',
 }
 
 function irPara(secao) {
@@ -777,16 +704,12 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('aberta')
 }
 
-// ── FILTRAR TABELA ──
 function filtrarTabela(tbodyId, q) {
-  const tbody = document.getElementById(tbodyId)
-  const rows = tbody.querySelectorAll('tr')
-  rows.forEach(row => {
+  document.getElementById(tbodyId).querySelectorAll('tr').forEach(row => {
     row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'
   })
 }
 
-// ── TOAST ──
 function mostrarToast(msg, tipo = 'sucesso') {
   const t = document.getElementById('toast')
   t.textContent = msg
@@ -794,13 +717,11 @@ function mostrarToast(msg, tipo = 'sucesso') {
   setTimeout(() => t.classList.remove('visivel'), 3000)
 }
 
-// ── HELPERS ──
 function formatarData(str) {
   if (!str) return '—'
   return new Date(str).toLocaleDateString('pt-BR')
 }
 
-// ── AUTO SLUG ──
 document.getElementById('mp-termo')?.addEventListener('input', function() {
   if (!document.getElementById('mp-id').value) {
     document.getElementById('mp-slug').value = this.value.toLowerCase()
@@ -809,7 +730,6 @@ document.getElementById('mp-termo')?.addEventListener('input', function() {
   }
 })
 
-// ── INIT ──
 init()
 </script>
 </body>
