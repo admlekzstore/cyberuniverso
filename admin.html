@@ -726,7 +726,7 @@ function abrirModalNovaPalavra() {
   document.getElementById('mp-significado').value = ''
   document.getElementById('mp-status').value = 'aprovada'
   document.getElementById('modal-palavra-titulo').textContent = '➕ NOVA PALAVRA'
-  abrirModal('modal-palavra')
+  document.getElementById('modal-palavra').classList.add('aberto')
 }
 
 function abrirModalEditarPalavra(id, termo, slug, status) {
@@ -735,13 +735,13 @@ function abrirModalEditarPalavra(id, termo, slug, status) {
   document.getElementById('mp-slug').value = slug
   document.getElementById('mp-status').value = status
   document.getElementById('modal-palavra-titulo').textContent = '✏️ EDITAR PALAVRA'
-  abrirModal('modal-palavra')
+  document.getElementById('modal-palavra').classList.add('aberto')
 }
 
 function abrirModalSubcat(catId) {
   document.getElementById('ns-cat-id').value = catId
   document.getElementById('ns-nome').value = ''
-  abrirModal('modal-nova-subcat')
+  document.getElementById('modal-nova-subcat').classList.add('aberto')
 }
 
 function abrirModal(id) {
