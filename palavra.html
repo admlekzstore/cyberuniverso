@@ -705,7 +705,7 @@
   const { data: palavra, error } = await sb
     .from('palavras')
     .select(`
-      id, titulo, slug, status, nivel, pronuncia, criado_em, visualizacoes,
+      id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca,
       categorias ( id, nome, slug ),
       perfis ( nome_usuario )
     `)
@@ -726,7 +726,7 @@
     sb.from('significados').select('texto, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('exemplos').select('texto, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
-    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id, palavras!sinonimos_sinonimo_palavra_id_fkey(titulo,slug)').eq('palavra_id', palavra.id),
+    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id, palavras!sinonimos_sinonimo_palavra_id_fkey(termo,slug)').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
     sb.from('comentarios').select('id, texto, criado_em, perfis(nome_usuario)').eq('palavra_id', palavra.id).eq('status','aprovado').order('criado_em')
   ]);
@@ -738,13 +738,11 @@
     minhaReacao = mr?.tipo || null;
   }
 
-  // incrementa views (best-effort)
-  sb.from('palavras').update({ visualizacoes: (palavra.visualizacoes || 0) + 1 }).eq('id', palavra.id);
 
   // ══ RENDER ══════════════════════════════════════════
 
   // ── SEO ──
-  const titulo = palavra.titulo;
+  const titulo = palavra.termo;
   const primSig = significados?.[0]?.texto || '';
   $('page-title').textContent = `${titulo} — o que significa? | CyberUniverso`;
   $('meta-desc').content = primSig
@@ -788,11 +786,9 @@
   // ── badges ──
   const badgeWrap = $('wd-badges');
   const nivelMap = { basico:'🟢 Básico', intermediario:'🟡 Intermediário', avancado:'🔴 Avançado' };
-  if (palavra.nivel) {
-    badgeWrap.innerHTML += `<div class="badge badge-nivel">⚡ ${nivelMap[palavra.nivel] || palavra.nivel}</div>`;
+  if (palavra.nivel_uso) {
+    badgeWrap.innerHTML += `<div class="badge badge-nivel">⚡ ${nivelMap[palavra.nivel_uso] || palavra.nivel_uso}</div>`;
   }
-  if (palavra.visualizacoes) {
-    badgeWrap.innerHTML += `<div class="badge badge-regiao">👁 ${(palavra.visualizacoes+1).toLocaleString('pt-BR')} views</div>`;
   }
   const statusMap = { aprovado:'✅ Aprovada', pendente:'⏳ Pendente', recusado:'❌ Recusada' };
   if (statusMap[palavra.status]) {
@@ -829,7 +825,7 @@
     $('card-sinonimos').style.display = 'block';
     sins.forEach(s => {
       const p = s.palavras;
-      const label = p?.titulo || s.sinonimo_texto;
+      const label = p?.termo || s.sinonimo_texto;
       const href  = p ? `palavra.html?palavra=${p.slug}` : '#';
       sinWrap.innerHTML += `<a href="${href}" class="tag">${label}</a>`;
     });
@@ -903,23 +899,23 @@
   const alfaWrap = $('wd-alfa');
   const letra = titulo[0].toUpperCase();
   const [{ data: anteriores }, { data: proximas }] = await Promise.all([
-    sb.from('palavras').select('titulo, slug').eq('status','aprovado')
-      .lt('titulo', titulo).order('titulo', { ascending: false }).limit(3),
-    sb.from('palavras').select('titulo, slug').eq('status','aprovado')
-      .gt('titulo', titulo).order('titulo', { ascending: true }).limit(3)
+    sb.from('palavras').select('termo, slug').eq('status','aprovado')
+      .lt('termo', titulo).order('termo', { ascending: false }).limit(3),
+    sb.from('palavras').select('termo, slug').eq('status','aprovado')
+      .gt('termo', titulo).order('termo', { ascending: true }).limit(3)
   ]);
 
   let alfaHTML = '';
   if (anteriores?.length) {
     alfaHTML += `<div class="alfa-grupo">
       <span class="alfa-label">◀ Anterior</span>
-      ${anteriores.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.titulo}</a>`).join('')}
+      ${anteriores.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.termo}</a>`).join('')}
     </div><div class="alfa-sep">|</div>`;
   }
   if (proximas?.length) {
     alfaHTML += `<div class="alfa-grupo direita">
       <span class="alfa-label">Próxima ▶</span>
-      ${proximas.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.titulo}</a>`).join('')}
+      ${proximas.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.termo}</a>`).join('')}
     </div>`;
   }
   alfaWrap.innerHTML = alfaHTML || `<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha encontrada.</span>`;
@@ -995,9 +991,9 @@
 
   // ── sidebar: top 10 + recentes ──
   const [{ data: top10 }, { data: recentes }] = await Promise.all([
-    sb.from('palavras').select('titulo, slug, visualizacoes').eq('status','aprovado')
-      .order('visualizacoes', { ascending: false }).limit(10),
-    sb.from('palavras').select('titulo, slug, criado_em').eq('status','aprovado')
+    sb.from('palavras').select('termo, slug').eq('status','aprovado')
+      .order('termo', { ascending: true }).limit(10),
+    sb.from('palavras').select('termo, slug, criado_em').eq('status','aprovado')
       .order('criado_em', { ascending: false }).limit(5)
   ]);
 
@@ -1005,14 +1001,14 @@
   $('sidebar-top').innerHTML = (top10 || []).map((p, i) => `
     <a href="palavra.html?palavra=${p.slug}" class="top-item">
       <span class="top-rank ${rankClass[i] || ''}">${i+1}</span>
-      <span class="top-word">${p.titulo}</span>
-      <span class="top-busca">${p.visualizacoes ? (p.visualizacoes > 999 ? (p.visualizacoes/1000).toFixed(1)+'k' : p.visualizacoes) : '—'}</span>
+      <span class="top-word">${p.termo}</span>
+      <span class="top-busca">—</span>
     </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
 
   $('sidebar-recentes').innerHTML = (recentes || []).map(p => `
     <a href="palavra.html?palavra=${p.slug}" class="recente-item">
       <span class="recente-dot"></span>
-      <span class="recente-word">${p.titulo}</span>
+      <span class="recente-word">${p.termo}</span>
       <span class="recente-data">${fmtDataRelativa(p.criado_em)}</span>
     </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
 
