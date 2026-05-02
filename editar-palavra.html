@@ -11,7 +11,6 @@
   body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
 
-  /* TOPBAR */
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(5,8,15,0.95);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
   .topbar-left{display:flex;align-items:center;gap:14px;}
   .btn-voltar{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:8px 14px;color:var(--texto);font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;transition:all 0.2s;}
@@ -21,17 +20,13 @@
   .btn-salvar-top:hover{background:#0050cc;}
   .btn-salvar-top:disabled{background:#1a3a6e;cursor:not-allowed;opacity:0.7;}
 
-  /* LAYOUT */
   .page-wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px;}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 
-  /* SEÇÃO */
   .secao-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;}
   .secao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
   .secao-titulo{font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;color:var(--ciano);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
 
-  /* CAMPO */
   .campo{margin-bottom:14px;}
   .campo label{display:block;font-size:12px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
   .campo input,.campo select,.campo textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
@@ -40,7 +35,27 @@
   .campo select option{background:var(--card2);}
   .campo textarea{resize:vertical;min-height:80px;}
 
-  /* LISTA DINÂMICA (significados, exemplos, sinônimos) */
+  /* ── SIGNIFICADOS ── */
+  .sig-lista{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;}
+  .sig-bloco-wrap{display:flex;gap:8px;align-items:flex-start;}
+  .sig-bloco{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:14px;transition:border-color 0.2s;}
+  .sig-bloco:focus-within{border-color:var(--azul);}
+  .sig-numero{font-size:11px;font-weight:800;color:#4a6fa5;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .sig-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:70px;}
+  .sig-texto::placeholder{color:#2a4a7a;}
+  .sig-extras{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .sig-extra-item{background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;position:relative;}
+  .sig-extra-titulo{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;padding:4px 0 6px;margin-bottom:6px;}
+  .sig-extra-titulo::placeholder{color:#2a4a7a;font-family:'Nunito',sans-serif;font-size:13px;letter-spacing:0;}
+  .sig-extra-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:50px;}
+  .sig-extra-texto::placeholder{color:#2a4a7a;}
+  .btn-rem-extra{position:absolute;top:8px;right:8px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:var(--vermelho);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:800;cursor:pointer;}
+  .btn-rem-extra:hover{background:var(--vermelho);color:#fff;}
+  .sig-acoes{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--borda);}
+  .btn-add-sub{background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.3);color:var(--ciano);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s;}
+  .btn-add-sub:hover{background:rgba(0,234,255,0.15);}
+
+  /* ── LISTAS SIMPLES ── */
   .lista-dinamica{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
   .lista-item{display:flex;gap:8px;align-items:flex-start;}
   .lista-item input,.lista-item textarea{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
@@ -52,7 +67,7 @@
   .btn-adicionar-item{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.08);border:1.5px dashed rgba(26,110,245,0.3);color:#4a8aff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;}
   .btn-adicionar-item:hover{background:rgba(26,110,245,0.15);border-color:var(--azul);}
 
-  /* TAGS */
+  /* ── TAGS ── */
   .tags-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .tag-item{display:flex;align-items:center;gap:4px;background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:#7ab0ff;}
   .tag-item button{background:none;border:none;color:#4a6fa5;cursor:pointer;font-size:14px;line-height:1;padding:0 2px;}
@@ -62,32 +77,28 @@
   .tag-input-row input:focus{border-color:var(--azul);}
   .tag-input-row button{background:var(--azul);border:none;border-radius:10px;padding:9px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;}
 
-  /* BADGES SELECIONÁVEIS */
+  /* ── BADGES ── */
   .badges-grid{display:flex;flex-wrap:wrap;gap:8px;}
   .badge-opcao{background:var(--card2);border:1.5px solid var(--borda);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;color:#4a6fa5;}
   .badge-opcao.selecionado{background:rgba(26,110,245,0.2);border-color:var(--azul);color:#7ab0ff;}
   .badge-opcao:hover{border-color:var(--azul);}
 
-  /* STATUS BADGE */
+  /* ── STATUS ── */
   .status-select{display:flex;gap:8px;flex-wrap:wrap;}
   .status-opt{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:800;cursor:pointer;border:1.5px solid var(--borda);background:var(--card2);color:#4a6fa5;transition:all 0.2s;}
   .status-opt.sel-pendente{background:rgba(255,140,0,0.15);border-color:rgba(255,140,0,0.4);color:#ff8c00;}
   .status-opt.sel-aprovada{background:rgba(100,255,150,0.12);border-color:rgba(100,255,150,0.3);color:var(--verde);}
   .status-opt.sel-rejeitada{background:rgba(255,80,80,0.12);border-color:rgba(255,80,80,0.3);color:var(--vermelho);}
 
-  /* TOAST */
   .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;}
   .toast.visivel{transform:translateY(0);opacity:1;}
   .toast.sucesso{border-color:rgba(100,255,150,0.4);color:var(--verde);}
   .toast.erro{border-color:rgba(255,80,80,0.4);color:var(--vermelho);}
 
   .loading{text-align:center;padding:60px;color:#4a6fa5;font-size:15px;font-weight:700;}
-  .acesso-negado{text-align:center;padding:80px 20px;}
-  .acesso-negado-emoji{font-size:64px;margin-bottom:16px;}
-  .acesso-negado-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho);}
 
   @media(max-width:600px){
-    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .grid-2{grid-template-columns:1fr;}
     .topbar{flex-wrap:wrap;gap:10px;}
   }
 </style>
@@ -103,10 +114,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<div class="page-wrap" id="pageWrap">
-  <div class="loading">Carregando...</div>
-</div>
+<div class="page-wrap" id="pageWrap"><div class="loading">Carregando...</div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase.js"></script>
@@ -118,24 +126,13 @@ const palavraId = params.get('id')
 let statusAtual = 'pendente'
 let tagsAtuais = []
 let categoriasDisponiveis = []
-let subcategoriasDisponiveis = []
 
-// ── INIT ──
 async function init() {
-  // verificar admin
   const { data: { session } } = await sb.auth.getSession()
   if (!session) { window.location.href = 'cadastro.html'; return }
   const { data: perfil } = await sb.from('perfis').select('is_admin').eq('id', session.user.id).maybeSingle()
-  if (!perfil?.is_admin) {
-    document.getElementById('pageWrap').innerHTML = `
-      <div class="acesso-negado">
-        <div class="acesso-negado-emoji">🚫</div>
-        <div class="acesso-negado-titulo">ACESSO NEGADO</div>
-      </div>`
-    return
-  }
+  if (!perfil?.is_admin) { document.getElementById('pageWrap').innerHTML = '<div class="loading">🚫 Acesso negado</div>'; return }
 
-  // carregar categorias
   const { data: cats } = await sb.from('categorias').select('id, nome, subcategorias(id, nome)').order('nome')
   categoriasDisponiveis = cats || []
 
@@ -147,30 +144,24 @@ async function init() {
   }
 }
 
-// ── CARREGAR PALAVRA ──
 async function carregarPalavra() {
   const { data: p } = await sb.from('palavras')
     .select('*, significados(*), exemplos(*), sinonimos(*), tags:palavras_tags(tag_id, tags(nome))')
     .eq('id', palavraId)
     .single()
-
-  if (!p) {
-    document.getElementById('pageWrap').innerHTML = '<div class="loading">Palavra não encontrada.</div>'
-    return
-  }
-
+  if (!p) { document.getElementById('pageWrap').innerHTML = '<div class="loading">Palavra não encontrada.</div>'; return }
   statusAtual = p.status
-  tagsAtuais = (p.tags || []).map(t => t.tags.nome)
+  tagsAtuais = (p.tags || []).map(t => t.tags?.nome).filter(Boolean)
   renderFormulario(p)
 }
 
-// ── RENDERIZAR FORMULÁRIO ──
 function renderFormulario(p) {
   const wrap = document.getElementById('pageWrap')
-
-  // subcategorias da categoria selecionada
   const catId = p?.categoria_id || ''
   const subOpts = catId ? (categoriasDisponiveis.find(c => c.id == catId)?.subcategorias || []) : []
+
+  // significados com extras vazios por padrão
+  const sigs = p?.significados?.length ? p.significados.sort((a,b) => a.ordem - b.ordem) : [{ descricao: '', extras: [] }]
 
   wrap.innerHTML = `
     <!-- BÁSICO -->
@@ -180,14 +171,16 @@ function renderFormulario(p) {
         <div class="campo"><label>Palavra *</label><input type="text" id="f-termo" placeholder="ex: Simbora" value="${p?.termo || ''}"></div>
         <div class="campo"><label>Slug (URL) *</label><input type="text" id="f-slug" placeholder="ex: simbora" value="${p?.slug || ''}"></div>
       </div>
-      <div class="campo"><label>Pronúncia</label><input type="text" id="f-pronuncia" placeholder="ex: sim-BO-ra" value="${p?.pronuncia || ''}"></div>
-      <div class="campo"><label>Imagem (URL opcional)</label><input type="text" id="f-imagem" placeholder="https://..." value="${p?.imagem_url || ''}"></div>
+      <div class="grid-2">
+        <div class="campo"><label>Pronúncia</label><input type="text" id="f-pronuncia" placeholder="ex: sim-BO-ra" value="${p?.pronuncia || ''}"></div>
+        <div class="campo"><label>Imagem (URL)</label><input type="text" id="f-imagem" placeholder="https://..." value="${p?.imagem_url || ''}"></div>
+      </div>
       <div class="campo">
         <label>Status</label>
         <div class="status-select">
-          <div class="status-opt ${statusAtual === 'pendente' ? 'sel-pendente' : ''}" onclick="selecionarStatus('pendente', this)">⏳ Pendente</div>
-          <div class="status-opt ${statusAtual === 'aprovada' ? 'sel-aprovada' : ''}" onclick="selecionarStatus('aprovada', this)">✅ Aprovada</div>
-          <div class="status-opt ${statusAtual === 'rejeitada' ? 'sel-rejeitada' : ''}" onclick="selecionarStatus('rejeitada', this)">✗ Rejeitada</div>
+          <div class="status-opt ${statusAtual==='pendente'?'sel-pendente':''}" onclick="selecionarStatus('pendente',this)">⏳ Pendente</div>
+          <div class="status-opt ${statusAtual==='aprovada'?'sel-aprovada':''}" onclick="selecionarStatus('aprovada',this)">✅ Aprovada</div>
+          <div class="status-opt ${statusAtual==='rejeitada'?'sel-rejeitada':''}" onclick="selecionarStatus('rejeitada',this)">✗ Rejeitada</div>
         </div>
       </div>
     </div>
@@ -195,13 +188,8 @@ function renderFormulario(p) {
     <!-- SIGNIFICADOS -->
     <div class="secao-card">
       <div class="secao-titulo">📖 Significados</div>
-      <div class="lista-dinamica" id="lista-significados">
-        ${(p?.significados?.length ? p.significados : [{ descricao: '' }]).map((s, i) => `
-          <div class="lista-item">
-            <textarea placeholder="Significado ${i + 1}...">${s.descricao || ''}</textarea>
-            <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
-          </div>
-        `).join('')}
+      <div class="sig-lista" id="lista-significados">
+        ${sigs.map((s, i) => criarBlocoSignificado(i + 1, s.descricao || '', [])).join('')}
       </div>
       <button class="btn-adicionar-item" onclick="adicionarSignificado()">➕ Adicionar significado</button>
     </div>
@@ -210,12 +198,11 @@ function renderFormulario(p) {
     <div class="secao-card">
       <div class="secao-titulo">💬 Exemplos de Frases</div>
       <div class="lista-dinamica" id="lista-exemplos">
-        ${(p?.exemplos?.length ? p.exemplos : [{ frase: '' }]).map((e, i) => `
+        ${(p?.exemplos?.length ? p.exemplos : [{frase:''}]).map(e => `
           <div class="lista-item">
-            <input type="text" placeholder="Ex: Simbora pra praia!" value="${e.frase || ''}">
+            <input type="text" placeholder='Ex: "Simbora pra praia!"' value="${e.frase || ''}">
             <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
-          </div>
-        `).join('')}
+          </div>`).join('')}
       </div>
       <button class="btn-adicionar-item" onclick="adicionarExemplo()">➕ Adicionar exemplo</button>
     </div>
@@ -228,60 +215,56 @@ function renderFormulario(p) {
           <label>Categoria</label>
           <select id="f-categoria" onchange="atualizarSubcategorias()">
             <option value="">Selecionar...</option>
-            ${categoriasDisponiveis.map(c => `<option value="${c.id}" ${p?.categoria_id == c.id ? 'selected' : ''}>${c.nome}</option>`).join('')}
+            ${categoriasDisponiveis.map(c => `<option value="${c.id}" ${p?.categoria_id==c.id?'selected':''}>${c.nome}</option>`).join('')}
           </select>
         </div>
         <div class="campo">
           <label>Subcategoria</label>
           <select id="f-subcategoria">
             <option value="">Selecionar...</option>
-            ${subOpts.map(s => `<option value="${s.id}" ${p?.subcategoria_id == s.id ? 'selected' : ''}>${s.nome}</option>`).join('')}
+            ${subOpts.map(s => `<option value="${s.id}" ${p?.subcategoria_id==s.id?'selected':''}>${s.nome}</option>`).join('')}
           </select>
         </div>
       </div>
     </div>
 
-    <!-- BADGES -->
+    <!-- CLASSIFICAÇÃO -->
     <div class="secao-card">
       <div class="secao-titulo">🏷️ Classificação</div>
       <div class="grid-2">
         <div class="campo">
           <label>Nível de Uso</label>
-          <div class="badges-grid" id="badges-nivel">
-            ${['Muito usado', 'Usado', 'Pouco usado', 'Raro'].map(v => `
-              <div class="badge-opcao ${p?.nivel_uso === v ? 'selecionado' : ''}" onclick="selecionarBadge('nivel', '${v}', this)">${v}</div>
-            `).join('')}
+          <div class="badges-grid">
+            ${['Muito usado','Usado','Pouco usado','Raro'].map(v=>`
+              <div class="badge-opcao ${p?.nivel_uso===v?'selecionado':''}" onclick="selecionarBadge('nivel','${v}',this)">${v}</div>`).join('')}
           </div>
-          <input type="hidden" id="f-nivel" value="${p?.nivel_uso || ''}">
+          <input type="hidden" id="f-nivel" value="${p?.nivel_uso||''}">
         </div>
         <div class="campo">
           <label>Contexto</label>
-          <div class="badges-grid" id="badges-contexto">
-            ${['Informal', 'Internet', 'Funk', 'Surf', 'Periferia', 'Jovem', 'Geral'].map(v => `
-              <div class="badge-opcao ${p?.contexto === v ? 'selecionado' : ''}" onclick="selecionarBadge('contexto', '${v}', this)">${v}</div>
-            `).join('')}
+          <div class="badges-grid">
+            ${['Informal','Internet','Funk','Surf','Periferia','Jovem','Geral'].map(v=>`
+              <div class="badge-opcao ${p?.contexto===v?'selecionado':''}" onclick="selecionarBadge('contexto','${v}',this)">${v}</div>`).join('')}
           </div>
-          <input type="hidden" id="f-contexto" value="${p?.contexto || ''}">
+          <input type="hidden" id="f-contexto" value="${p?.contexto||''}">
         </div>
       </div>
       <div class="grid-2" style="margin-top:14px;">
         <div class="campo">
           <label>Região</label>
-          <div class="badges-grid" id="badges-regiao">
-            ${['Nacional', 'São Paulo', 'Rio de Janeiro', 'Sul', 'Nordeste', 'Centro-Oeste', 'Norte'].map(v => `
-              <div class="badge-opcao ${p?.regiao === v ? 'selecionado' : ''}" onclick="selecionarBadge('regiao', '${v}', this)">${v}</div>
-            `).join('')}
+          <div class="badges-grid">
+            ${['Nacional','São Paulo','Rio de Janeiro','Sul','Nordeste','Centro-Oeste','Norte'].map(v=>`
+              <div class="badge-opcao ${p?.regiao===v?'selecionado':''}" onclick="selecionarBadge('regiao','${v}',this)">${v}</div>`).join('')}
           </div>
-          <input type="hidden" id="f-regiao" value="${p?.regiao || ''}">
+          <input type="hidden" id="f-regiao" value="${p?.regiao||''}">
         </div>
         <div class="campo">
           <label>Época</label>
-          <div class="badges-grid" id="badges-epoca">
-            ${['Atual', 'Anos 2010', 'Anos 2000', 'Anos 90', 'Anos 80', 'Clássica'].map(v => `
-              <div class="badge-opcao ${p?.epoca === v ? 'selecionado' : ''}" onclick="selecionarBadge('epoca', '${v}', this)">${v}</div>
-            `).join('')}
+          <div class="badges-grid">
+            ${['Atual','Anos 2010','Anos 2000','Anos 90','Anos 80','Clássica'].map(v=>`
+              <div class="badge-opcao ${p?.epoca===v?'selecionado':''}" onclick="selecionarBadge('epoca','${v}',this)">${v}</div>`).join('')}
           </div>
-          <input type="hidden" id="f-epoca" value="${p?.epoca || ''}">
+          <input type="hidden" id="f-epoca" value="${p?.epoca||''}">
         </div>
       </div>
     </div>
@@ -290,9 +273,7 @@ function renderFormulario(p) {
     <div class="secao-card">
       <div class="secao-titulo">🔖 Tags</div>
       <div class="tags-wrap" id="tags-wrap">
-        ${tagsAtuais.map(t => `
-          <div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>
-        `).join('')}
+        ${tagsAtuais.map(t=>`<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')}
       </div>
       <div class="tag-input-row">
         <input type="text" id="tag-input" placeholder="Adicionar tag..." onkeydown="if(event.key==='Enter'){adicionarTag();event.preventDefault()}">
@@ -300,41 +281,101 @@ function renderFormulario(p) {
       </div>
     </div>
 
-    <!-- SINÔNIMOS E RELACIONADAS -->
+    <!-- SINÔNIMOS -->
     <div class="secao-card">
       <div class="secao-titulo">🔗 Sinônimos</div>
       <div class="lista-dinamica" id="lista-sinonimos">
-        ${(p?.sinonimos?.length ? p.sinonimos : [{ sinonimo: '' }]).map(s => `
+        ${(p?.sinonimos?.length ? p.sinonimos : [{sinonimo:''}]).map(s=>`
           <div class="lista-item">
-            <input type="text" placeholder="ex: Bora, Vamo, Vamos" value="${s.sinonimo || ''}">
+            <input type="text" placeholder="ex: Bora, Vamo" value="${s.sinonimo||''}">
             <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
-          </div>
-        `).join('')}
+          </div>`).join('')}
       </div>
       <button class="btn-adicionar-item" onclick="adicionarSinonimo()">➕ Adicionar sinônimo</button>
     </div>
 
-    <!-- BOTÃO SALVAR FINAL -->
     <button class="btn-salvar-top" style="width:100%;padding:16px;font-size:22px;border-radius:12px;" onclick="salvarTudo()">💾 SALVAR TUDO</button>
   `
 
-  // auto slug
+  // auto slug apenas para nova palavra
   document.getElementById('f-termo').addEventListener('input', function() {
     if (!palavraId) {
       document.getElementById('f-slug').value = this.value.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
     }
   })
 }
 
-// ── ATUALIZAR SUBCATEGORIAS ──
+// ── BLOCO DE SIGNIFICADO ──
+function criarBlocoSignificado(num, texto, extras) {
+  return `
+    <div class="sig-bloco-wrap">
+      <div class="sig-bloco">
+        <div class="sig-numero">Significado ${num}</div>
+        <textarea class="sig-texto" placeholder="Descreva o significado...">${texto}</textarea>
+        <div class="sig-extras" id="extras-sig-${num}"></div>
+        <div class="sig-acoes">
+          <button class="btn-add-sub" onclick="adicionarExtra(this)">➕ Título adicional</button>
+        </div>
+      </div>
+      <button class="btn-remover" onclick="removerSig(this)" style="margin-top:2px;">🗑️</button>
+    </div>`
+}
+
+function adicionarExtra(btn) {
+  const extrasDiv = btn.closest('.sig-bloco').querySelector('.sig-extras')
+  const div = document.createElement('div')
+  div.className = 'sig-extra-item'
+  div.innerHTML = `
+    <button class="btn-rem-extra" onclick="this.closest('.sig-extra-item').remove()">✕</button>
+    <input class="sig-extra-titulo" type="text" placeholder="Título adicional (ex: Origem, Curiosidade...)">
+    <textarea class="sig-extra-texto" placeholder="Texto adicional..."></textarea>`
+  extrasDiv.appendChild(div)
+}
+
+function adicionarSignificado() {
+  const lista = document.getElementById('lista-significados')
+  const num = lista.querySelectorAll('.sig-bloco-wrap').length + 1
+  lista.insertAdjacentHTML('beforeend', criarBlocoSignificado(num, '', []))
+}
+
+function removerSig(btn) {
+  const lista = document.getElementById('lista-significados')
+  if (lista.querySelectorAll('.sig-bloco-wrap').length > 1) {
+    btn.closest('.sig-bloco-wrap').remove()
+    // renumerar
+    lista.querySelectorAll('.sig-numero').forEach((el, i) => el.textContent = `Significado ${i+1}`)
+  }
+}
+
+// ── LISTAS SIMPLES ──
+function removerItem(btn) {
+  const lista = btn.closest('.lista-dinamica')
+  if (lista.querySelectorAll('.lista-item').length > 1) btn.closest('.lista-item').remove()
+}
+
+function adicionarExemplo() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder='Ex: "Usa a palavra em uma frase..."'><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-exemplos').appendChild(div)
+}
+
+function adicionarSinonimo() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Sinônimo..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-sinonimos').appendChild(div)
+}
+
+// ── CATEGORIA ──
 function atualizarSubcategorias() {
   const catId = document.getElementById('f-categoria').value
   const cat = categoriasDisponiveis.find(c => c.id == catId)
   const subs = cat?.subcategorias || []
-  const sel = document.getElementById('f-subcategoria')
-  sel.innerHTML = `<option value="">Selecionar...</option>` +
+  document.getElementById('f-subcategoria').innerHTML =
+    `<option value="">Selecionar...</option>` +
     subs.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')
 }
 
@@ -347,47 +388,16 @@ function selecionarStatus(valor, el) {
 
 // ── BADGES ──
 function selecionarBadge(tipo, valor, el) {
-  const container = document.getElementById('badges-' + tipo)
-  container.querySelectorAll('.badge-opcao').forEach(b => b.classList.remove('selecionado'))
+  el.closest('.badges-grid').querySelectorAll('.badge-opcao').forEach(b => b.classList.remove('selecionado'))
   el.classList.add('selecionado')
   document.getElementById('f-' + tipo).value = valor
-}
-
-// ── LISTAS DINÂMICAS ──
-function removerItem(btn) {
-  const lista = btn.closest('.lista-dinamica')
-  if (lista.querySelectorAll('.lista-item').length > 1) {
-    btn.closest('.lista-item').remove()
-  }
-}
-
-function adicionarSignificado() {
-  const n = document.getElementById('lista-significados').querySelectorAll('.lista-item').length + 1
-  const div = document.createElement('div')
-  div.className = 'lista-item'
-  div.innerHTML = `<textarea placeholder="Significado ${n}..."></textarea><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
-  document.getElementById('lista-significados').appendChild(div)
-}
-
-function adicionarExemplo() {
-  const div = document.createElement('div')
-  div.className = 'lista-item'
-  div.innerHTML = `<input type="text" placeholder="Ex: Usa a palavra em uma frase..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
-  document.getElementById('lista-exemplos').appendChild(div)
-}
-
-function adicionarSinonimo() {
-  const div = document.createElement('div')
-  div.className = 'lista-item'
-  div.innerHTML = `<input type="text" placeholder="Sinônimo..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
-  document.getElementById('lista-sinonimos').appendChild(div)
 }
 
 // ── TAGS ──
 function adicionarTag() {
   const inp = document.getElementById('tag-input')
-  const val = inp.value.trim().toLowerCase().replace(/\s+/g, '-')
-  if (!val || tagsAtuais.includes(val)) { inp.value = ''; return }
+  const val = inp.value.trim().toLowerCase().replace(/\s+/g,'-')
+  if (!val || tagsAtuais.includes(val)) { inp.value=''; return }
   tagsAtuais.push(val)
   renderTags()
   inp.value = ''
@@ -399,9 +409,8 @@ function removerTag(tag) {
 }
 
 function renderTags() {
-  document.getElementById('tags-wrap').innerHTML = tagsAtuais.map(t => `
-    <div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>
-  `).join('')
+  document.getElementById('tags-wrap').innerHTML =
+    tagsAtuais.map(t => `<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')
 }
 
 // ── SALVAR TUDO ──
@@ -411,12 +420,10 @@ async function salvarTudo() {
   if (!termo || !slug) { mostrarToast('⚠️ Preencha pelo menos a palavra e o slug!', 'erro'); return }
 
   const btn = document.getElementById('btnSalvarTop')
-  btn.disabled = true
-  btn.textContent = 'Salvando...'
+  btn.disabled = true; btn.textContent = 'Salvando...'
 
   const dadosPalavra = {
-    termo,
-    slug,
+    termo, slug,
     pronuncia: document.getElementById('f-pronuncia').value.trim() || null,
     imagem_url: document.getElementById('f-imagem').value.trim() || null,
     status: statusAtual,
@@ -429,58 +436,61 @@ async function salvarTudo() {
   }
 
   let id = palavraId
-
-  // salvar palavra principal
   if (id) {
     const { error } = await sb.from('palavras').update(dadosPalavra).eq('id', id)
-    if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); btn.disabled = false; btn.textContent = '💾 SALVAR TUDO'; return }
+    if (error) { mostrarToast('Erro: ' + error.message, 'erro'); btn.disabled=false; btn.textContent='💾 SALVAR TUDO'; return }
   } else {
     const { data, error } = await sb.from('palavras').insert(dadosPalavra).select().single()
-    if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); btn.disabled = false; btn.textContent = '💾 SALVAR TUDO'; return }
+    if (error) { mostrarToast('Erro: ' + error.message, 'erro'); btn.disabled=false; btn.textContent='💾 SALVAR TUDO'; return }
     id = data.id
     history.replaceState(null, '', `?id=${id}`)
   }
 
-  // salvar significados
+  // significados — coleta texto + extras como JSON no campo descricao
   await sb.from('significados').delete().eq('palavra_id', id)
-  const significados = [...document.getElementById('lista-significados').querySelectorAll('textarea')]
-    .map((t, i) => ({ palavra_id: id, descricao: t.value.trim(), ordem: i + 1 }))
-    .filter(s => s.descricao)
+  const blocos = document.getElementById('lista-significados').querySelectorAll('.sig-bloco')
+  const significados = []
+  blocos.forEach((bloco, i) => {
+    const texto = bloco.querySelector('.sig-texto').value.trim()
+    if (!texto) return
+    const extras = [...bloco.querySelectorAll('.sig-extra-item')].map(e => ({
+      titulo: e.querySelector('.sig-extra-titulo').value.trim(),
+      texto: e.querySelector('.sig-extra-texto').value.trim()
+    })).filter(e => e.titulo || e.texto)
+    // salva extras como JSON junto ao significado
+    const descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
+    significados.push({ palavra_id: id, descricao, ordem: i + 1 })
+  })
   if (significados.length) await sb.from('significados').insert(significados)
 
-  // salvar exemplos
+  // exemplos
   await sb.from('exemplos').delete().eq('palavra_id', id)
   const exemplos = [...document.getElementById('lista-exemplos').querySelectorAll('input')]
-    .map(i => ({ palavra_id: id, frase: i.value.trim() }))
-    .filter(e => e.frase)
+    .map(i => ({ palavra_id: id, frase: i.value.trim() })).filter(e => e.frase)
   if (exemplos.length) await sb.from('exemplos').insert(exemplos)
 
-  // salvar sinônimos
+  // sinônimos
   await sb.from('sinonimos').delete().eq('palavra_id', id)
   const sinonimos = [...document.getElementById('lista-sinonimos').querySelectorAll('input')]
-    .map(i => ({ palavra_id: id, sinonimo: i.value.trim() }))
-    .filter(s => s.sinonimo)
+    .map(i => ({ palavra_id: id, sinonimo: i.value.trim() })).filter(s => s.sinonimo)
   if (sinonimos.length) await sb.from('sinonimos').insert(sinonimos)
 
-  // salvar tags
+  // tags
   await sb.from('palavras_tags').delete().eq('palavra_id', id)
   for (const tagNome of tagsAtuais) {
-    let { data: tagExistente } = await sb.from('tags').select('id').eq('nome', tagNome).maybeSingle()
-    if (!tagExistente) {
-      const { data: novaTag } = await sb.from('tags').insert({ nome: tagNome }).select().single()
-      tagExistente = novaTag
+    let { data: tag } = await sb.from('tags').select('id').eq('nome', tagNome).maybeSingle()
+    if (!tag) {
+      const { data: nova } = await sb.from('tags').insert({ nome: tagNome }).select().single()
+      tag = nova
     }
-    if (tagExistente) await sb.from('palavras_tags').insert({ palavra_id: id, tag_id: tagExistente.id })
+    if (tag) await sb.from('palavras_tags').insert({ palavra_id: id, tag_id: tag.id })
   }
 
-  btn.disabled = false
-  btn.textContent = '💾 SALVAR TUDO'
+  btn.disabled = false; btn.textContent = '💾 SALVAR TUDO'
   mostrarToast('✅ Palavra salva com sucesso!', 'sucesso')
-
   setTimeout(() => window.location.href = 'admin.html', 1500)
 }
 
-// ── TOAST ──
 function mostrarToast(msg, tipo = 'sucesso') {
   const t = document.getElementById('toast')
   t.textContent = msg
