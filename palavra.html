@@ -649,13 +649,11 @@
   </aside>
 
 </div>
-
 <script>
 (async () => {
   const sb = window._supabase;
   const $ = id => document.getElementById(id);
 
-  // ── parâmetro: aceita ?palavra=slug ou ?w=slug (compatibilidade) ──
   const params = new URLSearchParams(location.search);
   const slug = params.get('palavra') || params.get('w') || '';
 
@@ -663,30 +661,27 @@
     if (!iso) return '—';
     return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
   }
-  function fmtDataRelativa(iso) {
+  function fmtRel(iso) {
     if (!iso) return '';
-    const diff = Date.now() - new Date(iso).getTime();
-    const d = Math.floor(diff / 86400000);
+    const d = Math.floor((Date.now() - new Date(iso)) / 86400000);
     if (d === 0) return 'hoje';
     if (d === 1) return 'ontem';
-    if (d < 7)  return `${d} dias`;
-    if (d < 30) return `${Math.floor(d/7)} sem.`;
-    return `${Math.floor(d/30)} mes.`;
+    if (d < 7)  return d + ' dias';
+    if (d < 30) return Math.floor(d/7) + ' sem.';
+    return Math.floor(d/30) + ' mes.';
   }
-
-  function mostrarErro() {
+  function erro() {
     $('loading-overlay').classList.add('hide');
     $('error-box').style.display = 'block';
   }
 
-  // ── sem slug → erro ──
-  if (!slug) { mostrarErro(); return; }
+  if (!slug) { erro(); return; }
 
   // ── auth ──
   let session = null, perfil = null;
   try {
-    const { data: { session: s } } = await sb.auth.getSession();
-    session = s;
+    const res = await sb.auth.getSession();
+    session = res.data.session;
     if (session) {
       $('nav-login').textContent = '👤 Perfil';
       $('nav-mobile-login').textContent = '👤 Meu Perfil';
@@ -694,7 +689,7 @@
         .select('nome_usuario, is_admin')
         .eq('id', session.user.id).single();
       perfil = p;
-      if (p?.is_admin) {
+      if (p && p.is_admin) {
         $('nav-admin').style.display = 'inline';
         $('nav-mobile-admin').style.display = 'block';
       }
@@ -704,15 +699,11 @@
   // ── busca principal ──
   const { data: palavra, error } = await sb
     .from('palavras')
-    .select(`
-      id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca,
-      categorias ( id, nome, slug ),
-      perfis ( nome_usuario )
-    `)
+    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, categorias(id, nome, slug), perfis(nome_usuario)')
     .eq('slug', slug)
     .single();
 
-  if (error || !palavra) { mostrarErro(); return; }
+  if (error || !palavra) { erro(); return; }
 
   // ── busças paralelas ──
   const [
@@ -726,306 +717,272 @@
     sb.from('significados').select('texto, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('exemplos').select('texto, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
-    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id, palavras!sinonimos_sinonimo_palavra_id_fkey(termo,slug)').eq('palavra_id', palavra.id),
+    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
-    sb.from('comentarios').select('id, texto, criado_em, perfis(nome_usuario)').eq('palavra_id', palavra.id).eq('status','aprovado').order('criado_em')
+    sb.from('comentarios').select('id, texto, criado_em, perfis(nome_usuario)').eq('palavra_id', palavra.id).eq('status', 'aprovado').order('criado_em')
   ]);
 
-  // minha reação
   let minhaReacao = null;
   if (session) {
-    const mr = (reacoes || []).find(r => r.usuario_id === session.user.id);
-    minhaReacao = mr?.tipo || null;
+    const mr = (reacoes || []).find(function(r) { return r.usuario_id === session.user.id; });
+    if (mr) minhaReacao = mr.tipo;
   }
 
+  // ══ RENDER ══
 
-  // ══ RENDER ══════════════════════════════════════════
-
-  // ── SEO ──
   const titulo = palavra.termo;
-  const primSig = significados?.[0]?.texto || '';
-  $('page-title').textContent = `${titulo} — o que significa? | CyberUniverso`;
+  const primSig = (significados && significados[0]) ? significados[0].texto : '';
+
+  $('page-title').textContent = titulo + ' — o que significa? | CyberUniverso';
   $('meta-desc').content = primSig
-    ? `${titulo}: ${primSig.substring(0,150)}`
-    : `Significado de ${titulo} no dicionário de gírias CyberUniverso.`;
+    ? titulo + ': ' + primSig.substring(0, 150)
+    : 'Significado de ' + titulo + ' no dicionário de gírias CyberUniverso.';
 
-  // ── título ──
   $('wd-titulo').textContent = titulo.toUpperCase();
-
-  // ── breadcrumb ──
   $('bc-palavra').textContent = titulo;
+
   if (palavra.categorias) {
-    $('bc-categoria').innerHTML = `<a href="categoria.html?c=${palavra.categorias.slug}">${palavra.categorias.nome}</a>`;
+    $('bc-categoria').innerHTML = '<a href="categoria.html?c=' + palavra.categorias.slug + '">' + palavra.categorias.nome + '</a>';
     $('bc-sep').style.display = 'inline';
   }
 
-  // ── pronúncia ──
   if (palavra.pronuncia) {
     $('wd-pronuncia-txt').textContent = palavra.pronuncia;
     $('wd-pronuncia').style.display = 'block';
   }
 
-  // ── avatar + autor ──
-  const nomeAutor = palavra.perfis?.nome_usuario || 'anônimo';
+  var nomeAutor = (palavra.perfis && palavra.perfis.nome_usuario) ? palavra.perfis.nome_usuario : 'anônimo';
   $('wd-avatar').textContent = nomeAutor[0].toUpperCase();
   $('wd-autor').textContent = nomeAutor;
   $('wd-data').textContent = fmtData(palavra.criado_em);
 
-  // ── botão editar (admin) ──
-  if (perfil?.is_admin) {
-    $('btn-editar').href = `editar-palavra.html?id=${palavra.id}`;
+  if (perfil && perfil.is_admin) {
+    $('btn-editar').href = 'editar-palavra.html?id=' + palavra.id;
     $('btn-editar').style.display = 'inline-flex';
   }
 
-  // ── categoria tag ──
-  const catWrap = $('wd-categorias');
+  // categorias
+  var catWrap = $('wd-categorias');
   if (palavra.categorias) {
-    catWrap.innerHTML = `<a href="categoria.html?c=${palavra.categorias.slug}" class="cat-tag">🗂 ${palavra.categorias.nome}</a>`;
+    catWrap.innerHTML = '<a href="categoria.html?c=' + palavra.categorias.slug + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
   }
 
-  // ── badges ──
-  const badgeWrap = $('wd-badges');
-  const nivelMap = { basico:'🟢 Básico', intermediario:'🟡 Intermediário', avancado:'🔴 Avançado' };
+  // badges
+  var badgeWrap = $('wd-badges');
+  var nivelMap = { basico: '🟢 Básico', intermediario: '🟡 Intermediário', avancado: '🔴 Avançado' };
   if (palavra.nivel_uso) {
-    badgeWrap.innerHTML += `<div class="badge badge-nivel">⚡ ${nivelMap[palavra.nivel_uso] || palavra.nivel_uso}</div>`;
+    badgeWrap.innerHTML += '<div class="badge badge-nivel">⚡ ' + (nivelMap[palavra.nivel_uso] || palavra.nivel_uso) + '</div>';
   }
+  if (palavra.regiao) {
+    badgeWrap.innerHTML += '<div class="badge badge-regiao">📍 ' + palavra.regiao + '</div>';
   }
-  const statusMap = { aprovado:'✅ Aprovada', pendente:'⏳ Pendente', recusado:'❌ Recusada' };
+  if (palavra.contexto) {
+    badgeWrap.innerHTML += '<div class="badge badge-contexto">🌐 ' + palavra.contexto + '</div>';
+  }
+  if (palavra.epoca) {
+    badgeWrap.innerHTML += '<div class="badge badge-epoca">📅 ' + palavra.epoca + '</div>';
+  }
+  var statusMap = { aprovado: '✅ Aprovada', pendente: '⏳ Pendente', recusado: '❌ Recusada' };
   if (statusMap[palavra.status]) {
-    badgeWrap.innerHTML += `<div class="badge badge-epoca">${statusMap[palavra.status]}</div>`;
+    badgeWrap.innerHTML += '<div class="badge badge-nivel">' + statusMap[palavra.status] + '</div>';
   }
 
-  // ── significados ──
-  const sigWrap = $('wd-significados');
-  if (significados?.length) {
-    significados.forEach((s, i) => {
+  // significados
+  var sigWrap = $('wd-significados');
+  if (significados && significados.length) {
+    significados.forEach(function(s, i) {
       if (s.subtitulo) {
-        sigWrap.innerHTML += `<div class="subtitulo">▸ ${s.subtitulo}</div>`;
+        sigWrap.innerHTML += '<div class="subtitulo">▸ ' + s.subtitulo + '</div>';
       } else if (i > 0) {
-        sigWrap.innerHTML += `<div class="subtitulo">▸ Definição ${i+1}</div>`;
+        sigWrap.innerHTML += '<div class="subtitulo">▸ Definição ' + (i+1) + '</div>';
       }
-      sigWrap.innerHTML += `<p class="significado-text">${s.texto}</p>${i < significados.length-1 ? '<br>' : ''}`;
+      sigWrap.innerHTML += '<p class="significado-text">' + s.texto + '</p>' + (i < significados.length - 1 ? '<br>' : '');
     });
   } else {
-    sigWrap.innerHTML = `<p class="significado-text" style="color:#4a6fa5">Significado ainda não cadastrado.</p>`;
+    sigWrap.innerHTML = '<p class="significado-text" style="color:#4a6fa5">Significado ainda não cadastrado.</p>';
   }
 
-  // ── exemplos ──
-  const exWrap = $('wd-exemplos');
-  if (exemplos?.length) {
+  // exemplos
+  if (exemplos && exemplos.length) {
     $('card-exemplos').style.display = 'block';
-    exemplos.forEach(ex => {
-      exWrap.innerHTML += `<div class="exemplo">— ${ex.texto}</div>`;
+    var exWrap = $('wd-exemplos');
+    exemplos.forEach(function(ex) {
+      exWrap.innerHTML += '<div class="exemplo">— ' + ex.texto + '</div>';
     });
   }
 
-  // ── sinônimos ──
-  const sinWrap = $('wd-sinonimos');
-  if (sins?.length) {
+  // sinônimos
+  if (sins && sins.length) {
     $('card-sinonimos').style.display = 'block';
-    sins.forEach(s => {
-      const p = s.palavras;
-      const label = p?.termo || s.sinonimo_texto;
-      const href  = p ? `palavra.html?palavra=${p.slug}` : '#';
-      sinWrap.innerHTML += `<a href="${href}" class="tag">${label}</a>`;
+    var sinWrap = $('wd-sinonimos');
+    sins.forEach(function(s) {
+      sinWrap.innerHTML += '<a href="palavra.html?palavra=' + (s.slug || '#') + '" class="tag">' + (s.sinonimo_texto || '?') + '</a>';
     });
   }
 
-  // ── tags ──
-  const tagWrap = $('wd-tags');
-  if (ptags?.length) {
+  // tags
+  if (ptags && ptags.length) {
     $('card-tags').style.display = 'block';
-    ptags.forEach(({ tags: t }) => {
-      if (!t) return;
-      tagWrap.innerHTML += `<a href="todas.html?tag=${t.slug}" class="tag">#${t.nome}</a>`;
+    var tagWrap = $('wd-tags');
+    ptags.forEach(function(pt) {
+      if (!pt.tags) return;
+      tagWrap.innerHTML += '<a href="todas.html?tag=' + pt.tags.slug + '" class="tag">#' + pt.tags.nome + '</a>';
     });
   }
 
-  // ── reações ──
-  const TIPOS = [
-    { tipo:'positivo',   emoji:'🔥', label:'CLÁSSICA'  },
-    { tipo:'engraçado',  emoji:'😂', label:'ENGRAÇADA' },
-    { tipo:'duvida',     emoji:'🤔', label:'CONFUSA'   },
-    { tipo:'negativo',   emoji:'💀', label:'MORTA'     },
-    { tipo:'util',       emoji:'✨', label:'INCRÍVEL'  },
+  // reações
+  var TIPOS = [
+    { tipo: 'positivo',  emoji: '🔥', label: 'CLÁSSICA'  },
+    { tipo: 'engracado', emoji: '😂', label: 'ENGRAÇADA' },
+    { tipo: 'duvida',    emoji: '🤔', label: 'CONFUSA'   },
+    { tipo: 'negativo',  emoji: '💀', label: 'MORTA'     },
+    { tipo: 'util',      emoji: '✨', label: 'INCRÍVEL'  }
   ];
-  const contagem = {};
-  (reacoes || []).forEach(r => { contagem[r.tipo] = (contagem[r.tipo] || 0) + 1; });
+  var contagem = {};
+  (reacoes || []).forEach(function(r) { contagem[r.tipo] = (contagem[r.tipo] || 0) + 1; });
 
-  const reWrap = $('wd-reacoes');
+  var reWrap = $('wd-reacoes');
   reWrap.innerHTML = '';
-  TIPOS.forEach(({ tipo, emoji, label }) => {
-    const btn = document.createElement('button');
-    btn.className = 'reacao-btn' + (minhaReacao === tipo ? ' ativo' : '');
-    btn.dataset.tipo = tipo;
-    btn.innerHTML = `
-      <span class="reacao-emoji">${emoji}</span>
-      <span class="reacao-count">${contagem[tipo] || 0}</span>
-      <span class="reacao-label">${label}</span>`;
-    btn.addEventListener('click', () => reagir(tipo, btn));
+  TIPOS.forEach(function(t) {
+    var btn = document.createElement('button');
+    btn.className = 'reacao-btn' + (minhaReacao === t.tipo ? ' ativo' : '');
+    btn.dataset.tipo = t.tipo;
+    btn.innerHTML = '<span class="reacao-emoji">' + t.emoji + '</span><span class="reacao-count">' + (contagem[t.tipo] || 0) + '</span><span class="reacao-label">' + t.label + '</span>';
+    btn.addEventListener('click', function() { reagir(t.tipo, btn); });
     reWrap.appendChild(btn);
   });
   if (!session) {
-    $('reacao-login-hint').innerHTML = `<p class="reacao-hint-login">⚡ <a href="cadastro.html" style="color:var(--azul);font-weight:800">Faça login</a> para reagir</p>`;
+    $('reacao-login-hint').innerHTML = '<p class="reacao-hint-login">⚡ <a href="cadastro.html" style="color:var(--azul);font-weight:800">Faça login</a> para reagir</p>';
   }
 
   async function reagir(tipo, btnEl) {
     if (!session) { location.href = 'cadastro.html'; return; }
-    const jaAtivo = btnEl.classList.contains('ativo');
-    document.querySelectorAll('.reacao-btn').forEach(b => b.classList.remove('ativo'));
-
+    var jaAtivo = btnEl.classList.contains('ativo');
+    document.querySelectorAll('.reacao-btn').forEach(function(b) { b.classList.remove('ativo'); });
     if (jaAtivo) {
       await sb.from('reacoes').delete().eq('palavra_id', palavra.id).eq('usuario_id', session.user.id);
-      const c = btnEl.querySelector('.reacao-count');
+      var c = btnEl.querySelector('.reacao-count');
       c.textContent = Math.max(0, parseInt(c.textContent) - 1);
       minhaReacao = null;
     } else {
       if (minhaReacao) {
-        const antBtn = reWrap.querySelector(`[data-tipo="${minhaReacao}"] .reacao-count`);
+        var antBtn = reWrap.querySelector('[data-tipo="' + minhaReacao + '"] .reacao-count');
         if (antBtn) antBtn.textContent = Math.max(0, parseInt(antBtn.textContent) - 1);
       }
       await sb.from('reacoes').upsert(
-        { palavra_id: palavra.id, usuario_id: session.user.id, tipo },
+        { palavra_id: palavra.id, usuario_id: session.user.id, tipo: tipo },
         { onConflict: 'palavra_id,usuario_id' }
       );
-      const c = btnEl.querySelector('.reacao-count');
-      c.textContent = parseInt(c.textContent) + 1;
+      var c2 = btnEl.querySelector('.reacao-count');
+      c2.textContent = parseInt(c2.textContent) + 1;
       btnEl.classList.add('ativo');
       minhaReacao = tipo;
     }
   }
 
-  // ── nav alfabética ──
-  const alfaWrap = $('wd-alfa');
-  const letra = titulo[0].toUpperCase();
-  const [{ data: anteriores }, { data: proximas }] = await Promise.all([
-    sb.from('palavras').select('termo, slug').eq('status','aprovado')
-      .lt('termo', titulo).order('termo', { ascending: false }).limit(3),
-    sb.from('palavras').select('termo, slug').eq('status','aprovado')
-      .gt('termo', titulo).order('termo', { ascending: true }).limit(3)
+  // nav alfabética
+  var alfaWrap = $('wd-alfa');
+  var resAlfa = await Promise.all([
+    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').lt('termo', titulo).order('termo', { ascending: false }).limit(3),
+    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').gt('termo', titulo).order('termo', { ascending: true }).limit(3)
   ]);
+  var anteriores = resAlfa[0].data;
+  var proximas   = resAlfa[1].data;
 
-  let alfaHTML = '';
-  if (anteriores?.length) {
-    alfaHTML += `<div class="alfa-grupo">
-      <span class="alfa-label">◀ Anterior</span>
-      ${anteriores.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.termo}</a>`).join('')}
-    </div><div class="alfa-sep">|</div>`;
+  var alfaHTML = '';
+  if (anteriores && anteriores.length) {
+    var linksAnt = anteriores.map(function(p) {
+      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
+    }).join('');
+    alfaHTML += '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + linksAnt + '</div><div class="alfa-sep">|</div>';
   }
-  if (proximas?.length) {
-    alfaHTML += `<div class="alfa-grupo direita">
-      <span class="alfa-label">Próxima ▶</span>
-      ${proximas.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.termo}</a>`).join('')}
-    </div>`;
+  if (proximas && proximas.length) {
+    var linksProx = proximas.map(function(p) {
+      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
+    }).join('');
+    alfaHTML += '<div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + linksProx + '</div>';
   }
-  alfaWrap.innerHTML = alfaHTML || `<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha encontrada.</span>`;
+  alfaWrap.innerHTML = alfaHTML || '<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha.</span>';
 
-  // ── compartilhar ──
-  const pageUrl = location.href;
-  const shareTexto = `Descobri o significado de "${titulo}" no CyberUniverso! 🤙`;
-  $('share-wa').href = `https://wa.me/?text=${encodeURIComponent(shareTexto + '\n' + pageUrl)}`;
-  $('share-x').href  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTexto)}&url=${encodeURIComponent(pageUrl)}`;
+  // compartilhar
+  var pageUrl = location.href;
+  var shareTexto = 'Descobri o significado de "' + titulo + '" no CyberUniverso! 🤙';
+  $('share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareTexto + '\n' + pageUrl);
+  $('share-x').href  = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareTexto) + '&url=' + encodeURIComponent(pageUrl);
 
-  window.copiarLink = async () => {
-    await navigator.clipboard.writeText(pageUrl).catch(()=>{});
-    const ok = $('copy-ok');
+  window.copiarLink = async function() {
+    await navigator.clipboard.writeText(pageUrl).catch(function() {});
+    var ok = $('copy-ok');
     ok.style.display = 'inline';
-    setTimeout(() => ok.style.display = 'none', 2000);
+    setTimeout(function() { ok.style.display = 'none'; }, 2000);
   };
 
-  // ── comentários ──
-  $('comentarios-count').textContent = comentarios?.length ? `(${comentarios.length})` : '';
+  // comentários
+  $('comentarios-count').textContent = (comentarios && comentarios.length) ? '(' + comentarios.length + ')' : '';
 
-  const formArea = $('comment-form-area');
+  var formArea = $('comment-form-area');
   if (session) {
-    formArea.innerHTML = `
-      <div class="comment-form">
-        <textarea id="comment-txt" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
-        <button class="btn-comentar" id="btn-comentar">COMENTAR</button>
-        <span id="comment-msg" style="font-size:12px;margin-left:10px;color:#00ff99;display:none"></span>
-      </div>`;
-    $('btn-comentar').addEventListener('click', async () => {
-      const txt = $('comment-txt').value.trim();
+    formArea.innerHTML = '<div class="comment-form"><textarea id="comment-txt" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea><button class="btn-comentar" id="btn-comentar">COMENTAR</button><span id="comment-msg" style="font-size:12px;margin-left:10px;color:#00ff99;display:none"></span></div>';
+    $('btn-comentar').addEventListener('click', async function() {
+      var txt = $('comment-txt').value.trim();
       if (!txt) return;
       $('btn-comentar').disabled = true;
-      const { error: ce } = await sb.from('comentarios').insert({
-        palavra_id: palavra.id, usuario_id: session.user.id,
-        texto: txt, status: 'pendente'
-      });
-      if (!ce) {
+      var res2 = await sb.from('comentarios').insert({ palavra_id: palavra.id, usuario_id: session.user.id, texto: txt, status: 'pendente' });
+      if (!res2.error) {
         $('comment-txt').value = '';
-        const msg = $('comment-msg');
+        var msg = $('comment-msg');
         msg.textContent = '✅ Enviado! Aguarda aprovação.';
         msg.style.display = 'inline';
-        setTimeout(() => msg.style.display = 'none', 4000);
+        setTimeout(function() { msg.style.display = 'none'; }, 4000);
       }
       $('btn-comentar').disabled = false;
     });
   } else {
-    formArea.innerHTML = `
-      <div class="login-prompt">
-        <a href="cadastro.html">Faça login</a> para deixar um comentário 💬
-      </div>`;
+    formArea.innerHTML = '<div class="login-prompt"><a href="cadastro.html">Faça login</a> para deixar um comentário 💬</div>';
   }
 
-  const cList = $('comment-list');
-  if (!comentarios?.length) {
-    cList.innerHTML = `<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>`;
+  var cList = $('comment-list');
+  if (!comentarios || !comentarios.length) {
+    cList.innerHTML = '<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>';
   } else {
     cList.innerHTML = '';
-    comentarios.forEach(c => {
-      const nome = c.perfis?.nome_usuario || 'anônimo';
-      const avatarColors = ['linear-gradient(135deg,#f5e800,#f5a800)','linear-gradient(135deg,#ff64c8,#a855f7)','linear-gradient(135deg,#00eaff,#1a6ef5)','linear-gradient(135deg,#00ff99,#1a6ef5)'];
-      const cor = avatarColors[nome.charCodeAt(0) % avatarColors.length];
-      const textColor = cor.includes('f5e800') ? '#000' : '#fff';
-      cList.innerHTML += `
-        <div class="comentario">
-          <div class="com-avatar" style="background:${cor};color:${textColor}">${nome[0].toUpperCase()}</div>
-          <div class="com-body">
-            <div class="com-meta"><strong>${nome}</strong> · ${fmtDataRelativa(c.criado_em)}</div>
-            <div class="com-text">${c.texto}</div>
-          </div>
-        </div>`;
+    var cores = ['linear-gradient(135deg,#f5e800,#f5a800)', 'linear-gradient(135deg,#ff64c8,#a855f7)', 'linear-gradient(135deg,#00eaff,#1a6ef5)', 'linear-gradient(135deg,#00ff99,#1a6ef5)'];
+    comentarios.forEach(function(c) {
+      var nome = (c.perfis && c.perfis.nome_usuario) ? c.perfis.nome_usuario : 'anônimo';
+      var cor  = cores[nome.charCodeAt(0) % cores.length];
+      var txtColor = cor.indexOf('f5e800') >= 0 ? '#000' : '#fff';
+      cList.innerHTML += '<div class="comentario"><div class="com-avatar" style="background:' + cor + ';color:' + txtColor + '">' + nome[0].toUpperCase() + '</div><div class="com-body"><div class="com-meta"><strong>' + nome + '</strong> · ' + fmtRel(c.criado_em) + '</div><div class="com-text">' + c.texto + '</div></div></div>';
     });
   }
 
-  // ── sidebar: top 10 + recentes ──
-  const [{ data: top10 }, { data: recentes }] = await Promise.all([
-    sb.from('palavras').select('termo, slug').eq('status','aprovado')
-      .order('termo', { ascending: true }).limit(10),
-    sb.from('palavras').select('termo, slug, criado_em').eq('status','aprovado')
-      .order('criado_em', { ascending: false }).limit(5)
+  // sidebar
+  var resSidebar = await Promise.all([
+    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').order('termo', { ascending: true }).limit(10),
+    sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovado').order('criado_em', { ascending: false }).limit(5)
   ]);
+  var top10   = resSidebar[0].data;
+  var recentes = resSidebar[1].data;
 
-  const rankClass = ['ouro','prata','bronze'];
-  $('sidebar-top').innerHTML = (top10 || []).map((p, i) => `
-    <a href="palavra.html?palavra=${p.slug}" class="top-item">
-      <span class="top-rank ${rankClass[i] || ''}">${i+1}</span>
-      <span class="top-word">${p.termo}</span>
-      <span class="top-busca">—</span>
-    </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
+  var rankClass = ['ouro', 'prata', 'bronze'];
+  $('sidebar-top').innerHTML = (top10 || []).map(function(p, i) {
+    return '<a href="palavra.html?palavra=' + p.slug + '" class="top-item"><span class="top-rank ' + (rankClass[i] || '') + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span><span class="top-busca">—</span></a>';
+  }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
 
-  $('sidebar-recentes').innerHTML = (recentes || []).map(p => `
-    <a href="palavra.html?palavra=${p.slug}" class="recente-item">
-      <span class="recente-dot"></span>
-      <span class="recente-word">${p.termo}</span>
-      <span class="recente-data">${fmtDataRelativa(p.criado_em)}</span>
-    </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
+  $('sidebar-recentes').innerHTML = (recentes || []).map(function(p) {
+    return '<a href="palavra.html?palavra=' + p.slug + '" class="recente-item"><span class="recente-dot"></span><span class="recente-word">' + p.termo + '</span><span class="recente-data">' + fmtRel(p.criado_em) + '</span></a>';
+  }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
 
-  // ── sidebar busca ──
-  window.buscaSidebar = () => {
-    const q = $('sidebar-search-input').value.trim();
-    if (q) location.href = `todas.html?q=${encodeURIComponent(q)}`;
+  window.buscaSidebar = function() {
+    var q = $('sidebar-search-input').value.trim();
+    if (q) location.href = 'todas.html?q=' + encodeURIComponent(q);
   };
-  $('sidebar-search-input').addEventListener('keydown', e => {
+  $('sidebar-search-input').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') window.buscaSidebar();
   });
 
-  // ── revela tudo ──
-  setTimeout(() => {
-    $('loading-overlay').classList.add('hide');
-    $('page-wrap').style.display = 'grid';
-  }, 100);
+  // revela
+  $('loading-overlay').classList.add('hide');
+  $('page-wrap').style.display = 'grid';
 
 })();
 </script>
