@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aloha — CyberCity Dicionário</title>
-<meta name="description" content="Significado de Aloha: palavra havaiana usada como saudação tipo oi, aí, olá, alô, mas também como despedida, tchau, valeu, falou.">
+<title id="page-title">CyberUniverso — Dicionário de Gírias</title>
+<meta name="description" id="meta-desc" content="Dicionário colaborativo de gírias do português brasileiro.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -409,6 +412,56 @@
   }
   .sidebar-search button:hover{background:#0050cc;}
 
+  /* ── LOADING / ESTADOS ── */
+  #loading-overlay{
+    position:fixed;inset:0;background:var(--fundo);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:500;gap:16px;transition:opacity 0.4s;
+  }
+  #loading-overlay.hide{opacity:0;pointer-events:none;}
+  .spinner{
+    width:44px;height:44px;border:3px solid var(--borda);
+    border-top-color:var(--ciano);border-radius:50%;
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-txt{font-family:'Fredoka One',cursive;font-size:18px;color:var(--ciano);letter-spacing:1px;}
+
+  #error-box{
+    display:none;text-align:center;padding:80px 20px;
+  }
+  #error-box .err-icon{font-size:64px;margin-bottom:16px;}
+  #error-box h2{font-family:'Bangers',cursive;font-size:2.5rem;letter-spacing:3px;color:var(--amarelo);margin-bottom:10px;}
+  #error-box p{color:#4a6fa5;font-size:16px;}
+  #error-box a{color:var(--ciano);font-weight:700;text-decoration:none;}
+
+  /* admin edit btn */
+  .btn-admin-edit{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(245,232,0,0.1);border:1px solid var(--amarelo);
+    color:var(--amarelo);border-radius:8px;padding:6px 14px;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+    text-decoration:none;transition:all 0.2s;margin-left:auto;
+  }
+  .btn-admin-edit:hover{background:rgba(245,232,0,0.2);}
+
+  /* login prompt comentários */
+  .login-prompt{
+    text-align:center;padding:18px;color:#4a6fa5;
+    font-size:14px;border:1px dashed var(--borda);border-radius:10px;
+    margin-bottom:16px;
+  }
+  .login-prompt a{color:var(--azul);font-weight:800;text-decoration:none;}
+  .login-prompt a:hover{color:var(--ciano);}
+
+  /* reação hint */
+  .reacao-hint-login{
+    font-size:12px;color:#4a6fa5;width:100%;margin-top:4px;
+  }
+
+  /* copy feedback */
+  .copy-ok{display:none;font-size:12px;color:#00ff99;margin-left:8px;}
+
   /* ── RESPONSIVE ── */
   @media(max-width:768px){
     .page-wrap{grid-template-columns:1fr;}
@@ -418,31 +471,28 @@
     .palavra-titulo{font-size:clamp(52px,18vw,80px);}
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase.js"></script>
 </head>
 <body>
 
 <!-- LOADING -->
-<div id="loading-overlay" style="position:fixed;inset:0;background:var(--fundo);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;gap:16px;transition:opacity 0.4s;">
-  <div style="width:44px;height:44px;border:3px solid var(--borda);border-top-color:var(--ciano);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
-  <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--ciano);">Carregando palavra…</div>
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">Carregando palavra…</div>
 </div>
-<style>#loading-overlay.hide{opacity:0;pointer-events:none;}@keyframes spin{to{transform:rotate(360deg);}}</style>
 
 <!-- ERRO -->
-<div id="error-box" style="display:none;text-align:center;padding:80px 20px;">
-  <div style="font-size:64px;margin-bottom:16px;">🔍</div>
-  <h2 style="font-family:'Bangers',cursive;font-size:2.5rem;letter-spacing:3px;color:var(--amarelo);margin-bottom:10px;">Palavra não encontrada</h2>
-  <p style="color:#4a6fa5;font-size:16px;">Essa gíria ainda não está no nosso universo.<br><br>
-    <a href="index.html" style="color:var(--ciano);font-weight:700;text-decoration:none;">← Voltar ao início</a> &nbsp;·&nbsp;
-    <a href="todas.html" style="color:var(--ciano);font-weight:700;text-decoration:none;">Ver todas as palavras</a>
+<div id="error-box">
+  <div class="err-icon">🔍</div>
+  <h2>Palavra não encontrada</h2>
+  <p>Essa gíria ainda não está no nosso universo.<br><br>
+    <a href="index.html">← Voltar ao início</a> &nbsp;·&nbsp;
+    <a href="todas.html">Ver todas as palavras</a>
   </p>
 </div>
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="logo-main">CyberCity</a>
+  <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html">Todas</a>
@@ -508,25 +558,25 @@
     <div class="badges" id="wd-badges"></div>
 
     <!-- SIGNIFICADO -->
-    <div class="card" style="animation-delay:0.1s">
+    <div class="card" style="animation-delay:0.1s" id="card-significado">
       <div class="card-title">📖 Significado</div>
       <div id="wd-significados"></div>
     </div>
 
     <!-- EXEMPLOS -->
-    <div class="card" style="animation-delay:0.15s;display:none" id="card-exemplos">
+    <div class="card" style="animation-delay:0.15s" id="card-exemplos" style="display:none">
       <div class="card-title">💬 Exemplos em frases</div>
       <div id="wd-exemplos"></div>
     </div>
 
     <!-- SINÔNIMOS -->
-    <div class="card" style="animation-delay:0.2s;display:none" id="card-sinonimos">
+    <div class="card" style="animation-delay:0.2s" id="card-sinonimos" style="display:none">
       <div class="card-title">🔄 Sinônimos</div>
       <div class="tags-list" id="wd-sinonimos"></div>
     </div>
 
     <!-- TAGS / RELACIONADAS -->
-    <div class="card" style="animation-delay:0.25s;display:none" id="card-tags">
+    <div class="card" style="animation-delay:0.25s" id="card-tags" style="display:none">
       <div class="card-title">🔗 Palavras relacionadas</div>
       <div class="tags-list" id="wd-tags"></div>
     </div>
@@ -534,14 +584,18 @@
     <!-- REAÇÕES -->
     <div class="card" style="animation-delay:0.3s">
       <div class="card-title">⚡ O que você achou?</div>
-      <div class="reacoes" id="wd-reacoes"><span style="color:#4a6fa5;font-size:14px">Carregando…</span></div>
+      <div class="reacoes" id="wd-reacoes">
+        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
+      </div>
       <div id="reacao-login-hint"></div>
     </div>
 
     <!-- NAV ALFABÉTICA -->
-    <div class="card" style="animation-delay:0.35s">
+    <div class="card" style="animation-delay:0.35s" id="card-alfa">
       <div class="card-title">🔤 Navegação alfabética</div>
-      <div class="alfa-nav" id="wd-alfa"><span style="color:#4a6fa5;font-size:14px">Carregando…</span></div>
+      <div class="alfa-nav" id="wd-alfa">
+        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
+      </div>
     </div>
 
     <!-- COMPARTILHAR -->
@@ -557,6 +611,7 @@
     <!-- COMENTÁRIOS -->
     <div class="card" style="animation-delay:0.45s">
       <div class="card-title">💬 Comentários <span id="comentarios-count" style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;"></span></div>
+
       <div id="comment-form-area"></div>
       <div id="comment-list"></div>
     </div>
@@ -578,13 +633,17 @@
     <!-- top 10 -->
     <div class="sidebar-card">
       <div class="sidebar-title">🏆 Top 10 Mais Buscadas</div>
-      <div id="sidebar-top"><span style="color:#4a6fa5;font-size:13px">Carregando…</span></div>
+      <div id="sidebar-top">
+        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
+      </div>
     </div>
 
     <!-- recentes -->
     <div class="sidebar-card">
       <div class="sidebar-title">🆕 Últimas Adicionadas</div>
-      <div id="sidebar-recentes"><span style="color:#4a6fa5;font-size:13px">Carregando…</span></div>
+      <div id="sidebar-recentes">
+        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
+      </div>
     </div>
 
   </aside>
@@ -618,7 +677,7 @@
 
   if (!slug) { erro(); return; }
 
-  // auth
+  // ── auth ──
   let session = null, perfil = null;
   try {
     const res = await sb.auth.getSession();
@@ -626,7 +685,9 @@
     if (session) {
       $('nav-login').textContent = '👤 Perfil';
       $('nav-mobile-login').textContent = '👤 Meu Perfil';
-      const { data: p } = await sb.from('perfis').select('username, is_admin').eq('id', session.user.id).single();
+      const { data: p } = await sb.from('perfis')
+        .select('username, is_admin')
+        .eq('id', session.user.id).single();
       perfil = p;
       if (p && p.is_admin) {
         $('nav-admin').style.display = 'inline';
@@ -635,7 +696,7 @@
     }
   } catch(e) {}
 
-  // busca principal — colunas reais: termo, nivel_uso, regiao, contexto, epoca, usuario_id, categoria_id
+  // ── busca principal ──
   const { data: palavra, error } = await sb
     .from('palavras')
     .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, usuario_id, categorias(id, nome)')
@@ -644,7 +705,7 @@
 
   if (error || !palavra) { erro(); return; }
 
-  // busças paralelas — colunas reais
+  // ── busças paralelas ──
   const [
     { data: significados },
     { data: exemplos },
@@ -667,12 +728,16 @@
     if (mr) minhaReacao = mr.tipo;
   }
 
-  // RENDER
+  // ══ RENDER ══
+
   const titulo = palavra.termo;
   const primSig = (significados && significados[0]) ? significados[0].descricao : '';
 
   $('page-title').textContent = titulo + ' — o que significa? | CyberUniverso';
-  $('meta-desc').content = primSig ? titulo + ': ' + primSig.substring(0, 150) : 'Significado de ' + titulo + ' no CyberUniverso.';
+  $('meta-desc').content = primSig
+    ? titulo + ': ' + primSig.substring(0, 150)
+    : 'Significado de ' + titulo + ' no dicionário de gírias CyberUniverso.';
+
   $('wd-titulo').textContent = titulo.toUpperCase();
   $('bc-palavra').textContent = titulo;
 
@@ -686,6 +751,7 @@
     $('wd-pronuncia').style.display = 'block';
   }
 
+  // busca autor separado (sem FK declarada)
   var nomeAutor = 'anônimo';
   if (palavra.usuario_id) {
     var { data: autorData } = await sb.from('perfis').select('username').eq('id', palavra.usuario_id).single();
@@ -700,25 +766,41 @@
     $('btn-editar').style.display = 'inline-flex';
   }
 
+  // categorias
+  var catWrap = $('wd-categorias');
   if (palavra.categorias) {
-    $('wd-categorias').innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
+    catWrap.innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
   }
 
+  // badges
   var badgeWrap = $('wd-badges');
   var nivelMap = { basico: '🟢 Básico', intermediario: '🟡 Intermediário', avancado: '🔴 Avançado' };
-  if (palavra.nivel_uso) badgeWrap.innerHTML += '<div class="badge badge-nivel">⚡ ' + (nivelMap[palavra.nivel_uso] || palavra.nivel_uso) + '</div>';
-  if (palavra.regiao)   badgeWrap.innerHTML += '<div class="badge badge-regiao">📍 ' + palavra.regiao + '</div>';
-  if (palavra.contexto) badgeWrap.innerHTML += '<div class="badge badge-contexto">🌐 ' + palavra.contexto + '</div>';
-  if (palavra.epoca)    badgeWrap.innerHTML += '<div class="badge badge-epoca">📅 ' + palavra.epoca + '</div>';
+  if (palavra.nivel_uso) {
+    badgeWrap.innerHTML += '<div class="badge badge-nivel">⚡ ' + (nivelMap[palavra.nivel_uso] || palavra.nivel_uso) + '</div>';
+  }
+  if (palavra.regiao) {
+    badgeWrap.innerHTML += '<div class="badge badge-regiao">📍 ' + palavra.regiao + '</div>';
+  }
+  if (palavra.contexto) {
+    badgeWrap.innerHTML += '<div class="badge badge-contexto">🌐 ' + palavra.contexto + '</div>';
+  }
+  if (palavra.epoca) {
+    badgeWrap.innerHTML += '<div class="badge badge-epoca">📅 ' + palavra.epoca + '</div>';
+  }
   var statusMap = { aprovado: '✅ Aprovada', pendente: '⏳ Pendente', recusado: '❌ Recusada' };
-  if (statusMap[palavra.status]) badgeWrap.innerHTML += '<div class="badge badge-nivel">' + statusMap[palavra.status] + '</div>';
+  if (statusMap[palavra.status]) {
+    badgeWrap.innerHTML += '<div class="badge badge-nivel">' + statusMap[palavra.status] + '</div>';
+  }
 
   // significados
   var sigWrap = $('wd-significados');
   if (significados && significados.length) {
     significados.forEach(function(s, i) {
-      if (s.subtitulo) sigWrap.innerHTML += '<div class="subtitulo">▸ ' + s.subtitulo + '</div>';
-      else if (i > 0)  sigWrap.innerHTML += '<div class="subtitulo">▸ Definição ' + (i+1) + '</div>';
+      if (s.subtitulo) {
+        sigWrap.innerHTML += '<div class="subtitulo">▸ ' + s.subtitulo + '</div>';
+      } else if (i > 0) {
+        sigWrap.innerHTML += '<div class="subtitulo">▸ Definição ' + (i+1) + '</div>';
+      }
       sigWrap.innerHTML += '<p class="significado-text">' + s.descricao + '</p>' + (i < significados.length - 1 ? '<br>' : '');
     });
   } else {
@@ -729,7 +811,9 @@
   if (exemplos && exemplos.length) {
     $('card-exemplos').style.display = 'block';
     var exWrap = $('wd-exemplos');
-    exemplos.forEach(function(ex) { exWrap.innerHTML += '<div class="exemplo">— ' + ex.frase + '</div>'; });
+    exemplos.forEach(function(ex) {
+      exWrap.innerHTML += '<div class="exemplo">— ' + ex.frase + '</div>';
+    });
   }
 
   // sinônimos
@@ -737,7 +821,7 @@
     $('card-sinonimos').style.display = 'block';
     var sinWrap = $('wd-sinonimos');
     sins.forEach(function(s) {
-      sinWrap.innerHTML += '<span class="tag">' + s.sinonimo + '</span>';
+      sinWrap.innerHTML += '<a href="palavra.html?palavra=' + (s.slug || '#') + '" class="tag">' + (s.sinonimo || '?') + '</a>';
     });
   }
 
@@ -747,7 +831,7 @@
     var tagWrap = $('wd-tags');
     ptags.forEach(function(pt) {
       if (!pt.tags) return;
-      tagWrap.innerHTML += '<a href="todas.html?tag=' + pt.tags.nome + '" class="tag">#' + pt.tags.nome + '</a>';
+      tagWrap.innerHTML += '<a href="todas.html?tag=' + pt.tags.slug + '" class="tag">#' + pt.tags.nome + '</a>';
     });
   }
 
@@ -790,7 +874,10 @@
         var antBtn = reWrap.querySelector('[data-tipo="' + minhaReacao + '"] .reacao-count');
         if (antBtn) antBtn.textContent = Math.max(0, parseInt(antBtn.textContent) - 1);
       }
-      await sb.from('reacoes').upsert({ palavra_id: palavra.id, usuario_id: session.user.id, tipo: tipo }, { onConflict: 'palavra_id,usuario_id' });
+      await sb.from('reacoes').upsert(
+        { palavra_id: palavra.id, usuario_id: session.user.id, tipo: tipo },
+        { onConflict: 'palavra_id,usuario_id' }
+      );
       var c2 = btnEl.querySelector('.reacao-count');
       c2.textContent = parseInt(c2.textContent) + 1;
       btnEl.classList.add('ativo');
@@ -806,12 +893,19 @@
   ]);
   var anteriores = resAlfa[0].data;
   var proximas   = resAlfa[1].data;
+
   var alfaHTML = '';
   if (anteriores && anteriores.length) {
-    alfaHTML += '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + anteriores.map(function(p) { return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>'; }).join('') + '</div><div class="alfa-sep">|</div>';
+    var linksAnt = anteriores.map(function(p) {
+      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
+    }).join('');
+    alfaHTML += '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + linksAnt + '</div><div class="alfa-sep">|</div>';
   }
   if (proximas && proximas.length) {
-    alfaHTML += '<div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + proximas.map(function(p) { return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>'; }).join('') + '</div>';
+    var linksProx = proximas.map(function(p) {
+      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
+    }).join('');
+    alfaHTML += '<div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + linksProx + '</div>';
   }
   alfaWrap.innerHTML = alfaHTML || '<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha.</span>';
 
@@ -820,6 +914,7 @@
   var shareTexto = 'Descobri o significado de "' + titulo + '" no CyberUniverso! 🤙';
   $('share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareTexto + '\n' + pageUrl);
   $('share-x').href  = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareTexto) + '&url=' + encodeURIComponent(pageUrl);
+
   window.copiarLink = async function() {
     await navigator.clipboard.writeText(pageUrl).catch(function() {});
     var ok = $('copy-ok');
@@ -829,6 +924,7 @@
 
   // comentários
   $('comentarios-count').textContent = (comentarios && comentarios.length) ? '(' + comentarios.length + ')' : '';
+
   var formArea = $('comment-form-area');
   if (session) {
     formArea.innerHTML = '<div class="comment-form"><textarea id="comment-txt" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea><button class="btn-comentar" id="btn-comentar">COMENTAR</button><span id="comment-msg" style="font-size:12px;margin-left:10px;color:#00ff99;display:none"></span></div>';
@@ -855,6 +951,7 @@
     cList.innerHTML = '<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>';
   } else {
     cList.innerHTML = '';
+    // busca nomes dos autores dos comentarios
     var uids = comentarios.map(function(c) { return c.usuario_id; }).filter(Boolean);
     var nomesMap = {};
     if (uids.length) {
@@ -875,12 +972,14 @@
     sb.from('palavras').select('termo, slug').eq('status', 'aprovado').order('termo', { ascending: true }).limit(10),
     sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovado').order('criado_em', { ascending: false }).limit(5)
   ]);
-  var top10    = resSidebar[0].data;
+  var top10   = resSidebar[0].data;
   var recentes = resSidebar[1].data;
+
   var rankClass = ['ouro', 'prata', 'bronze'];
   $('sidebar-top').innerHTML = (top10 || []).map(function(p, i) {
     return '<a href="palavra.html?palavra=' + p.slug + '" class="top-item"><span class="top-rank ' + (rankClass[i] || '') + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span><span class="top-busca">—</span></a>';
   }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
+
   $('sidebar-recentes').innerHTML = (recentes || []).map(function(p) {
     return '<a href="palavra.html?palavra=' + p.slug + '" class="recente-item"><span class="recente-dot"></span><span class="recente-word">' + p.termo + '</span><span class="recente-data">' + fmtRel(p.criado_em) + '</span></a>';
   }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
@@ -893,6 +992,7 @@
     if (e.key === 'Enter') window.buscaSidebar();
   });
 
+  // revela
   $('loading-overlay').classList.add('hide');
   $('page-wrap').style.display = 'grid';
 
