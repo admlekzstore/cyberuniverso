@@ -714,8 +714,8 @@
     { data: reacoes },
     { data: comentarios }
   ] = await Promise.all([
-    sb.from('significados').select('texto, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
-    sb.from('exemplos').select('texto, ordem').eq('palavra_id', palavra.id).order('ordem'),
+    sb.from('significados').select('descricao, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
+    sb.from('exemplos').select('frase, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
     sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
@@ -801,7 +801,7 @@
       } else if (i > 0) {
         sigWrap.innerHTML += '<div class="subtitulo">▸ Definição ' + (i+1) + '</div>';
       }
-      sigWrap.innerHTML += '<p class="significado-text">' + s.texto + '</p>' + (i < significados.length - 1 ? '<br>' : '');
+      sigWrap.innerHTML += '<p class="significado-text">' + s.descricao + '</p>' + (i < significados.length - 1 ? '<br>' : '');
     });
   } else {
     sigWrap.innerHTML = '<p class="significado-text" style="color:#4a6fa5">Significado ainda não cadastrado.</p>';
@@ -812,7 +812,7 @@
     $('card-exemplos').style.display = 'block';
     var exWrap = $('wd-exemplos');
     exemplos.forEach(function(ex) {
-      exWrap.innerHTML += '<div class="exemplo">— ' + ex.texto + '</div>';
+      exWrap.innerHTML += '<div class="exemplo">— ' + ex.frase + '</div>';
     });
   }
 
