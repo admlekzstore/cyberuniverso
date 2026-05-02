@@ -699,7 +699,7 @@
   // ── busca principal ──
   const { data: palavra, error } = await sb
     .from('palavras')
-    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, categorias(id, nome, slug), perfis(nome_usuario)')
+    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, usuario_id, categorias(id, nome, slug)')
     .eq('slug', slug)
     .single();
 
@@ -719,7 +719,7 @@
     sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
     sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
-    sb.from('comentarios').select('id, texto, criado_em, perfis(nome_usuario)').eq('palavra_id', palavra.id).eq('status', 'aprovado').order('criado_em')
+    sb.from('comentarios').select('id, texto, criado_em, usuario_id').eq('palavra_id', palavra.id).eq('status', 'aprovado').order('criado_em')
   ]);
 
   let minhaReacao = null;
@@ -751,7 +751,12 @@
     $('wd-pronuncia').style.display = 'block';
   }
 
-  var nomeAutor = (palavra.perfis && palavra.perfis.nome_usuario) ? palavra.perfis.nome_usuario : 'anônimo';
+  // busca autor separado (sem FK declarada)
+  var nomeAutor = 'anônimo';
+  if (palavra.usuario_id) {
+    var { data: autorData } = await sb.from('perfis').select('nome_usuario').eq('id', palavra.usuario_id).single();
+    if (autorData && autorData.nome_usuario) nomeAutor = autorData.nome_usuario;
+  }
   $('wd-avatar').textContent = nomeAutor[0].toUpperCase();
   $('wd-autor').textContent = nomeAutor;
   $('wd-data').textContent = fmtData(palavra.criado_em);
@@ -946,9 +951,16 @@
     cList.innerHTML = '<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>';
   } else {
     cList.innerHTML = '';
+    // busca nomes dos autores dos comentarios
+    var uids = comentarios.map(function(c) { return c.usuario_id; }).filter(Boolean);
+    var nomesMap = {};
+    if (uids.length) {
+      var { data: perfisComent } = await sb.from('perfis').select('id, nome_usuario').in('id', uids);
+      (perfisComent || []).forEach(function(p) { nomesMap[p.id] = p.nome_usuario; });
+    }
     var cores = ['linear-gradient(135deg,#f5e800,#f5a800)', 'linear-gradient(135deg,#ff64c8,#a855f7)', 'linear-gradient(135deg,#00eaff,#1a6ef5)', 'linear-gradient(135deg,#00ff99,#1a6ef5)'];
     comentarios.forEach(function(c) {
-      var nome = (c.perfis && c.perfis.nome_usuario) ? c.perfis.nome_usuario : 'anônimo';
+      var nome = nomesMap[c.usuario_id] || 'anônimo';
       var cor  = cores[nome.charCodeAt(0) % cores.length];
       var txtColor = cor.indexOf('f5e800') >= 0 ? '#000' : '#fff';
       cList.innerHTML += '<div class="comentario"><div class="com-avatar" style="background:' + cor + ';color:' + txtColor + '">' + nome[0].toUpperCase() + '</div><div class="com-body"><div class="com-meta"><strong>' + nome + '</strong> · ' + fmtRel(c.criado_em) + '</div><div class="com-text">' + c.texto + '</div></div></div>';
