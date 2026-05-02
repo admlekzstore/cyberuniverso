@@ -716,8 +716,8 @@
   ] = await Promise.all([
     sb.from('significados').select('descricao, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('exemplos').select('frase, ordem').eq('palavra_id', palavra.id).order('ordem'),
-    sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
-    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id').eq('palavra_id', palavra.id),
+    sb.from('palavras_tags').select('tags(nome)').eq('palavra_id', palavra.id),
+    sb.from('sinonimos').select('sinonimo').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
     sb.from('comentarios').select('id, texto, criado_em, usuario_id').eq('palavra_id', palavra.id).eq('status', 'aprovado').order('criado_em')
   ]);
@@ -821,7 +821,7 @@
     $('card-sinonimos').style.display = 'block';
     var sinWrap = $('wd-sinonimos');
     sins.forEach(function(s) {
-      sinWrap.innerHTML += '<a href="palavra.html?palavra=' + (s.slug || '#') + '" class="tag">' + (s.sinonimo_texto || '?') + '</a>';
+      sinWrap.innerHTML += '<a href="palavra.html?palavra=' + (s.slug || '#') + '" class="tag">' + (s.sinonimo || '?') + '</a>';
     });
   }
 
