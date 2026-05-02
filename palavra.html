@@ -699,7 +699,7 @@
   // ── busca principal ──
   const { data: palavra, error } = await sb
     .from('palavras')
-    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, usuario_id, categorias(id, nome, slug)')
+    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, usuario_id, categorias(id, nome)')
     .eq('slug', slug)
     .single();
 
@@ -742,7 +742,7 @@
   $('bc-palavra').textContent = titulo;
 
   if (palavra.categorias) {
-    $('bc-categoria').innerHTML = '<a href="categoria.html?c=' + palavra.categorias.slug + '">' + palavra.categorias.nome + '</a>';
+    $('bc-categoria').innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '">' + palavra.categorias.nome + '</a>';
     $('bc-sep').style.display = 'inline';
   }
 
@@ -769,7 +769,7 @@
   // categorias
   var catWrap = $('wd-categorias');
   if (palavra.categorias) {
-    catWrap.innerHTML = '<a href="categoria.html?c=' + palavra.categorias.slug + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
+    catWrap.innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
   }
 
   // badges
