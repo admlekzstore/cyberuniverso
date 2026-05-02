@@ -686,7 +686,7 @@
       $('nav-login').textContent = '👤 Perfil';
       $('nav-mobile-login').textContent = '👤 Meu Perfil';
       const { data: p } = await sb.from('perfis')
-        .select('nome_usuario, is_admin')
+        .select('username, is_admin')
         .eq('id', session.user.id).single();
       perfil = p;
       if (p && p.is_admin) {
@@ -754,8 +754,8 @@
   // busca autor separado (sem FK declarada)
   var nomeAutor = 'anônimo';
   if (palavra.usuario_id) {
-    var { data: autorData } = await sb.from('perfis').select('nome_usuario').eq('id', palavra.usuario_id).single();
-    if (autorData && autorData.nome_usuario) nomeAutor = autorData.nome_usuario;
+    var { data: autorData } = await sb.from('perfis').select('username').eq('id', palavra.usuario_id).single();
+    if (autorData && autorData.username) nomeAutor = autorData.username;
   }
   $('wd-avatar').textContent = nomeAutor[0].toUpperCase();
   $('wd-autor').textContent = nomeAutor;
@@ -955,8 +955,8 @@
     var uids = comentarios.map(function(c) { return c.usuario_id; }).filter(Boolean);
     var nomesMap = {};
     if (uids.length) {
-      var { data: perfisComent } = await sb.from('perfis').select('id, nome_usuario').in('id', uids);
-      (perfisComent || []).forEach(function(p) { nomesMap[p.id] = p.nome_usuario; });
+      var { data: perfisComent } = await sb.from('perfis').select('id, username').in('id', uids);
+      (perfisComent || []).forEach(function(p) { nomesMap[p.id] = p.username; });
     }
     var cores = ['linear-gradient(135deg,#f5e800,#f5a800)', 'linear-gradient(135deg,#ff64c8,#a855f7)', 'linear-gradient(135deg,#00eaff,#1a6ef5)', 'linear-gradient(135deg,#00ff99,#1a6ef5)'];
     comentarios.forEach(function(c) {
