@@ -3,254 +3,508 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aloha — CyberCity Dicionário</title>
-<meta name="description" content="Significado de Aloha: palavra havaiana usada como saudação tipo oi, aí, olá, alô, mas também como despedida, tchau, valeu, falou.">
+<title id="page-title">CyberUniverso — Dicionário de Gírias</title>
+<meta name="description" id="meta-desc" content="Dicionário colaborativo de gírias do português brasileiro.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  :root{
-    --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
-    --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
-    --borda:#1a3a6e;--texto:#d0e4ff;
-  }
-  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;cursor:default;}
-  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
 
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
-  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
+  :root{
+    --azul:#1a6ef5;
+    --azul-escuro:#0d3fa6;
+    --amarelo:#f5e800;
+    --ciano:#00eaff;
+    --preto:#000;
+    --fundo:#05080f;
+    --card:#0a1628;
+    --card2:#0d1f3c;
+    --borda:#1a3a6e;
+    --texto:#d0e4ff;
+  }
+
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    overflow-x:hidden;
+    cursor:default;
+  }
+
+  /* scanlines overlay */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+    pointer-events:none;
+    z-index:999;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 20px;
+    background:rgba(5,8,15,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--borda);
+  }
+  .logo-main{
+    font-family:'Bangers',cursive;font-size:28px;
+    color:var(--ciano);
+    text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);
+    letter-spacing:2px;text-decoration:none;
+  }
   .nav-links{display:flex;gap:20px;align-items:center;}
-  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
+  .nav-links a{
+    color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;
+    transition:color 0.2s;
+  }
   .nav-links a:hover{color:var(--amarelo);}
-  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
+  .menu-btn{
+    display:none;background:none;border:1.5px solid var(--borda);
+    border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;
+  }
   .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
+
+  /* mobile nav */
+  .nav-mobile{
+    display:none;position:fixed;top:0;right:0;width:260px;height:100vh;
+    background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);
+    flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;
+  }
   .nav-mobile.open{display:flex;}
-  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;}
+  .nav-mobile a{
+    color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;
+    padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;
+  }
   .nav-mobile a:hover{color:var(--amarelo);}
-  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
+  .close-nav{
+    position:absolute;top:18px;right:18px;background:none;border:none;
+    color:#fff;font-size:24px;cursor:pointer;
+  }
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
   .overlay.open{display:block;}
 
-  .page-wrap{max-width:1100px;margin:0 auto;padding:90px 16px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+  /* ── LAYOUT ── */
+  .page-wrap{
+    max-width:1100px;margin:0 auto;
+    padding:90px 16px 60px;
+    display:grid;
+    grid-template-columns:1fr 280px;
+    gap:24px;
+    align-items:start;
+  }
+
+  /* ── MAIN CONTENT ── */
   .main-col{}
 
   /* breadcrumb */
-  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;}
+  .breadcrumb{
+    display:flex;align-items:center;gap:8px;
+    font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;
+  }
   .breadcrumb a{color:#4a6fa5;text-decoration:none;transition:color 0.2s;}
   .breadcrumb a:hover{color:var(--ciano);}
   .breadcrumb span{color:#2a4a7a;}
 
-  /* ── TÍTULO AUTO-TAMANHO ── */
+  /* palavra título */
   .palavra-titulo{
     font-family:'Bangers',cursive;
-    /* clamp dinâmico: palavras curtas ficam grandes, longas ficam menores */
-    font-size:clamp(28px, 12vw, 100px);
-    line-height:1.05;
-    letter-spacing:3px;
+    font-size:clamp(60px,15vw,100px);
+    line-height:1;
+    letter-spacing:4px;
     color:var(--amarelo);
-    text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro),0 0 40px rgba(245,232,0,0.3);
+    text-shadow:
+      4px 4px 0 var(--azul),
+      8px 8px 0 var(--azul-escuro),
+      0 0 40px rgba(245,232,0,0.3);
     -webkit-text-stroke:2px var(--azul);
     animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;
     margin-bottom:16px;
-    word-break:break-word;
   }
-  /* expressões longas ficam menores automaticamente via JS */
-  .palavra-titulo.curta  {font-size:clamp(60px,15vw,100px);}
-  .palavra-titulo.media  {font-size:clamp(40px,10vw,72px);}
-  .palavra-titulo.longa  {font-size:clamp(28px,7vw,52px);}
-  .palavra-titulo.muito-longa{font-size:clamp(22px,5vw,38px);letter-spacing:1px;}
-
-  @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+  @keyframes titlePop{
+    from{transform:scale(0.6) translateY(20px);opacity:0;}
+    to{transform:scale(1) translateY(0);opacity:1;}
+  }
 
   /* pronuncia */
-  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;animation:fadeUp 0.5s 0.2s both;}
-  .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
+  .pronuncia{
+    font-size:14px;color:#4a8aff;font-weight:700;
+    letter-spacing:2px;margin-bottom:16px;
+    animation:fadeUp 0.5s 0.2s both;
+  }
+  .pronuncia span{
+    background:rgba(26,110,245,0.15);
+    border:1px solid rgba(26,110,245,0.3);
+    border-radius:20px;padding:4px 14px;
+    font-family:'Fredoka One',cursive;font-size:16px;
+  }
 
-  /* meta */
-  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;animation:fadeUp 0.5s 0.25s both;}
-  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;}
+  /* meta info */
+  .meta-info{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:18px;flex-wrap:wrap;
+    animation:fadeUp 0.5s 0.25s both;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,var(--azul),var(--ciano));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:14px;color:#fff;flex-shrink:0;
+  }
   .meta-text{font-size:13px;color:#4a6fa5;}
   .meta-text strong{color:var(--ciano);font-weight:800;}
 
   /* categorias */
-  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;animation:fadeUp 0.5s 0.3s both;}
-  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
+  .categorias{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-bottom:28px;
+    animation:fadeUp 0.5s 0.3s both;
+  }
+  .cat-tag{
+    background:rgba(26,110,245,0.15);
+    border:1.5px solid rgba(26,110,245,0.4);
+    color:#7ab0ff;
+    border-radius:50px;padding:5px 14px;
+    font-size:12px;font-weight:700;letter-spacing:0.5px;
+    text-decoration:none;text-transform:uppercase;
+    transition:all 0.2s;
+  }
   .cat-tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
 
-  /* ── TAGS ── */
-  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;animation:fadeUp 0.5s 0.32s both;align-items:center;}
-  .tags-label{font-size:11px;color:#2a4a7a;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
-  .hash-tag{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);color:#4ab8cc;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
-  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);border-color:var(--ciano);}
-
   /* badges */
-  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;animation:fadeUp 0.5s 0.35s both;}
-  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:0.5px;}
+  .badges{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-bottom:28px;
+    animation:fadeUp 0.5s 0.35s both;
+  }
+  .badge{
+    display:flex;align-items:center;gap:6px;
+    border-radius:8px;padding:6px 12px;
+    font-size:12px;font-weight:800;letter-spacing:0.5px;
+  }
   .badge-nivel{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);color:var(--ciano);}
   .badge-regiao{background:rgba(245,232,0,0.1);border:1px solid rgba(245,232,0,0.3);color:var(--amarelo);}
   .badge-contexto{background:rgba(255,100,200,0.1);border:1px solid rgba(255,100,200,0.3);color:#ff64c8;}
   .badge-epoca{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
 
-  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
-  /* ── IMAGEM OPCIONAL ── */
-  .palavra-imagem{
-    width:100%;border-radius:14px;overflow:hidden;
-    margin-bottom:16px;border:1px solid var(--borda);
-    animation:fadeUp 0.5s 0.38s both;
+  @keyframes fadeUp{
+    from{transform:translateY(20px);opacity:0;}
+    to{transform:translateY(0);opacity:1;}
   }
-  .palavra-imagem img{width:100%;max-height:320px;object-fit:cover;display:block;}
-  .palavra-imagem-caption{padding:8px 14px;background:var(--card);font-size:12px;color:#4a6fa5;font-weight:700;}
 
   /* ── CARDS ── */
-  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp 0.5s both;position:relative;overflow:hidden;}
-  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
-  .card-title{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-
-  /* ── MÚLTIPLOS SIGNIFICADOS ── */
-  .significado-bloco{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda);}
-  .significado-bloco:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-  .sig-numero{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:26px;height:26px;border-radius:50%;
-    background:var(--azul);color:#fff;
-    font-family:'Bangers',cursive;font-size:15px;
-    margin-bottom:10px;flex-shrink:0;
+  .card{
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:16px;padding:24px;
+    margin-bottom:16px;
+    animation:fadeUp 0.5s both;
+    position:relative;overflow:hidden;
   }
-  .sig-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .sig-tipo{font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:var(--card2);border:1px solid var(--borda);border-radius:20px;padding:3px 10px;}
-  .significado-text{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;}
-  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
-  .origem-text{font-size:15px;color:var(--texto);line-height:1.7;}
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);
+  }
+
+  .card-title{
+    font-family:'Bangers',cursive;
+    font-size:20px;letter-spacing:2px;
+    color:var(--ciano);margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .significado-text{
+    font-size:17px;font-weight:700;
+    color:#e8f4ff;line-height:1.6;
+  }
+
+  .subtitulo{
+    font-family:'Fredoka One',cursive;
+    font-size:17px;color:var(--amarelo);
+    margin:20px 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .origem-text{
+    font-size:15px;color:var(--texto);line-height:1.7;
+  }
 
   /* exemplos */
-  .exemplo{background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:10px;font-size:15px;font-style:italic;color:#b0ccff;line-height:1.6;}
+  .exemplo{
+    background:rgba(26,110,245,0.08);
+    border-left:3px solid var(--azul);
+    border-radius:0 10px 10px 0;
+    padding:12px 16px;margin-bottom:10px;
+    font-size:15px;font-style:italic;color:#b0ccff;
+    line-height:1.6;
+  }
   .exemplo strong{color:var(--ciano);font-style:normal;}
 
   /* tags list */
-  .tags-list{display:flex;flex-wrap:wrap;gap:8px;}
-  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;cursor:pointer;}
+  .tags-list{
+    display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .tag{
+    background:var(--card2);
+    border:1px solid var(--borda);
+    border-radius:8px;padding:6px 14px;
+    font-size:14px;font-weight:700;color:var(--texto);
+    text-decoration:none;transition:all 0.2s;cursor:pointer;
+  }
   .tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
 
-  /* ── REAÇÕES + ENVIAR SIGNIFICADO ── */
-  .reacoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
-  .reacao-btn{background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:10px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;min-width:70px;}
+  /* reações */
+  .reacoes{
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .reacao-btn{
+    background:var(--card2);
+    border:1.5px solid var(--borda);
+    border-radius:12px;
+    padding:10px 18px;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    cursor:pointer;transition:all 0.2s;min-width:70px;
+  }
   .reacao-btn:hover{border-color:var(--azul);transform:translateY(-3px);}
-  .reacao-btn.ativo{background:rgba(26,110,245,0.2);border-color:var(--azul);}
+  .reacao-btn.ativo{
+    background:rgba(26,110,245,0.2);
+    border-color:var(--azul);
+  }
   .reacao-emoji{font-size:26px;}
   .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
-  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;letter-spacing:0.3px;}
-
-  /* botão enviar significado */
-  .btn-novo-sig{
-    display:flex;align-items:center;gap:8px;
-    background:rgba(163,255,74,0.08);
-    border:1.5px dashed rgba(163,255,74,0.35);
-    color:#a3ff4a;border-radius:12px;
-    padding:11px 18px;font-size:14px;font-weight:800;
-    cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;
-    margin-top:4px;
-  }
-  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);border-color:#a3ff4a;}
-
-  /* form novo significado */
-  .novo-sig-form{
-    display:none;margin-top:14px;
-    background:rgba(163,255,74,0.04);
-    border:1px solid rgba(163,255,74,0.2);
-    border-radius:12px;padding:16px;
-  }
-  .novo-sig-form.aberto{display:block;}
-  .novo-sig-form textarea{
-    width:100%;background:var(--card2);border:1.5px solid var(--borda);
-    border-radius:10px;padding:12px;color:var(--texto);
-    font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;
-    outline:none;transition:border-color 0.2s;margin-bottom:10px;
-  }
-  .novo-sig-form textarea:focus{border-color:#a3ff4a;}
-  .novo-sig-form textarea::placeholder{color:#2a4a7a;}
-  .novo-sig-btns{display:flex;gap:8px;}
-  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
-  .btn-enviar-sig:hover{background:#8fee2a;}
-  .btn-cancelar-sig{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:10px 16px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;transition:all 0.2s;}
-  .btn-cancelar-sig:hover{border-color:var(--borda);}
-  .sig-aviso{font-size:12px;color:#4a6fa5;margin-bottom:10px;}
+  .reacao-label{font-size:10px;color:#4a6fa5;font-weight:700;letter-spacing:0.5px;}
 
   /* nav alfabética */
-  .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-  .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
+  .alfa-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;
+  }
+  .alfa-grupo{
+    display:flex;flex-direction:column;gap:4px;flex:1;
+  }
   .alfa-grupo.direita{text-align:right;align-items:flex-end;}
   .alfa-label{font-size:11px;color:#4a6fa5;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-  .alfa-link{color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;transition:color 0.2s;}
+  .alfa-link{
+    color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;
+    transition:color 0.2s;
+  }
   .alfa-link:hover{color:var(--amarelo);}
   .alfa-sep{color:var(--borda);font-size:24px;}
 
   /* compartilhar */
   .share-btns{display:flex;gap:10px;flex-wrap:wrap;}
-  .share-btn{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .share-btn{
+    display:flex;align-items:center;gap:8px;
+    border-radius:10px;padding:10px 18px;
+    font-size:14px;font-weight:800;
+    border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;
+  }
   .share-btn:hover{transform:translateY(-2px);}
   .share-wpp{background:#25d366;color:#fff;}
   .share-copy{background:var(--card2);border:1px solid var(--borda);color:var(--texto);}
   .share-twitter{background:#1da1f2;color:#fff;}
 
   /* comentários */
-  .comentario{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda);}
-  .com-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#f5e800,#f5a800);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;}
+  .comentario{
+    display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;
+    border-bottom:1px solid var(--borda);
+  }
+  .com-avatar{
+    width:38px;height:38px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg,#f5e800,#f5a800);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:14px;color:#000;
+  }
+  .com-body{}
   .com-meta{font-size:12px;color:#4a6fa5;margin-bottom:4px;}
   .com-meta strong{color:var(--ciano);}
   .com-text{font-size:14px;color:var(--texto);line-height:1.5;}
+
   .comment-form{margin-top:16px;}
-  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;transition:border-color 0.2s;outline:none;}
-  .comment-form textarea:focus{border-color:var(--azul);}
+  .comment-form textarea{
+    width:100%;background:var(--card2);
+    border:1.5px solid var(--borda);border-radius:10px;
+    padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;
+    font-size:14px;resize:vertical;min-height:90px;
+    transition:border-color 0.2s;
+  }
+  .comment-form textarea:focus{outline:none;border-color:var(--azul);}
   .comment-form textarea::placeholder{color:#2a4a7a;}
-  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+  .btn-comentar{
+    margin-top:10px;background:var(--azul);color:#fff;
+    border:none;border-radius:10px;padding:10px 24px;
+    font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;
+    cursor:pointer;transition:all 0.2s;
+  }
   .btn-comentar:hover{background:#0050cc;transform:translateY(-2px);}
 
   /* ── SIDEBAR ── */
-  .sidebar{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;}
-  .sidebar-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
-  .sidebar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
-  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+  .sidebar{
+    position:sticky;top:90px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+
+  .sidebar-card{
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:14px;padding:18px;
+    position:relative;overflow:hidden;
+  }
+  .sidebar-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--amarelo),transparent);
+  }
+
+  .sidebar-title{
+    font-family:'Bangers',cursive;
+    font-size:18px;letter-spacing:2px;
+    color:var(--amarelo);margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .top-item{
+    display:flex;align-items:center;gap:10px;
+    padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);
+    text-decoration:none;transition:all 0.2s;
+  }
   .top-item:last-child{border-bottom:none;}
   .top-item:hover .top-word{color:var(--amarelo);}
-  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;flex-shrink:0;}
-  .top-rank.ouro{color:#ffd700;}.top-rank.prata{color:#c0c0c0;}.top-rank.bronze{color:#cd7f32;}
+  .top-rank{
+    font-family:'Bangers',cursive;font-size:18px;
+    color:var(--azul);width:24px;text-align:center;flex-shrink:0;
+  }
+  .top-rank.ouro{color:#ffd700;}
+  .top-rank.prata{color:#c0c0c0;}
+  .top-rank.bronze{color:#cd7f32;}
   .top-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
   .top-busca{font-size:11px;color:#4a6fa5;font-weight:700;}
-  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+
+  .recente-item{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);
+    text-decoration:none;transition:all 0.2s;
+  }
   .recente-item:last-child{border-bottom:none;}
   .recente-item:hover .recente-word{color:var(--ciano);}
   .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);flex-shrink:0;}
   .recente-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
   .recente-data{font-size:11px;color:#4a6fa5;}
-  .sidebar-search{display:flex;gap:0;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
-  .sidebar-search input{flex:1;background:var(--card2);border:none;outline:none;padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;}
+
+  /* busca sidebar */
+  .sidebar-search{
+    display:flex;gap:0;overflow:hidden;border-radius:8px;
+    border:1.5px solid var(--borda);
+  }
+  .sidebar-search input{
+    flex:1;background:var(--card2);border:none;outline:none;
+    padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;
+  }
   .sidebar-search input::placeholder{color:#2a4a7a;}
-  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;}
+  .sidebar-search button{
+    background:var(--azul);border:none;padding:0 14px;
+    color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;
+  }
   .sidebar-search button:hover{background:#0050cc;}
 
+  /* ── LOADING / ESTADOS ── */
+  #loading-overlay{
+    position:fixed;inset:0;background:var(--fundo);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:500;gap:16px;transition:opacity 0.4s;
+  }
+  #loading-overlay.hide{opacity:0;pointer-events:none;}
+  .spinner{
+    width:44px;height:44px;border:3px solid var(--borda);
+    border-top-color:var(--ciano);border-radius:50%;
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-txt{font-family:'Fredoka One',cursive;font-size:18px;color:var(--ciano);letter-spacing:1px;}
+
+  #error-box{
+    display:none;text-align:center;padding:80px 20px;
+  }
+  #error-box .err-icon{font-size:64px;margin-bottom:16px;}
+  #error-box h2{font-family:'Bangers',cursive;font-size:2.5rem;letter-spacing:3px;color:var(--amarelo);margin-bottom:10px;}
+  #error-box p{color:#4a6fa5;font-size:16px;}
+  #error-box a{color:var(--ciano);font-weight:700;text-decoration:none;}
+
+  /* admin edit btn */
+  .btn-admin-edit{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(245,232,0,0.1);border:1px solid var(--amarelo);
+    color:var(--amarelo);border-radius:8px;padding:6px 14px;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+    text-decoration:none;transition:all 0.2s;margin-left:auto;
+  }
+  .btn-admin-edit:hover{background:rgba(245,232,0,0.2);}
+
+  /* login prompt comentários */
+  .login-prompt{
+    text-align:center;padding:18px;color:#4a6fa5;
+    font-size:14px;border:1px dashed var(--borda);border-radius:10px;
+    margin-bottom:16px;
+  }
+  .login-prompt a{color:var(--azul);font-weight:800;text-decoration:none;}
+  .login-prompt a:hover{color:var(--ciano);}
+
+  /* reação hint */
+  .reacao-hint-login{
+    font-size:12px;color:#4a6fa5;width:100%;margin-top:4px;
+  }
+
+  /* copy feedback */
+  .copy-ok{display:none;font-size:12px;color:#00ff99;margin-left:8px;}
+
+  /* ── RESPONSIVE ── */
   @media(max-width:768px){
     .page-wrap{grid-template-columns:1fr;}
     .sidebar{position:static;}
     .nav-links{display:none;}
     .menu-btn{display:flex;}
+    .palavra-titulo{font-size:clamp(52px,18vw,80px);}
   }
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">Carregando palavra…</div>
+</div>
+
+<!-- ERRO -->
+<div id="error-box">
+  <div class="err-icon">🔍</div>
+  <h2>Palavra não encontrada</h2>
+  <p>Essa gíria ainda não está no nosso universo.<br><br>
+    <a href="index.html">← Voltar ao início</a> &nbsp;·&nbsp;
+    <a href="todas.html">Ver todas as palavras</a>
+  </p>
+</div>
+
+<!-- NAV -->
 <nav>
-  <a href="index.html" class="logo-main">CyberCity</a>
+  <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html">Todas</a>
     <a href="categorias.html">Categorias</a>
     <a href="rimas.html">Rimas</a>
     <a href="tarot.html">Tarot</a>
-    <a href="cadastro.html">Entrar</a>
+    <a href="cadastro.html" id="nav-login">Entrar</a>
+    <a href="admin.html" id="nav-admin" style="display:none;color:var(--amarelo)">⚙️ Admin</a>
   </div>
-  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  <button class="menu-btn" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -261,312 +515,523 @@
   <a href="categorias.html">🗂️ Categorias</a>
   <a href="rimas.html">🎵 Rimas</a>
   <a href="tarot.html">🃏 Tarot de Gírias</a>
-  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
+  <a href="cadastro.html" id="nav-mobile-login">👤 Entrar / Cadastrar</a>
+  <a href="admin.html" id="nav-mobile-admin" style="display:none;color:var(--amarelo)">⚙️ Admin</a>
 </nav>
 
-<div class="page-wrap">
-<main class="main-col">
+<!-- PAGE -->
+<div class="page-wrap" id="page-wrap" style="display:none">
 
-  <div class="breadcrumb">
-    <a href="index.html">Início</a><span>›</span>
-    <a href="todas.html">Todas</a><span>›</span>
-    <span style="color:var(--ciano)">Aloha</span>
-  </div>
+  <!-- MAIN -->
+  <main class="main-col">
 
-  <!-- TÍTULO — tamanho automático via JS -->
-  <h1 class="palavra-titulo" id="palavraTitulo">ALOHA</h1>
+    <!-- breadcrumb -->
+    <div class="breadcrumb">
+      <a href="index.html">Início</a>
+      <span>›</span>
+      <a href="todas.html">Todas</a>
+      <span>›</span>
+      <span id="bc-categoria"></span>
+      <span id="bc-sep" style="display:none">›</span>
+      <span id="bc-palavra" style="color:var(--ciano)"></span>
+    </div>
 
-  <!-- PRONUNCIA -->
-  <div class="pronuncia">🔊 Como pronunciar: <span>A · LO · RRA</span></div>
+    <!-- título -->
+    <h1 class="palavra-titulo" id="wd-titulo"></h1>
 
-  <!-- META -->
-  <div class="meta-info">
-    <div class="avatar">R</div>
-    <div class="meta-text">Enviado por <strong>rodrigo_surf</strong> · 17 de abril de 2026</div>
-  </div>
+    <!-- pronuncia -->
+    <div class="pronuncia" id="wd-pronuncia" style="display:none">🔊 Como pronunciar: <span id="wd-pronuncia-txt"></span></div>
 
-  <!-- CATEGORIAS -->
-  <div class="categorias">
-    <a href="categoria.html?c=girias-surf" class="cat-tag">🏄 Gírias de Surf</a>
-    <a href="categoria.html?c=girias-praia" class="cat-tag">🌊 Gírias da Praia</a>
-    <a href="categoria.html?c=cumprimentos" class="cat-tag">👋 Cumprimentos</a>
-    <a href="categoria.html?c=girias-havai" class="cat-tag">🌺 Gírias do Havaí</a>
-    <a href="categoria.html?c=interjeicoes" class="cat-tag">💬 Interjeições</a>
-    <a href="categoria.html?c=girias-amor" class="cat-tag">❤️ Gírias de Amor</a>
-  </div>
-
-  <!-- TAGS -->
-  <div class="tags-section">
-    <span class="tags-label">#</span>
-    <a href="busca.html?tag=praia" class="hash-tag">#praia</a>
-    <a href="busca.html?tag=surf" class="hash-tag">#surf</a>
-    <a href="busca.html?tag=havai" class="hash-tag">#havaí</a>
-    <a href="busca.html?tag=anos90" class="hash-tag">#anos90</a>
-    <a href="busca.html?tag=cumprimento" class="hash-tag">#cumprimento</a>
-    <a href="busca.html?tag=despedida" class="hash-tag">#despedida</a>
-    <a href="busca.html?tag=paz" class="hash-tag">#paz</a>
-  </div>
-
-  <!-- BADGES -->
-  <div class="badges">
-    <div class="badge badge-nivel">⚡ Muito usada</div>
-    <div class="badge badge-regiao">📍 SP · RJ · Litoral</div>
-    <div class="badge badge-contexto">🌐 Geral · Praia · Internet</div>
-    <div class="badge badge-epoca">📅 Anos 90 até hoje</div>
-  </div>
-
-  <!-- IMAGEM OPCIONAL — remova este bloco se a palavra não tiver imagem -->
-  <div class="palavra-imagem">
-    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" alt="Praia e cultura do surf — Aloha">
-    <div class="palavra-imagem-caption">🌊 A cultura do surf trouxe o "Aloha" para o Brasil nos anos 90</div>
-  </div>
-
-  <!-- SIGNIFICADOS -->
-  <div class="card" style="animation-delay:0.1s">
-    <div class="card-title">📖 Significado</div>
-
-    <!-- Significado 1 -->
-    <div class="significado-bloco">
-      <div class="sig-header">
-        <div class="sig-numero">1</div>
-        <span class="sig-tipo">Saudação / Despedida</span>
+    <!-- meta -->
+    <div class="meta-info">
+      <div class="avatar" id="wd-avatar">?</div>
+      <div class="meta-text">
+        Enviado por <strong id="wd-autor">—</strong> · <span id="wd-data">—</span>
       </div>
-      <p class="significado-text">
-        Palavra havaiana usada como saudação — tipo <em>oi, aí, olá, alô</em> — mas também como despedida: <em>tchau, valeu, falou</em>. Dá pra usar em qualquer momento do papo, na chegada ou na saída.
-      </p>
-      <div class="subtitulo">🌊 Origem e contexto</div>
-      <p class="origem-text">
-        No Havaí, <strong>Aloha</strong> vai muito além de um simples "oi". A palavra carrega o significado de <em>amor, paz, afeto e compaixão</em>. No Brasil, chegou junto com a cultura do surf nos anos 90 e virou gíria versátil no litoral e nas redes sociais.
-      </p>
+      <a href="#" id="btn-editar" class="btn-admin-edit" style="display:none">✏️ Editar</a>
     </div>
 
-    <!-- Significado 2 — exemplo de múltiplo significado aprovado -->
-    <div class="significado-bloco">
-      <div class="sig-header">
-        <div class="sig-numero">2</div>
-        <span class="sig-tipo">Estado de espírito</span>
+    <!-- categorias -->
+    <div class="categorias" id="wd-categorias"></div>
+
+    <!-- badges -->
+    <div class="badges" id="wd-badges"></div>
+
+    <!-- SIGNIFICADO -->
+    <div class="card" style="animation-delay:0.1s" id="card-significado">
+      <div class="card-title">📖 Significado</div>
+      <div id="wd-significados"></div>
+    </div>
+
+    <!-- EXEMPLOS -->
+    <div class="card" style="animation-delay:0.15s" id="card-exemplos" style="display:none">
+      <div class="card-title">💬 Exemplos em frases</div>
+      <div id="wd-exemplos"></div>
+    </div>
+
+    <!-- SINÔNIMOS -->
+    <div class="card" style="animation-delay:0.2s" id="card-sinonimos" style="display:none">
+      <div class="card-title">🔄 Sinônimos</div>
+      <div class="tags-list" id="wd-sinonimos"></div>
+    </div>
+
+    <!-- TAGS / RELACIONADAS -->
+    <div class="card" style="animation-delay:0.25s" id="card-tags" style="display:none">
+      <div class="card-title">🔗 Palavras relacionadas</div>
+      <div class="tags-list" id="wd-tags"></div>
+    </div>
+
+    <!-- REAÇÕES -->
+    <div class="card" style="animation-delay:0.3s">
+      <div class="card-title">⚡ O que você achou?</div>
+      <div class="reacoes" id="wd-reacoes">
+        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
       </div>
-      <p class="significado-text">
-        Também usado para descrever um estado de espírito de gratidão e paz. Quando alguém diz "tô no aloha", significa que está tranquilo, em harmonia, sem estresse.
-      </p>
+      <div id="reacao-login-hint"></div>
     </div>
 
-  </div>
-
-  <!-- EXEMPLOS -->
-  <div class="card" style="animation-delay:0.15s">
-    <div class="card-title">💬 Exemplos em frases</div>
-    <div class="exemplo">— <strong>Aloha</strong>, galera! Chegamos! 🤙</div>
-    <div class="exemplo">— Foi demais a praia hoje, <strong>aloha</strong> pra todo mundo!</div>
-    <div class="exemplo">— Ei man, <strong>aloha</strong>! Faz quanto tempo!</div>
-    <div class="exemplo">— Tô indo, <strong>aloha</strong> pra vocês! 🌊</div>
-    <div class="exemplo">— Cara, tô no <strong>aloha</strong> total hoje. Sem estresse nenhum. ✌️</div>
-  </div>
-
-  <!-- SINÔNIMOS -->
-  <div class="card" style="animation-delay:0.2s">
-    <div class="card-title">🔄 Sinônimos</div>
-    <div class="tags-list">
-      <a href="palavra.html?w=oi" class="tag">Oi</a>
-      <a href="palavra.html?w=salve" class="tag">Salve</a>
-      <a href="palavra.html?w=eai" class="tag">E aí</a>
-      <a href="palavra.html?w=tchau" class="tag">Tchau</a>
-      <a href="palavra.html?w=valeu" class="tag">Valeu</a>
-      <a href="palavra.html?w=falou" class="tag">Falou</a>
-      <a href="palavra.html?w=abraco" class="tag">Abraço</a>
-      <a href="palavra.html?w=paz" class="tag">Paz ✌️</a>
-    </div>
-  </div>
-
-  <!-- RELACIONADAS -->
-  <div class="card" style="animation-delay:0.25s">
-    <div class="card-title">🔗 Palavras relacionadas</div>
-    <div class="tags-list">
-      <a href="palavra.html?w=surfe" class="tag">Surfe 🏄</a>
-      <a href="palavra.html?w=mana" class="tag">Mana</a>
-      <a href="palavra.html?w=dude" class="tag">Dude</a>
-      <a href="palavra.html?w=shaka" class="tag">Shaka 🤙</a>
-      <a href="palavra.html?w=vibe" class="tag">Vibe</a>
-      <a href="palavra.html?w=flow" class="tag">Flow</a>
-      <a href="palavra.html?w=curtiu" class="tag">Curtiu</a>
-    </div>
-  </div>
-
-  <!-- REAÇÕES + ENVIAR NOVO SIGNIFICADO -->
-  <div class="card" style="animation-delay:0.3s">
-    <div class="card-title">⚡ O que você achou?</div>
-    <div class="reacoes">
-      <button class="reacao-btn ativo" onclick="reagir(this)">
-        <span class="reacao-emoji">🔥</span><span class="reacao-count">247</span><span class="reacao-label">DAORA</span>
-      </button>
-      <button class="reacao-btn" onclick="reagir(this)">
-        <span class="reacao-emoji">😂</span><span class="reacao-count">89</span><span class="reacao-label">RACHEI</span>
-      </button>
-      <button class="reacao-btn" onclick="reagir(this)">
-        <span class="reacao-emoji">🤔</span><span class="reacao-count">34</span><span class="reacao-label">TENDI NÃO</span>
-      </button>
-      <button class="reacao-btn" onclick="reagir(this)">
-        <span class="reacao-emoji">👻</span><span class="reacao-count">156</span><span class="reacao-label">BIZARRO</span>
-      </button>
-      <button class="reacao-btn" onclick="reagir(this)">
-        <span class="reacao-emoji">😍</span><span class="reacao-count">312</span><span class="reacao-label">AMEI</span>
-      </button>
-    </div>
-
-    <!-- ENVIAR NOVO SIGNIFICADO -->
-    <button class="btn-novo-sig" onclick="toggleNovoSig()">
-      ✍️ Conhece outro significado? Envie o seu!
-    </button>
-    <div class="novo-sig-form" id="novoSigForm">
-      <p class="sig-aviso">⏳ Seu significado será revisado antes de aparecer no site.</p>
-      <textarea placeholder="Descreva o significado que você conhece, com contexto e exemplos..."></textarea>
-      <div class="novo-sig-btns">
-        <button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button>
-        <button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button>
+    <!-- NAV ALFABÉTICA -->
+    <div class="card" style="animation-delay:0.35s" id="card-alfa">
+      <div class="card-title">🔤 Navegação alfabética</div>
+      <div class="alfa-nav" id="wd-alfa">
+        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
       </div>
     </div>
-  </div>
 
-  <!-- NAV ALFABÉTICA -->
-  <div class="card" style="animation-delay:0.35s">
-    <div class="card-title">🔤 Navegação alfabética</div>
-    <div class="alfa-nav">
-      <div class="alfa-grupo">
-        <span class="alfa-label">◀ Anterior</span>
-        <a href="palavra.html?w=aloba" class="alfa-link">Aloba</a>
-        <a href="palavra.html?w=aloco" class="alfa-link">Alocô</a>
-        <a href="palavra.html?w=aleto" class="alfa-link">Aleto</a>
-      </div>
-      <div class="alfa-sep">|</div>
-      <div class="alfa-grupo direita">
-        <span class="alfa-label">Próxima ▶</span>
-        <a href="palavra.html?w=altas" class="alfa-link">Altas</a>
-        <a href="palavra.html?w=amasso" class="alfa-link">Amasso</a>
-        <a href="palavra.html?w=amoeba" class="alfa-link">Amoeba</a>
+    <!-- COMPARTILHAR -->
+    <div class="card" style="animation-delay:0.4s">
+      <div class="card-title">📤 Compartilhar</div>
+      <div class="share-btns">
+        <a id="share-wa" href="#" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
+        <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link <span class="copy-ok" id="copy-ok">✓</span></button>
+        <a id="share-x" href="#" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
       </div>
     </div>
-  </div>
 
-  <!-- COMPARTILHAR -->
-  <div class="card" style="animation-delay:0.4s">
-    <div class="card-title">📤 Compartilhar</div>
-    <div class="share-btns">
-      <a href="https://wa.me/?text=Sabia%20o%20que%20significa%20Aloha%3F%20Veja%20no%20CyberCity!" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
-      <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>
-      <a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20Aloha%3F%20CyberCity!" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
+    <!-- COMENTÁRIOS -->
+    <div class="card" style="animation-delay:0.45s">
+      <div class="card-title">💬 Comentários <span id="comentarios-count" style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;"></span></div>
+
+      <div id="comment-form-area"></div>
+      <div id="comment-list"></div>
     </div>
-  </div>
 
-  <!-- COMENTÁRIOS -->
-  <div class="card" style="animation-delay:0.45s">
-    <div class="card-title">💬 Comentários <span style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;">(1)</span></div>
-    <div class="comentario">
-      <div class="com-avatar">M</div>
-      <div class="com-body">
-        <div class="com-meta"><strong>mari_carioca</strong> · 2 dias atrás</div>
-        <div class="com-text">Cresci ouvindo isso na praia de Ipanema! Clássico demais 🌊🤙</div>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- busca -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">🔍 Buscar</div>
+      <div class="sidebar-search">
+        <input type="text" id="sidebar-search-input" placeholder="Buscar palavra...">
+        <button onclick="buscaSidebar()">→</button>
       </div>
     </div>
-    <div class="comment-form">
-      <textarea placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
-      <button class="btn-comentar">COMENTAR</button>
-    </div>
-  </div>
 
-</main>
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-card">
-    <div class="sidebar-title">🔍 Buscar</div>
-    <div class="sidebar-search">
-      <input type="text" placeholder="Buscar palavra...">
-      <button>→</button>
+    <!-- top 10 -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">🏆 Top 10 Mais Buscadas</div>
+      <div id="sidebar-top">
+        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
+      </div>
     </div>
-  </div>
-  <div class="sidebar-card">
-    <div class="sidebar-title">🏆 Top 10 Mais Buscadas</div>
-    <a href="#" class="top-item"><span class="top-rank ouro">1</span><span class="top-word">Simbora</span><span class="top-busca">12.4k</span></a>
-    <a href="#" class="top-item"><span class="top-rank prata">2</span><span class="top-word">Mió</span><span class="top-busca">9.8k</span></a>
-    <a href="#" class="top-item"><span class="top-rank bronze">3</span><span class="top-word">Vapo</span><span class="top-busca">8.1k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">4</span><span class="top-word">Calica</span><span class="top-busca">7.3k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">5</span><span class="top-word">Boh</span><span class="top-busca">6.9k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">6</span><span class="top-word">Cringe</span><span class="top-busca">6.2k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">7</span><span class="top-word">Din</span><span class="top-busca">5.8k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">8</span><span class="top-word">Tankar</span><span class="top-busca">5.1k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">9</span><span class="top-word">Loli</span><span class="top-busca">4.7k</span></a>
-    <a href="#" class="top-item"><span class="top-rank">10</span><span class="top-word">Meczada</span><span class="top-busca">4.2k</span></a>
-  </div>
-  <div class="sidebar-card">
-    <div class="sidebar-title">🆕 Últimas Adicionadas</div>
-    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Tchurma</span><span class="recente-data">hoje</span></a>
-    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Surtada</span><span class="recente-data">ontem</span></a>
-    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Fechou</span><span class="recente-data">2 dias</span></a>
-    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Aloha</span><span class="recente-data">3 dias</span></a>
-    <a href="#" class="recente-item"><span class="recente-dot"></span><span class="recente-word">Bora</span><span class="recente-data">5 dias</span></a>
-  </div>
-</aside>
+
+    <!-- recentes -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">🆕 Últimas Adicionadas</div>
+      <div id="sidebar-recentes">
+        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
+      </div>
+    </div>
+
+  </aside>
+
 </div>
 
 <script>
-  // ── TAMANHO DO TÍTULO AUTOMÁTICO ──
-  function ajustarTitulo(){
-    const el = document.getElementById('palavraTitulo');
-    const texto = el.textContent.trim();
-    const len = texto.length;
-    el.classList.remove('curta','media','longa','muito-longa');
-    if(len <= 6)       el.classList.add('curta');
-    else if(len <= 12) el.classList.add('media');
-    else if(len <= 20) el.classList.add('longa');
-    else               el.classList.add('muito-longa');
-  }
-  ajustarTitulo();
+(async () => {
+  const sb = window._supabase;
+  const $ = id => document.getElementById(id);
 
-  // ── MENU ──
-  function toggleMenu(){
-    document.getElementById('navMobile').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
+  // ── parâmetro: aceita ?palavra=slug ou ?w=slug (compatibilidade) ──
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('palavra') || params.get('w') || '';
+
+  function fmtData(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+  }
+  function fmtDataRelativa(iso) {
+    if (!iso) return '';
+    const diff = Date.now() - new Date(iso).getTime();
+    const d = Math.floor(diff / 86400000);
+    if (d === 0) return 'hoje';
+    if (d === 1) return 'ontem';
+    if (d < 7)  return `${d} dias`;
+    if (d < 30) return `${Math.floor(d/7)} sem.`;
+    return `${Math.floor(d/30)} mes.`;
   }
 
-  // ── REAÇÕES ──
-  function reagir(btn){
-    const ativo = btn.classList.contains('ativo');
-    document.querySelectorAll('.reacao-btn').forEach(b=>b.classList.remove('ativo'));
-    if(!ativo){
-      btn.classList.add('ativo');
-      const count = btn.querySelector('.reacao-count');
-      count.textContent = parseInt(count.textContent)+1;
+  function mostrarErro() {
+    $('loading-overlay').classList.add('hide');
+    $('error-box').style.display = 'block';
+  }
+
+  // ── sem slug → erro ──
+  if (!slug) { mostrarErro(); return; }
+
+  // ── auth ──
+  let session = null, perfil = null;
+  try {
+    const { data: { session: s } } = await sb.auth.getSession();
+    session = s;
+    if (session) {
+      $('nav-login').textContent = '👤 Perfil';
+      $('nav-mobile-login').textContent = '👤 Meu Perfil';
+      const { data: p } = await sb.from('perfis')
+        .select('nome_usuario, is_admin')
+        .eq('id', session.user.id).single();
+      perfil = p;
+      if (p?.is_admin) {
+        $('nav-admin').style.display = 'inline';
+        $('nav-mobile-admin').style.display = 'block';
+      }
+    }
+  } catch(e) {}
+
+  // ── busca principal ──
+  const { data: palavra, error } = await sb
+    .from('palavras')
+    .select(`
+      id, titulo, slug, status, nivel, pronuncia, criado_em, visualizacoes,
+      categorias ( id, nome, slug ),
+      perfis ( nome_usuario )
+    `)
+    .eq('slug', slug)
+    .single();
+
+  if (error || !palavra) { mostrarErro(); return; }
+
+  // ── busças paralelas ──
+  const [
+    { data: significados },
+    { data: exemplos },
+    { data: ptags },
+    { data: sins },
+    { data: reacoes },
+    { data: comentarios }
+  ] = await Promise.all([
+    sb.from('significados').select('texto, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
+    sb.from('exemplos').select('texto, ordem').eq('palavra_id', palavra.id).order('ordem'),
+    sb.from('palavras_tags').select('tags(nome, slug)').eq('palavra_id', palavra.id),
+    sb.from('sinonimos').select('sinonimo_texto, sinonimo_palavra_id, palavras!sinonimos_sinonimo_palavra_id_fkey(titulo,slug)').eq('palavra_id', palavra.id),
+    sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
+    sb.from('comentarios').select('id, texto, criado_em, perfis(nome_usuario)').eq('palavra_id', palavra.id).eq('status','aprovado').order('criado_em')
+  ]);
+
+  // minha reação
+  let minhaReacao = null;
+  if (session) {
+    const mr = (reacoes || []).find(r => r.usuario_id === session.user.id);
+    minhaReacao = mr?.tipo || null;
+  }
+
+  // incrementa views (best-effort)
+  sb.from('palavras').update({ visualizacoes: (palavra.visualizacoes || 0) + 1 }).eq('id', palavra.id);
+
+  // ══ RENDER ══════════════════════════════════════════
+
+  // ── SEO ──
+  const titulo = palavra.titulo;
+  const primSig = significados?.[0]?.texto || '';
+  $('page-title').textContent = `${titulo} — o que significa? | CyberUniverso`;
+  $('meta-desc').content = primSig
+    ? `${titulo}: ${primSig.substring(0,150)}`
+    : `Significado de ${titulo} no dicionário de gírias CyberUniverso.`;
+
+  // ── título ──
+  $('wd-titulo').textContent = titulo.toUpperCase();
+
+  // ── breadcrumb ──
+  $('bc-palavra').textContent = titulo;
+  if (palavra.categorias) {
+    $('bc-categoria').innerHTML = `<a href="categoria.html?c=${palavra.categorias.slug}">${palavra.categorias.nome}</a>`;
+    $('bc-sep').style.display = 'inline';
+  }
+
+  // ── pronúncia ──
+  if (palavra.pronuncia) {
+    $('wd-pronuncia-txt').textContent = palavra.pronuncia;
+    $('wd-pronuncia').style.display = 'block';
+  }
+
+  // ── avatar + autor ──
+  const nomeAutor = palavra.perfis?.nome_usuario || 'anônimo';
+  $('wd-avatar').textContent = nomeAutor[0].toUpperCase();
+  $('wd-autor').textContent = nomeAutor;
+  $('wd-data').textContent = fmtData(palavra.criado_em);
+
+  // ── botão editar (admin) ──
+  if (perfil?.is_admin) {
+    $('btn-editar').href = `editar-palavra.html?id=${palavra.id}`;
+    $('btn-editar').style.display = 'inline-flex';
+  }
+
+  // ── categoria tag ──
+  const catWrap = $('wd-categorias');
+  if (palavra.categorias) {
+    catWrap.innerHTML = `<a href="categoria.html?c=${palavra.categorias.slug}" class="cat-tag">🗂 ${palavra.categorias.nome}</a>`;
+  }
+
+  // ── badges ──
+  const badgeWrap = $('wd-badges');
+  const nivelMap = { basico:'🟢 Básico', intermediario:'🟡 Intermediário', avancado:'🔴 Avançado' };
+  if (palavra.nivel) {
+    badgeWrap.innerHTML += `<div class="badge badge-nivel">⚡ ${nivelMap[palavra.nivel] || palavra.nivel}</div>`;
+  }
+  if (palavra.visualizacoes) {
+    badgeWrap.innerHTML += `<div class="badge badge-regiao">👁 ${(palavra.visualizacoes+1).toLocaleString('pt-BR')} views</div>`;
+  }
+  const statusMap = { aprovado:'✅ Aprovada', pendente:'⏳ Pendente', recusado:'❌ Recusada' };
+  if (statusMap[palavra.status]) {
+    badgeWrap.innerHTML += `<div class="badge badge-epoca">${statusMap[palavra.status]}</div>`;
+  }
+
+  // ── significados ──
+  const sigWrap = $('wd-significados');
+  if (significados?.length) {
+    significados.forEach((s, i) => {
+      if (s.subtitulo) {
+        sigWrap.innerHTML += `<div class="subtitulo">▸ ${s.subtitulo}</div>`;
+      } else if (i > 0) {
+        sigWrap.innerHTML += `<div class="subtitulo">▸ Definição ${i+1}</div>`;
+      }
+      sigWrap.innerHTML += `<p class="significado-text">${s.texto}</p>${i < significados.length-1 ? '<br>' : ''}`;
+    });
+  } else {
+    sigWrap.innerHTML = `<p class="significado-text" style="color:#4a6fa5">Significado ainda não cadastrado.</p>`;
+  }
+
+  // ── exemplos ──
+  const exWrap = $('wd-exemplos');
+  if (exemplos?.length) {
+    $('card-exemplos').style.display = 'block';
+    exemplos.forEach(ex => {
+      exWrap.innerHTML += `<div class="exemplo">— ${ex.texto}</div>`;
+    });
+  }
+
+  // ── sinônimos ──
+  const sinWrap = $('wd-sinonimos');
+  if (sins?.length) {
+    $('card-sinonimos').style.display = 'block';
+    sins.forEach(s => {
+      const p = s.palavras;
+      const label = p?.titulo || s.sinonimo_texto;
+      const href  = p ? `palavra.html?palavra=${p.slug}` : '#';
+      sinWrap.innerHTML += `<a href="${href}" class="tag">${label}</a>`;
+    });
+  }
+
+  // ── tags ──
+  const tagWrap = $('wd-tags');
+  if (ptags?.length) {
+    $('card-tags').style.display = 'block';
+    ptags.forEach(({ tags: t }) => {
+      if (!t) return;
+      tagWrap.innerHTML += `<a href="todas.html?tag=${t.slug}" class="tag">#${t.nome}</a>`;
+    });
+  }
+
+  // ── reações ──
+  const TIPOS = [
+    { tipo:'positivo',   emoji:'🔥', label:'CLÁSSICA'  },
+    { tipo:'engraçado',  emoji:'😂', label:'ENGRAÇADA' },
+    { tipo:'duvida',     emoji:'🤔', label:'CONFUSA'   },
+    { tipo:'negativo',   emoji:'💀', label:'MORTA'     },
+    { tipo:'util',       emoji:'✨', label:'INCRÍVEL'  },
+  ];
+  const contagem = {};
+  (reacoes || []).forEach(r => { contagem[r.tipo] = (contagem[r.tipo] || 0) + 1; });
+
+  const reWrap = $('wd-reacoes');
+  reWrap.innerHTML = '';
+  TIPOS.forEach(({ tipo, emoji, label }) => {
+    const btn = document.createElement('button');
+    btn.className = 'reacao-btn' + (minhaReacao === tipo ? ' ativo' : '');
+    btn.dataset.tipo = tipo;
+    btn.innerHTML = `
+      <span class="reacao-emoji">${emoji}</span>
+      <span class="reacao-count">${contagem[tipo] || 0}</span>
+      <span class="reacao-label">${label}</span>`;
+    btn.addEventListener('click', () => reagir(tipo, btn));
+    reWrap.appendChild(btn);
+  });
+  if (!session) {
+    $('reacao-login-hint').innerHTML = `<p class="reacao-hint-login">⚡ <a href="cadastro.html" style="color:var(--azul);font-weight:800">Faça login</a> para reagir</p>`;
+  }
+
+  async function reagir(tipo, btnEl) {
+    if (!session) { location.href = 'cadastro.html'; return; }
+    const jaAtivo = btnEl.classList.contains('ativo');
+    document.querySelectorAll('.reacao-btn').forEach(b => b.classList.remove('ativo'));
+
+    if (jaAtivo) {
+      await sb.from('reacoes').delete().eq('palavra_id', palavra.id).eq('usuario_id', session.user.id);
+      const c = btnEl.querySelector('.reacao-count');
+      c.textContent = Math.max(0, parseInt(c.textContent) - 1);
+      minhaReacao = null;
+    } else {
+      if (minhaReacao) {
+        const antBtn = reWrap.querySelector(`[data-tipo="${minhaReacao}"] .reacao-count`);
+        if (antBtn) antBtn.textContent = Math.max(0, parseInt(antBtn.textContent) - 1);
+      }
+      await sb.from('reacoes').upsert(
+        { palavra_id: palavra.id, usuario_id: session.user.id, tipo },
+        { onConflict: 'palavra_id,usuario_id' }
+      );
+      const c = btnEl.querySelector('.reacao-count');
+      c.textContent = parseInt(c.textContent) + 1;
+      btnEl.classList.add('ativo');
+      minhaReacao = tipo;
     }
   }
 
-  // ── NOVO SIGNIFICADO ──
-  function toggleNovoSig(){
-    const form = document.getElementById('novoSigForm');
-    form.classList.toggle('aberto');
+  // ── nav alfabética ──
+  const alfaWrap = $('wd-alfa');
+  const letra = titulo[0].toUpperCase();
+  const [{ data: anteriores }, { data: proximas }] = await Promise.all([
+    sb.from('palavras').select('titulo, slug').eq('status','aprovado')
+      .lt('titulo', titulo).order('titulo', { ascending: false }).limit(3),
+    sb.from('palavras').select('titulo, slug').eq('status','aprovado')
+      .gt('titulo', titulo).order('titulo', { ascending: true }).limit(3)
+  ]);
+
+  let alfaHTML = '';
+  if (anteriores?.length) {
+    alfaHTML += `<div class="alfa-grupo">
+      <span class="alfa-label">◀ Anterior</span>
+      ${anteriores.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.titulo}</a>`).join('')}
+    </div><div class="alfa-sep">|</div>`;
   }
-  function enviarSig(){
-    const form = document.getElementById('novoSigForm');
-    const ta = form.querySelector('textarea');
-    if(!ta.value.trim()){ ta.style.borderColor='#ff5050'; return; }
-    ta.style.borderColor='';
-    form.classList.remove('aberto');
-    ta.value='';
-    // mostra confirmação
-    const btn = document.querySelector('.btn-novo-sig');
-    btn.textContent='✅ Significado enviado! Aguardando revisão.';
-    btn.style.color='#64ff96';
-    btn.style.borderColor='rgba(100,255,150,0.4)';
-    btn.style.background='rgba(100,255,150,0.08)';
-    btn.onclick = null;
-    // Aqui conecta com Supabase
+  if (proximas?.length) {
+    alfaHTML += `<div class="alfa-grupo direita">
+      <span class="alfa-label">Próxima ▶</span>
+      ${proximas.map(p => `<a href="palavra.html?palavra=${p.slug}" class="alfa-link">${p.titulo}</a>`).join('')}
+    </div>`;
+  }
+  alfaWrap.innerHTML = alfaHTML || `<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha encontrada.</span>`;
+
+  // ── compartilhar ──
+  const pageUrl = location.href;
+  const shareTexto = `Descobri o significado de "${titulo}" no CyberUniverso! 🤙`;
+  $('share-wa').href = `https://wa.me/?text=${encodeURIComponent(shareTexto + '\n' + pageUrl)}`;
+  $('share-x').href  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTexto)}&url=${encodeURIComponent(pageUrl)}`;
+
+  window.copiarLink = async () => {
+    await navigator.clipboard.writeText(pageUrl).catch(()=>{});
+    const ok = $('copy-ok');
+    ok.style.display = 'inline';
+    setTimeout(() => ok.style.display = 'none', 2000);
+  };
+
+  // ── comentários ──
+  $('comentarios-count').textContent = comentarios?.length ? `(${comentarios.length})` : '';
+
+  const formArea = $('comment-form-area');
+  if (session) {
+    formArea.innerHTML = `
+      <div class="comment-form">
+        <textarea id="comment-txt" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
+        <button class="btn-comentar" id="btn-comentar">COMENTAR</button>
+        <span id="comment-msg" style="font-size:12px;margin-left:10px;color:#00ff99;display:none"></span>
+      </div>`;
+    $('btn-comentar').addEventListener('click', async () => {
+      const txt = $('comment-txt').value.trim();
+      if (!txt) return;
+      $('btn-comentar').disabled = true;
+      const { error: ce } = await sb.from('comentarios').insert({
+        palavra_id: palavra.id, usuario_id: session.user.id,
+        texto: txt, status: 'pendente'
+      });
+      if (!ce) {
+        $('comment-txt').value = '';
+        const msg = $('comment-msg');
+        msg.textContent = '✅ Enviado! Aguarda aprovação.';
+        msg.style.display = 'inline';
+        setTimeout(() => msg.style.display = 'none', 4000);
+      }
+      $('btn-comentar').disabled = false;
+    });
+  } else {
+    formArea.innerHTML = `
+      <div class="login-prompt">
+        <a href="cadastro.html">Faça login</a> para deixar um comentário 💬
+      </div>`;
   }
 
-  // ── COPIAR LINK ──
-  function copiarLink(){
-    navigator.clipboard.writeText(window.location.href).then(()=>{
-      alert('Link copiado! 🔗');
+  const cList = $('comment-list');
+  if (!comentarios?.length) {
+    cList.innerHTML = `<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>`;
+  } else {
+    cList.innerHTML = '';
+    comentarios.forEach(c => {
+      const nome = c.perfis?.nome_usuario || 'anônimo';
+      const avatarColors = ['linear-gradient(135deg,#f5e800,#f5a800)','linear-gradient(135deg,#ff64c8,#a855f7)','linear-gradient(135deg,#00eaff,#1a6ef5)','linear-gradient(135deg,#00ff99,#1a6ef5)'];
+      const cor = avatarColors[nome.charCodeAt(0) % avatarColors.length];
+      const textColor = cor.includes('f5e800') ? '#000' : '#fff';
+      cList.innerHTML += `
+        <div class="comentario">
+          <div class="com-avatar" style="background:${cor};color:${textColor}">${nome[0].toUpperCase()}</div>
+          <div class="com-body">
+            <div class="com-meta"><strong>${nome}</strong> · ${fmtDataRelativa(c.criado_em)}</div>
+            <div class="com-text">${c.texto}</div>
+          </div>
+        </div>`;
     });
   }
+
+  // ── sidebar: top 10 + recentes ──
+  const [{ data: top10 }, { data: recentes }] = await Promise.all([
+    sb.from('palavras').select('titulo, slug, visualizacoes').eq('status','aprovado')
+      .order('visualizacoes', { ascending: false }).limit(10),
+    sb.from('palavras').select('titulo, slug, criado_em').eq('status','aprovado')
+      .order('criado_em', { ascending: false }).limit(5)
+  ]);
+
+  const rankClass = ['ouro','prata','bronze'];
+  $('sidebar-top').innerHTML = (top10 || []).map((p, i) => `
+    <a href="palavra.html?palavra=${p.slug}" class="top-item">
+      <span class="top-rank ${rankClass[i] || ''}">${i+1}</span>
+      <span class="top-word">${p.titulo}</span>
+      <span class="top-busca">${p.visualizacoes ? (p.visualizacoes > 999 ? (p.visualizacoes/1000).toFixed(1)+'k' : p.visualizacoes) : '—'}</span>
+    </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
+
+  $('sidebar-recentes').innerHTML = (recentes || []).map(p => `
+    <a href="palavra.html?palavra=${p.slug}" class="recente-item">
+      <span class="recente-dot"></span>
+      <span class="recente-word">${p.titulo}</span>
+      <span class="recente-data">${fmtDataRelativa(p.criado_em)}</span>
+    </a>`).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
+
+  // ── sidebar busca ──
+  window.buscaSidebar = () => {
+    const q = $('sidebar-search-input').value.trim();
+    if (q) location.href = `todas.html?q=${encodeURIComponent(q)}`;
+  };
+  $('sidebar-search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.buscaSidebar();
+  });
+
+  // ── revela tudo ──
+  setTimeout(() => {
+    $('loading-overlay').classList.add('hide');
+    $('page-wrap').style.display = 'grid';
+  }, 100);
+
+})();
 </script>
 </body>
 </html>
