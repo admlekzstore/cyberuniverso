@@ -714,12 +714,12 @@
     { data: reacoes },
     { data: comentarios }
   ] = await Promise.all([
-    sb.from('significados').select('descricao, subtitulo, ordem').eq('palavra_id', palavra.id).order('ordem'),
+    sb.from('significados').select('descricao, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('exemplos').select('frase, ordem').eq('palavra_id', palavra.id).order('ordem'),
     sb.from('palavras_tags').select('tags(nome)').eq('palavra_id', palavra.id),
     sb.from('sinonimos').select('sinonimo').eq('palavra_id', palavra.id),
     sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
-    sb.from('comentarios').select('id, texto, criado_em, usuario_id').eq('palavra_id', palavra.id).eq('status', 'aprovado').order('criado_em')
+    sb.from('comentarios').select('id, texto, criado_em, usuario_id').eq('palavra_id', palavra.id).order('criado_em')
   ]);
 
   let minhaReacao = null;
@@ -888,8 +888,8 @@
   // nav alfabética
   var alfaWrap = $('wd-alfa');
   var resAlfa = await Promise.all([
-    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').lt('termo', titulo).order('termo', { ascending: false }).limit(3),
-    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').gt('termo', titulo).order('termo', { ascending: true }).limit(3)
+    sb.from('palavras').select('termo, slug').lt('termo', titulo).order('termo', { ascending: false }).limit(3),
+    sb.from('palavras').select('termo, slug').gt('termo', titulo).order('termo', { ascending: true }).limit(3)
   ]);
   var anteriores = resAlfa[0].data;
   var proximas   = resAlfa[1].data;
@@ -969,8 +969,8 @@
 
   // sidebar
   var resSidebar = await Promise.all([
-    sb.from('palavras').select('termo, slug').eq('status', 'aprovado').order('termo', { ascending: true }).limit(10),
-    sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovado').order('criado_em', { ascending: false }).limit(5)
+    sb.from('palavras').select('termo, slug').order('termo', { ascending: true }).limit(10),
+    sb.from('palavras').select('termo, slug, criado_em').order('criado_em', { ascending: false }).limit(5)
   ]);
   var top10   = resSidebar[0].data;
   var recentes = resSidebar[1].data;
