@@ -278,7 +278,7 @@ async function carregarPalavra() {
       sinonimos(*),
       categorias(id, nome, icone),
       tags:palavras_tags(tags(nome)),
-      perfis(username)
+
     `)
     .eq('slug', slug)
     .eq('status', 'aprovada')
@@ -334,7 +334,7 @@ function renderPalavra(p, reacoes) {
   const sigs = (p.significados || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
   const exemplos = p.exemplos || []
   const sinonimos = p.sinonimos || []
-  const username = p.perfis?.username || 'anônimo'
+  const username = 'CyberUniverso'
   const dataFormatada = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
 
   const mainCol = document.getElementById('mainCol')
@@ -501,7 +501,7 @@ function renderPalavra(p, reacoes) {
 // ── COMENTÁRIOS ──
 async function carregarComentarios(pid) {
   const { data } = await sb.from('comentarios')
-    .select('*, perfis(username)')
+    .select('id, texto, criado_em')
     .eq('palavra_id', pid)
     .order('criado_em', { ascending: false })
 
@@ -520,7 +520,7 @@ async function carregarComentarios(pid) {
     <div class="comentario">
       <div class="com-avatar">${(c.perfis?.username || 'A')[0].toUpperCase()}</div>
       <div class="com-body">
-        <div class="com-meta"><strong>${c.perfis?.username || 'Anônimo'}</strong> · ${formatarData(c.criado_em)}</div>
+        <div class="com-meta"><strong>${'Usuário'}</strong> · ${formatarData(c.criado_em)}</div>
         <div class="com-text">${c.texto}</div>
       </div>
     </div>
