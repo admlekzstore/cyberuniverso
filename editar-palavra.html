@@ -67,7 +67,7 @@
   .btn-adicionar-item{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.08);border:1.5px dashed rgba(26,110,245,0.3);color:#4a8aff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;}
   .btn-adicionar-item:hover{background:rgba(26,110,245,0.15);border-color:var(--azul);}
 
-  /* ── TAGS ── */
+  /* ── TAGS / CATEGORIAS MÚLTIPLAS ── */
   .tags-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .tag-item{display:flex;align-items:center;gap:4px;background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:#7ab0ff;}
   .tag-item button{background:none;border:none;color:#4a6fa5;cursor:pointer;font-size:14px;line-height:1;padding:0 2px;}
@@ -76,6 +76,16 @@
   .tag-input-row input{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
   .tag-input-row input:focus{border-color:var(--azul);}
   .tag-input-row button{background:var(--azul);border:none;border-radius:10px;padding:9px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;}
+
+  /* categorias selecionadas */
+  .cat-selecionada{display:flex;align-items:center;gap:4px;background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:var(--ciano);}
+  .cat-selecionada button{background:none;border:none;color:#4a6fa5;cursor:pointer;font-size:14px;line-height:1;padding:0 2px;}
+  .cat-selecionada button:hover{color:var(--vermelho);}
+  .cat-add-row{display:flex;gap:8px;margin-top:8px;}
+  .cat-add-row select{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .cat-add-row select:focus{border-color:var(--azul);}
+  .cat-add-row select option{background:var(--card2);}
+  .cat-add-row button{background:var(--azul);border:none;border-radius:10px;padding:9px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;}
 
   /* ── BADGES ── */
   .badges-grid{display:flex;flex-wrap:wrap;gap:8px;}
@@ -126,6 +136,7 @@ const palavraId = params.get('id')
 let statusAtual = 'pendente'
 let tagsAtuais = []
 let categoriasDisponiveis = []
+let categoriasSelecionadas = [] // múltiplas categorias
 
 async function init() {
   const { data: { session } } = await sb.auth.getSession()
@@ -146,22 +157,23 @@ async function init() {
 
 async function carregarPalavra() {
   const { data: p } = await sb.from('palavras')
-    .select('*, significados(*), exemplos(*), sinonimos(*), tags:palavras_tags(tag_id, tags(nome))')
+    .select('*, significados(*), exemplos(*), sinonimos(*), palavras_relacionadas(*), tags:palavras_tags(tag_id, tags(nome)), cats:palavras_categorias(categoria_id)')
     .eq('id', palavraId)
     .single()
   if (!p) { document.getElementById('pageWrap').innerHTML = '<div class="loading">Palavra não encontrada.</div>'; return }
   statusAtual = p.status
   tagsAtuais = (p.tags || []).map(t => t.tags?.nome).filter(Boolean)
+  categoriasSelecionadas = (p.cats || []).map(c => c.categoria_id)
+  // se não tem categorias múltiplas ainda mas tem categoria_id, usar ela
+  if (categoriasSelecionadas.length === 0 && p.categoria_id) {
+    categoriasSelecionadas = [p.categoria_id]
+  }
   renderFormulario(p)
 }
 
 function renderFormulario(p) {
   const wrap = document.getElementById('pageWrap')
-  const catId = p?.categoria_id || ''
-  const subOpts = catId ? (categoriasDisponiveis.find(c => c.id == catId)?.subcategorias || []) : []
-
-  // significados com extras vazios por padrão
-  const sigs = p?.significados?.length ? p.significados.sort((a,b) => a.ordem - b.ordem) : [{ descricao: '', extras: [] }]
+  const sigs = p?.significados?.length ? p.significados.sort((a,b) => a.ordem - b.ordem) : [{ descricao: '' }]
 
   wrap.innerHTML = `
     <!-- BÁSICO -->
@@ -189,7 +201,7 @@ function renderFormulario(p) {
     <div class="secao-card">
       <div class="secao-titulo">📖 Significados</div>
       <div class="sig-lista" id="lista-significados">
-        ${sigs.map((s, i) => criarBlocoSignificado(i + 1, s.descricao || '', [])).join('')}
+        ${sigs.map((s, i) => criarBlocoSignificado(i + 1, s.descricao || '')).join('')}
       </div>
       <button class="btn-adicionar-item" onclick="adicionarSignificado()">➕ Adicionar significado</button>
     </div>
@@ -207,24 +219,19 @@ function renderFormulario(p) {
       <button class="btn-adicionar-item" onclick="adicionarExemplo()">➕ Adicionar exemplo</button>
     </div>
 
-    <!-- CATEGORIA -->
+    <!-- CATEGORIAS MÚLTIPLAS -->
     <div class="secao-card">
-      <div class="secao-titulo">🗂️ Categoria</div>
-      <div class="grid-2">
-        <div class="campo">
-          <label>Categoria</label>
-          <select id="f-categoria" onchange="atualizarSubcategorias()">
-            <option value="">Selecionar...</option>
-            ${categoriasDisponiveis.map(c => `<option value="${c.id}" ${p?.categoria_id==c.id?'selected':''}>${c.nome}</option>`).join('')}
-          </select>
-        </div>
-        <div class="campo">
-          <label>Subcategoria</label>
-          <select id="f-subcategoria">
-            <option value="">Selecionar...</option>
-            ${subOpts.map(s => `<option value="${s.id}" ${p?.subcategoria_id==s.id?'selected':''}>${s.nome}</option>`).join('')}
-          </select>
-        </div>
+      <div class="secao-titulo">🗂️ Categorias</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:12px;">Você pode adicionar mais de uma categoria para esta palavra.</p>
+      <div class="tags-wrap" id="cats-selecionadas">
+        ${renderCatsSelecionadas()}
+      </div>
+      <div class="cat-add-row">
+        <select id="cat-select">
+          <option value="">Selecionar categoria...</option>
+          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+        </select>
+        <button onclick="adicionarCategoria()">➕ Adicionar</button>
       </div>
     </div>
 
@@ -276,7 +283,7 @@ function renderFormulario(p) {
         ${tagsAtuais.map(t=>`<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')}
       </div>
       <div class="tag-input-row">
-        <input type="text" id="tag-input" placeholder="Adicionar tag..." onkeydown="if(event.key==='Enter'){adicionarTag();event.preventDefault()}">
+        <input type="text" id="tag-input" placeholder="tag1, tag2, tag3 (separe por vírgula)" onkeydown="if(event.key==='Enter'){adicionarTag();event.preventDefault()}">
         <button onclick="adicionarTag()">Adicionar</button>
       </div>
     </div>
@@ -294,10 +301,23 @@ function renderFormulario(p) {
       <button class="btn-adicionar-item" onclick="adicionarSinonimo()">➕ Adicionar sinônimo</button>
     </div>
 
+    <!-- PALAVRAS RELACIONADAS -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔀 Palavras Relacionadas</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:12px;">Palavras relacionadas à gíria mas que não são sinônimos.</p>
+      <div class="lista-dinamica" id="lista-relacionadas">
+        ${(p?.palavras_relacionadas?.length ? p.palavras_relacionadas : [{relacionada:''}]).map(r=>`
+          <div class="lista-item">
+            <input type="text" placeholder="ex: Surf, Praia, Havaí" value="${r.relacionada||''}">
+            <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarRelacionada()">➕ Adicionar relacionada</button>
+    </div>
+
     <button class="btn-salvar-top" style="width:100%;padding:16px;font-size:22px;border-radius:12px;" onclick="salvarTudo()">💾 SALVAR TUDO</button>
   `
 
-  // auto slug apenas para nova palavra
   document.getElementById('f-termo').addEventListener('input', function() {
     if (!palavraId) {
       document.getElementById('f-slug').value = this.value.toLowerCase()
@@ -307,14 +327,37 @@ function renderFormulario(p) {
   })
 }
 
-// ── BLOCO DE SIGNIFICADO ──
-function criarBlocoSignificado(num, texto, extras) {
+// ── CATEGORIAS MÚLTIPLAS ──
+function renderCatsSelecionadas() {
+  return categoriasSelecionadas.map(id => {
+    const cat = categoriasDisponiveis.find(c => c.id == id)
+    if (!cat) return ''
+    return `<div class="cat-selecionada">📁 ${cat.nome}<button onclick="removerCategoria('${id}')">✕</button></div>`
+  }).join('')
+}
+
+function adicionarCategoria() {
+  const sel = document.getElementById('cat-select')
+  const id = sel.value
+  if (!id || categoriasSelecionadas.includes(id)) return
+  categoriasSelecionadas.push(id)
+  document.getElementById('cats-selecionadas').innerHTML = renderCatsSelecionadas()
+  sel.value = ''
+}
+
+function removerCategoria(id) {
+  categoriasSelecionadas = categoriasSelecionadas.filter(c => c != id)
+  document.getElementById('cats-selecionadas').innerHTML = renderCatsSelecionadas()
+}
+
+// ── SIGNIFICADOS ──
+function criarBlocoSignificado(num, texto) {
   return `
     <div class="sig-bloco-wrap">
       <div class="sig-bloco">
         <div class="sig-numero">Significado ${num}</div>
         <textarea class="sig-texto" placeholder="Descreva o significado...">${texto}</textarea>
-        <div class="sig-extras" id="extras-sig-${num}"></div>
+        <div class="sig-extras"></div>
         <div class="sig-acoes">
           <button class="btn-add-sub" onclick="adicionarExtra(this)">➕ Título adicional</button>
         </div>
@@ -337,14 +380,13 @@ function adicionarExtra(btn) {
 function adicionarSignificado() {
   const lista = document.getElementById('lista-significados')
   const num = lista.querySelectorAll('.sig-bloco-wrap').length + 1
-  lista.insertAdjacentHTML('beforeend', criarBlocoSignificado(num, '', []))
+  lista.insertAdjacentHTML('beforeend', criarBlocoSignificado(num, ''))
 }
 
 function removerSig(btn) {
   const lista = document.getElementById('lista-significados')
   if (lista.querySelectorAll('.sig-bloco-wrap').length > 1) {
     btn.closest('.sig-bloco-wrap').remove()
-    // renumerar
     lista.querySelectorAll('.sig-numero').forEach((el, i) => el.textContent = `Significado ${i+1}`)
   }
 }
@@ -369,14 +411,11 @@ function adicionarSinonimo() {
   document.getElementById('lista-sinonimos').appendChild(div)
 }
 
-// ── CATEGORIA ──
-function atualizarSubcategorias() {
-  const catId = document.getElementById('f-categoria').value
-  const cat = categoriasDisponiveis.find(c => c.id == catId)
-  const subs = cat?.subcategorias || []
-  document.getElementById('f-subcategoria').innerHTML =
-    `<option value="">Selecionar...</option>` +
-    subs.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')
+function adicionarRelacionada() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Palavra relacionada..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-relacionadas').appendChild(div)
 }
 
 // ── STATUS ──
@@ -421,13 +460,15 @@ async function salvarTudo() {
   const btn = document.getElementById('btnSalvarTop')
   btn.disabled = true; btn.textContent = 'Salvando...'
 
+  // categoria principal = primeira da lista
+  const catPrincipal = categoriasSelecionadas.length > 0 ? categoriasSelecionadas[0] : null
+
   const dadosPalavra = {
     termo, slug,
     pronuncia: document.getElementById('f-pronuncia').value.trim() || null,
     imagem_url: document.getElementById('f-imagem').value.trim() || null,
     status: statusAtual,
-    categoria_id: document.getElementById('f-categoria').value || null,
-    subcategoria_id: document.getElementById('f-subcategoria').value || null,
+    categoria_id: catPrincipal,
     nivel_uso: document.getElementById('f-nivel').value || null,
     contexto: document.getElementById('f-contexto').value || null,
     regiao: document.getElementById('f-regiao').value || null,
@@ -445,7 +486,7 @@ async function salvarTudo() {
     history.replaceState(null, '', `?id=${id}`)
   }
 
-  // significados — coleta texto + extras como JSON no campo descricao
+  // significados
   await sb.from('significados').delete().eq('palavra_id', id)
   const blocos = document.getElementById('lista-significados').querySelectorAll('.sig-bloco')
   const significados = []
@@ -456,7 +497,6 @@ async function salvarTudo() {
       titulo: e.querySelector('.sig-extra-titulo').value.trim(),
       texto: e.querySelector('.sig-extra-texto').value.trim()
     })).filter(e => e.titulo || e.texto)
-    // salva extras como JSON junto ao significado
     const descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
     significados.push({ palavra_id: id, descricao, ordem: i + 1 })
   })
@@ -473,6 +513,18 @@ async function salvarTudo() {
   const sinonimos = [...document.getElementById('lista-sinonimos').querySelectorAll('input')]
     .map(i => ({ palavra_id: id, sinonimo: i.value.trim() })).filter(s => s.sinonimo)
   if (sinonimos.length) await sb.from('sinonimos').insert(sinonimos)
+
+  // palavras relacionadas
+  await sb.from('palavras_relacionadas').delete().eq('palavra_id', id)
+  const relacionadas = [...document.getElementById('lista-relacionadas').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, relacionada: i.value.trim() })).filter(r => r.relacionada)
+  if (relacionadas.length) await sb.from('palavras_relacionadas').insert(relacionadas)
+
+  // categorias múltiplas
+  await sb.from('palavras_categorias').delete().eq('palavra_id', id)
+  for (const catId of categoriasSelecionadas) {
+    await sb.from('palavras_categorias').insert({ palavra_id: id, categoria_id: catId })
+  }
 
   // tags
   await sb.from('palavras_tags').delete().eq('palavra_id', id)
