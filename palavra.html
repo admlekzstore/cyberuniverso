@@ -3,494 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="page-title">CyberUniverso — Dicionário de Gírias</title>
-<meta name="description" id="meta-desc" content="Dicionário colaborativo de gírias do português brasileiro.">
+<title id="pageTitle">CyberUniverso — Dicionário de Gírias</title>
+<meta name="description" id="pageDesc" content="Dicionário colaborativo de gírias do português brasileiro.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-
   :root{
-    --azul:#1a6ef5;
-    --azul-escuro:#0d3fa6;
-    --amarelo:#f5e800;
-    --ciano:#00eaff;
-    --preto:#000;
-    --fundo:#05080f;
-    --card:#0a1628;
-    --card2:#0d1f3c;
-    --borda:#1a3a6e;
-    --texto:#d0e4ff;
+    --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
+    --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
+    --borda:#1a3a6e;--texto:#d0e4ff;
   }
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;cursor:default;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
 
-  body{
-    font-family:'Nunito',sans-serif;
-    background:var(--fundo);
-    color:var(--texto);
-    overflow-x:hidden;
-    cursor:default;
-  }
-
-  /* scanlines overlay */
-  body::before{
-    content:'';
-    position:fixed;
-    inset:0;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
-    pointer-events:none;
-    z-index:999;
-  }
-
-  /* ── NAV ── */
-  nav{
-    position:fixed;top:0;left:0;right:0;z-index:100;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:10px 20px;
-    background:rgba(5,8,15,0.85);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--borda);
-  }
-  .logo-main{
-    font-family:'Bangers',cursive;font-size:28px;
-    color:var(--ciano);
-    text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);
-    letter-spacing:2px;text-decoration:none;
-  }
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
+  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
   .nav-links{display:flex;gap:20px;align-items:center;}
-  .nav-links a{
-    color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;
-    letter-spacing:1px;text-transform:uppercase;
-    transition:color 0.2s;
-  }
+  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
   .nav-links a:hover{color:var(--amarelo);}
-  .menu-btn{
-    display:none;background:none;border:1.5px solid var(--borda);
-    border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;
-  }
+  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
   .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-
-  /* mobile nav */
-  .nav-mobile{
-    display:none;position:fixed;top:0;right:0;width:260px;height:100vh;
-    background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);
-    flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;
-  }
+  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
   .nav-mobile.open{display:flex;}
-  .nav-mobile a{
-    color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;
-    padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;
-  }
+  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;}
   .nav-mobile a:hover{color:var(--amarelo);}
-  .close-nav{
-    position:absolute;top:18px;right:18px;background:none;border:none;
-    color:#fff;font-size:24px;cursor:pointer;
-  }
+  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
   .overlay.open{display:block;}
 
-  /* ── LAYOUT ── */
-  .page-wrap{
-    max-width:1100px;margin:0 auto;
-    padding:90px 16px 60px;
-    display:grid;
-    grid-template-columns:1fr 280px;
-    gap:24px;
-    align-items:start;
-  }
+  .page-wrap{max-width:1100px;margin:0 auto;padding:90px 16px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
 
-  /* ── MAIN CONTENT ── */
-  .main-col{}
-
-  /* breadcrumb */
-  .breadcrumb{
-    display:flex;align-items:center;gap:8px;
-    font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;
-  }
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;}
   .breadcrumb a{color:#4a6fa5;text-decoration:none;transition:color 0.2s;}
   .breadcrumb a:hover{color:var(--ciano);}
   .breadcrumb span{color:#2a4a7a;}
 
-  /* palavra título */
-  .palavra-titulo{
-    font-family:'Bangers',cursive;
-    font-size:clamp(60px,15vw,100px);
-    line-height:1;
-    letter-spacing:4px;
-    color:var(--amarelo);
-    text-shadow:
-      4px 4px 0 var(--azul),
-      8px 8px 0 var(--azul-escuro),
-      0 0 40px rgba(245,232,0,0.3);
-    -webkit-text-stroke:2px var(--azul);
-    animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;
-    margin-bottom:16px;
-  }
-  @keyframes titlePop{
-    from{transform:scale(0.6) translateY(20px);opacity:0;}
-    to{transform:scale(1) translateY(0);opacity:1;}
-  }
+  .palavra-titulo{font-family:'Bangers',cursive;font-size:clamp(28px,12vw,100px);line-height:1.05;letter-spacing:3px;color:var(--amarelo);text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro),0 0 40px rgba(245,232,0,0.3);-webkit-text-stroke:2px var(--azul);animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;margin-bottom:16px;word-break:break-word;}
+  .palavra-titulo.curta{font-size:clamp(60px,15vw,100px);}
+  .palavra-titulo.media{font-size:clamp(40px,10vw,72px);}
+  .palavra-titulo.longa{font-size:clamp(28px,7vw,52px);}
+  .palavra-titulo.muito-longa{font-size:clamp(22px,5vw,38px);letter-spacing:1px;}
+  @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
 
-  /* pronuncia */
-  .pronuncia{
-    font-size:14px;color:#4a8aff;font-weight:700;
-    letter-spacing:2px;margin-bottom:16px;
-    animation:fadeUp 0.5s 0.2s both;
-  }
-  .pronuncia span{
-    background:rgba(26,110,245,0.15);
-    border:1px solid rgba(26,110,245,0.3);
-    border-radius:20px;padding:4px 14px;
-    font-family:'Fredoka One',cursive;font-size:16px;
-  }
+  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;animation:fadeUp 0.5s 0.2s both;}
+  .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
 
-  /* meta info */
-  .meta-info{
-    display:flex;align-items:center;gap:12px;
-    margin-bottom:18px;flex-wrap:wrap;
-    animation:fadeUp 0.5s 0.25s both;
-  }
-  .avatar{
-    width:36px;height:36px;border-radius:50%;
-    background:linear-gradient(135deg,var(--azul),var(--ciano));
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900;font-size:14px;color:#fff;flex-shrink:0;
-  }
+  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;animation:fadeUp 0.5s 0.25s both;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;}
   .meta-text{font-size:13px;color:#4a6fa5;}
   .meta-text strong{color:var(--ciano);font-weight:800;}
 
-  /* categorias */
-  .categorias{
-    display:flex;flex-wrap:wrap;gap:8px;
-    margin-bottom:28px;
-    animation:fadeUp 0.5s 0.3s both;
-  }
-  .cat-tag{
-    background:rgba(26,110,245,0.15);
-    border:1.5px solid rgba(26,110,245,0.4);
-    color:#7ab0ff;
-    border-radius:50px;padding:5px 14px;
-    font-size:12px;font-weight:700;letter-spacing:0.5px;
-    text-decoration:none;text-transform:uppercase;
-    transition:all 0.2s;
-  }
+  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;animation:fadeUp 0.5s 0.3s both;}
+  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
   .cat-tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
 
-  /* badges */
-  .badges{
-    display:flex;flex-wrap:wrap;gap:8px;
-    margin-bottom:28px;
-    animation:fadeUp 0.5s 0.35s both;
-  }
-  .badge{
-    display:flex;align-items:center;gap:6px;
-    border-radius:8px;padding:6px 12px;
-    font-size:12px;font-weight:800;letter-spacing:0.5px;
-  }
+  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;animation:fadeUp 0.5s 0.32s both;align-items:center;}
+  .tags-label{font-size:11px;color:#2a4a7a;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+  .hash-tag{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);color:#4ab8cc;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
+  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);border-color:var(--ciano);}
+
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;animation:fadeUp 0.5s 0.35s both;}
+  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:0.5px;}
   .badge-nivel{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);color:var(--ciano);}
   .badge-regiao{background:rgba(245,232,0,0.1);border:1px solid rgba(245,232,0,0.3);color:var(--amarelo);}
   .badge-contexto{background:rgba(255,100,200,0.1);border:1px solid rgba(255,100,200,0.3);color:#ff64c8;}
   .badge-epoca{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
 
-  @keyframes fadeUp{
-    from{transform:translateY(20px);opacity:0;}
-    to{transform:translateY(0);opacity:1;}
-  }
+  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
-  /* ── CARDS ── */
-  .card{
-    background:var(--card);
-    border:1px solid var(--borda);
-    border-radius:16px;padding:24px;
-    margin-bottom:16px;
-    animation:fadeUp 0.5s both;
-    position:relative;overflow:hidden;
-  }
-  .card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);
-  }
+  .palavra-imagem{width:100%;border-radius:14px;overflow:hidden;margin-bottom:16px;border:1px solid var(--borda);animation:fadeUp 0.5s 0.38s both;}
+  .palavra-imagem img{width:100%;max-height:320px;object-fit:cover;display:block;}
+  .palavra-imagem-caption{padding:8px 14px;background:var(--card);font-size:12px;color:#4a6fa5;font-weight:700;}
 
-  .card-title{
-    font-family:'Bangers',cursive;
-    font-size:20px;letter-spacing:2px;
-    color:var(--ciano);margin-bottom:14px;
-    display:flex;align-items:center;gap:8px;
-  }
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp 0.5s both;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .card-title{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 
-  .significado-text{
-    font-size:17px;font-weight:700;
-    color:#e8f4ff;line-height:1.6;
-  }
+  .significado-bloco{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda);}
+  .significado-bloco:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .sig-numero{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;font-family:'Bangers',cursive;font-size:15px;margin-bottom:10px;flex-shrink:0;}
+  .sig-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .significado-text{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;}
+  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
+  .origem-text{font-size:15px;color:var(--texto);line-height:1.7;}
 
-  .subtitulo{
-    font-family:'Fredoka One',cursive;
-    font-size:17px;color:var(--amarelo);
-    margin:20px 0 10px;
-    display:flex;align-items:center;gap:8px;
-  }
-
-  .origem-text{
-    font-size:15px;color:var(--texto);line-height:1.7;
-  }
-
-  /* exemplos */
-  .exemplo{
-    background:rgba(26,110,245,0.08);
-    border-left:3px solid var(--azul);
-    border-radius:0 10px 10px 0;
-    padding:12px 16px;margin-bottom:10px;
-    font-size:15px;font-style:italic;color:#b0ccff;
-    line-height:1.6;
-  }
+  .exemplo{background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:10px;font-size:15px;font-style:italic;color:#b0ccff;line-height:1.6;}
   .exemplo strong{color:var(--ciano);font-style:normal;}
 
-  /* tags list */
-  .tags-list{
-    display:flex;flex-wrap:wrap;gap:8px;
-  }
-  .tag{
-    background:var(--card2);
-    border:1px solid var(--borda);
-    border-radius:8px;padding:6px 14px;
-    font-size:14px;font-weight:700;color:var(--texto);
-    text-decoration:none;transition:all 0.2s;cursor:pointer;
-  }
+  .tags-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;cursor:pointer;}
   .tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
 
-  /* reações */
-  .reacoes{
-    display:flex;gap:10px;flex-wrap:wrap;
-  }
-  .reacao-btn{
-    background:var(--card2);
-    border:1.5px solid var(--borda);
-    border-radius:12px;
-    padding:10px 18px;
-    display:flex;flex-direction:column;align-items:center;gap:4px;
-    cursor:pointer;transition:all 0.2s;min-width:70px;
-  }
+  .reacoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .reacao-btn{background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:10px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;min-width:70px;}
   .reacao-btn:hover{border-color:var(--azul);transform:translateY(-3px);}
-  .reacao-btn.ativo{
-    background:rgba(26,110,245,0.2);
-    border-color:var(--azul);
-  }
+  .reacao-btn.ativo{background:rgba(26,110,245,0.2);border-color:var(--azul);}
   .reacao-emoji{font-size:26px;}
   .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
-  .reacao-label{font-size:10px;color:#4a6fa5;font-weight:700;letter-spacing:0.5px;}
+  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;letter-spacing:0.3px;}
 
-  /* nav alfabética */
-  .alfa-nav{
-    display:flex;align-items:center;justify-content:space-between;
-    gap:12px;flex-wrap:wrap;
-  }
-  .alfa-grupo{
-    display:flex;flex-direction:column;gap:4px;flex:1;
-  }
+  .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;}
+  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);border-color:#a3ff4a;}
+  .novo-sig-form{display:none;margin-top:14px;background:rgba(163,255,74,0.04);border:1px solid rgba(163,255,74,0.2);border-radius:12px;padding:16px;}
+  .novo-sig-form.aberto{display:block;}
+  .novo-sig-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;transition:border-color 0.2s;margin-bottom:10px;}
+  .novo-sig-form textarea:focus{border-color:#a3ff4a;}
+  .novo-sig-form textarea::placeholder{color:#2a4a7a;}
+  .novo-sig-btns{display:flex;gap:8px;}
+  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+  .btn-enviar-sig:hover{background:#8fee2a;}
+  .btn-cancelar-sig{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:10px 16px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;}
+  .sig-aviso{font-size:12px;color:#4a6fa5;margin-bottom:10px;}
+
+  .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
   .alfa-grupo.direita{text-align:right;align-items:flex-end;}
   .alfa-label{font-size:11px;color:#4a6fa5;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-  .alfa-link{
-    color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;
-    transition:color 0.2s;
-  }
+  .alfa-link{color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;transition:color 0.2s;}
   .alfa-link:hover{color:var(--amarelo);}
   .alfa-sep{color:var(--borda);font-size:24px;}
 
-  /* compartilhar */
   .share-btns{display:flex;gap:10px;flex-wrap:wrap;}
-  .share-btn{
-    display:flex;align-items:center;gap:8px;
-    border-radius:10px;padding:10px 18px;
-    font-size:14px;font-weight:800;
-    border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;
-  }
+  .share-btn{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
   .share-btn:hover{transform:translateY(-2px);}
   .share-wpp{background:#25d366;color:#fff;}
   .share-copy{background:var(--card2);border:1px solid var(--borda);color:var(--texto);}
   .share-twitter{background:#1da1f2;color:#fff;}
 
-  /* comentários */
-  .comentario{
-    display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;
-    border-bottom:1px solid var(--borda);
-  }
-  .com-avatar{
-    width:38px;height:38px;border-radius:50%;flex-shrink:0;
-    background:linear-gradient(135deg,#f5e800,#f5a800);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900;font-size:14px;color:#000;
-  }
-  .com-body{}
+  .comentario{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda);}
+  .com-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#f5e800,#f5a800);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;}
   .com-meta{font-size:12px;color:#4a6fa5;margin-bottom:4px;}
   .com-meta strong{color:var(--ciano);}
   .com-text{font-size:14px;color:var(--texto);line-height:1.5;}
-
   .comment-form{margin-top:16px;}
-  .comment-form textarea{
-    width:100%;background:var(--card2);
-    border:1.5px solid var(--borda);border-radius:10px;
-    padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;
-    font-size:14px;resize:vertical;min-height:90px;
-    transition:border-color 0.2s;
-  }
-  .comment-form textarea:focus{outline:none;border-color:var(--azul);}
+  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;transition:border-color 0.2s;outline:none;}
+  .comment-form textarea:focus{border-color:var(--azul);}
   .comment-form textarea::placeholder{color:#2a4a7a;}
-  .btn-comentar{
-    margin-top:10px;background:var(--azul);color:#fff;
-    border:none;border-radius:10px;padding:10px 24px;
-    font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;
-    cursor:pointer;transition:all 0.2s;
-  }
+  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
   .btn-comentar:hover{background:#0050cc;transform:translateY(-2px);}
 
-  /* ── SIDEBAR ── */
-  .sidebar{
-    position:sticky;top:90px;
-    display:flex;flex-direction:column;gap:16px;
-  }
-
-  .sidebar-card{
-    background:var(--card);
-    border:1px solid var(--borda);
-    border-radius:14px;padding:18px;
-    position:relative;overflow:hidden;
-  }
-  .sidebar-card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,transparent,var(--amarelo),transparent);
-  }
-
-  .sidebar-title{
-    font-family:'Bangers',cursive;
-    font-size:18px;letter-spacing:2px;
-    color:var(--amarelo);margin-bottom:14px;
-    display:flex;align-items:center;gap:8px;
-  }
-
-  .top-item{
-    display:flex;align-items:center;gap:10px;
-    padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);
-    text-decoration:none;transition:all 0.2s;
-  }
+  .sidebar{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;}
+  .sidebar-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+  .sidebar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
+  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
   .top-item:last-child{border-bottom:none;}
   .top-item:hover .top-word{color:var(--amarelo);}
-  .top-rank{
-    font-family:'Bangers',cursive;font-size:18px;
-    color:var(--azul);width:24px;text-align:center;flex-shrink:0;
-  }
-  .top-rank.ouro{color:#ffd700;}
-  .top-rank.prata{color:#c0c0c0;}
-  .top-rank.bronze{color:#cd7f32;}
+  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;flex-shrink:0;}
+  .top-rank.ouro{color:#ffd700;}.top-rank.prata{color:#c0c0c0;}.top-rank.bronze{color:#cd7f32;}
   .top-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
   .top-busca{font-size:11px;color:#4a6fa5;font-weight:700;}
-
-  .recente-item{
-    display:flex;align-items:center;gap:8px;
-    padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);
-    text-decoration:none;transition:all 0.2s;
-  }
+  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
   .recente-item:last-child{border-bottom:none;}
   .recente-item:hover .recente-word{color:var(--ciano);}
   .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);flex-shrink:0;}
   .recente-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
   .recente-data{font-size:11px;color:#4a6fa5;}
-
-  /* busca sidebar */
-  .sidebar-search{
-    display:flex;gap:0;overflow:hidden;border-radius:8px;
-    border:1.5px solid var(--borda);
-  }
-  .sidebar-search input{
-    flex:1;background:var(--card2);border:none;outline:none;
-    padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;
-  }
+  .sidebar-search{display:flex;gap:0;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
+  .sidebar-search input{flex:1;background:var(--card2);border:none;outline:none;padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;}
   .sidebar-search input::placeholder{color:#2a4a7a;}
-  .sidebar-search button{
-    background:var(--azul);border:none;padding:0 14px;
-    color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;
-  }
+  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;}
   .sidebar-search button:hover{background:#0050cc;}
 
-  /* ── LOADING / ESTADOS ── */
-  #loading-overlay{
-    position:fixed;inset:0;background:var(--fundo);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    z-index:500;gap:16px;transition:opacity 0.4s;
-  }
-  #loading-overlay.hide{opacity:0;pointer-events:none;}
-  .spinner{
-    width:44px;height:44px;border:3px solid var(--borda);
-    border-top-color:var(--ciano);border-radius:50%;
-    animation:spin 0.7s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .loading-txt{font-family:'Fredoka One',cursive;font-size:18px;color:var(--ciano);letter-spacing:1px;}
+  /* not found */
+  .not-found{text-align:center;padding:80px 20px;grid-column:1/-1;}
+  .not-found-emoji{font-size:64px;margin-bottom:16px;}
+  .not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho,#ff5050);letter-spacing:2px;margin-bottom:8px;}
+  .not-found-sub{color:#4a6fa5;font-size:15px;}
 
-  #error-box{
-    display:none;text-align:center;padding:80px 20px;
-  }
-  #error-box .err-icon{font-size:64px;margin-bottom:16px;}
-  #error-box h2{font-family:'Bangers',cursive;font-size:2.5rem;letter-spacing:3px;color:var(--amarelo);margin-bottom:10px;}
-  #error-box p{color:#4a6fa5;font-size:16px;}
-  #error-box a{color:var(--ciano);font-weight:700;text-decoration:none;}
+  /* skeleton */
+  .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:8px;}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 
-  /* admin edit btn */
-  .btn-admin-edit{
-    display:inline-flex;align-items:center;gap:7px;
-    background:rgba(245,232,0,0.1);border:1px solid var(--amarelo);
-    color:var(--amarelo);border-radius:8px;padding:6px 14px;
-    font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
-    text-decoration:none;transition:all 0.2s;margin-left:auto;
-  }
-  .btn-admin-edit:hover{background:rgba(245,232,0,0.2);}
-
-  /* login prompt comentários */
-  .login-prompt{
-    text-align:center;padding:18px;color:#4a6fa5;
-    font-size:14px;border:1px dashed var(--borda);border-radius:10px;
-    margin-bottom:16px;
-  }
-  .login-prompt a{color:var(--azul);font-weight:800;text-decoration:none;}
-  .login-prompt a:hover{color:var(--ciano);}
-
-  /* reação hint */
-  .reacao-hint-login{
-    font-size:12px;color:#4a6fa5;width:100%;margin-top:4px;
-  }
-
-  /* copy feedback */
-  .copy-ok{display:none;font-size:12px;color:#00ff99;margin-left:8px;}
-
-  /* ── RESPONSIVE ── */
   @media(max-width:768px){
     .page-wrap{grid-template-columns:1fr;}
     .sidebar{position:static;}
     .nav-links{display:none;}
     .menu-btn{display:flex;}
-    .palavra-titulo{font-size:clamp(52px,18vw,80px);}
   }
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div id="loading-overlay">
-  <div class="spinner"></div>
-  <div class="loading-txt">Carregando palavra…</div>
-</div>
-
-<!-- ERRO -->
-<div id="error-box">
-  <div class="err-icon">🔍</div>
-  <h2>Palavra não encontrada</h2>
-  <p>Essa gíria ainda não está no nosso universo.<br><br>
-    <a href="index.html">← Voltar ao início</a> &nbsp;·&nbsp;
-    <a href="todas.html">Ver todas as palavras</a>
-  </p>
-</div>
-
-<!-- NAV -->
 <nav>
   <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
@@ -499,12 +193,9 @@
     <a href="categorias.html">Categorias</a>
     <a href="rimas.html">Rimas</a>
     <a href="tarot.html">Tarot</a>
-    <a href="cadastro.html" id="nav-login">Entrar</a>
-    <a href="admin.html" id="nav-admin" style="display:none;color:var(--amarelo)">⚙️ Admin</a>
+    <a href="cadastro.html" id="navEntrar">Entrar</a>
   </div>
-  <button class="menu-btn" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
 </nav>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -515,86 +206,270 @@
   <a href="categorias.html">🗂️ Categorias</a>
   <a href="rimas.html">🎵 Rimas</a>
   <a href="tarot.html">🃏 Tarot de Gírias</a>
-  <a href="cadastro.html" id="nav-mobile-login">👤 Entrar / Cadastrar</a>
-  <a href="admin.html" id="nav-mobile-admin" style="display:none;color:var(--amarelo)">⚙️ Admin</a>
+  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
 </nav>
 
-<!-- PAGE -->
-<div class="page-wrap" id="page-wrap" style="display:none">
-
-  <!-- MAIN -->
-  <main class="main-col">
-
-    <!-- breadcrumb -->
-    <div class="breadcrumb">
-      <a href="index.html">Início</a>
-      <span>›</span>
-      <a href="todas.html">Todas</a>
-      <span>›</span>
-      <span id="bc-categoria"></span>
-      <span id="bc-sep" style="display:none">›</span>
-      <span id="bc-palavra" style="color:var(--ciano)"></span>
-    </div>
-
-    <!-- título -->
-    <h1 class="palavra-titulo" id="wd-titulo"></h1>
-
-    <!-- pronuncia -->
-    <div class="pronuncia" id="wd-pronuncia" style="display:none">🔊 Como pronunciar: <span id="wd-pronuncia-txt"></span></div>
-
-    <!-- meta -->
-    <div class="meta-info">
-      <div class="avatar" id="wd-avatar">?</div>
-      <div class="meta-text">
-        Enviado por <strong id="wd-autor">—</strong> · <span id="wd-data">—</span>
+<div class="page-wrap" id="pageWrap">
+  <!-- conteúdo carregado via JS -->
+  <main class="main-col" id="mainCol">
+    <!-- skeleton -->
+    <div class="skeleton" style="height:40px;width:60%;margin-bottom:20px;"></div>
+    <div class="skeleton" style="height:80px;margin-bottom:16px;"></div>
+    <div class="skeleton" style="height:200px;margin-bottom:16px;"></div>
+    <div class="skeleton" style="height:150px;margin-bottom:16px;"></div>
+  </main>
+  <aside class="sidebar" id="sidebarCol">
+    <div class="sidebar-card">
+      <div class="sidebar-title">🔍 Buscar</div>
+      <div class="sidebar-search">
+        <input type="text" id="sidebarBusca" placeholder="Buscar palavra..." onkeydown="if(event.key==='Enter')buscarSidebar()">
+        <button onclick="buscarSidebar()">→</button>
       </div>
-      <a href="#" id="btn-editar" class="btn-admin-edit" style="display:none">✏️ Editar</a>
+    </div>
+    <div class="sidebar-card" id="sidebarTop">
+      <div class="sidebar-title">🏆 Top Palavras</div>
+      <div class="skeleton" style="height:200px;"></div>
+    </div>
+    <div class="sidebar-card" id="sidebarRecentes">
+      <div class="sidebar-title">🆕 Últimas Adicionadas</div>
+      <div class="skeleton" style="height:150px;"></div>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+const params = new URLSearchParams(window.location.search)
+const slug = params.get('w')
+
+let palavraId = null
+let userSession = null
+let reacaoAtiva = null
+
+// ── INIT ──
+async function init() {
+  // verificar sessão
+  const { data: { session } } = await sb.auth.getSession()
+  userSession = session
+  if (session) {
+    document.getElementById('navEntrar').textContent = 'Minha Conta'
+  }
+
+  if (!slug) {
+    mostrarNotFound('Nenhuma palavra especificada.')
+    return
+  }
+
+  await Promise.all([
+    carregarPalavra(),
+    carregarSidebar()
+  ])
+}
+
+// ── CARREGAR PALAVRA ──
+async function carregarPalavra() {
+  const { data: p, error } = await sb.from('palavras')
+    .select(`
+      *,
+      significados(*),
+      exemplos(*),
+      sinonimos(*),
+      categorias(id, nome, icone),
+      tags:palavras_tags(tags(nome)),
+      perfis(username)
+    `)
+    .eq('slug', slug)
+    .eq('status', 'aprovada')
+    .single()
+
+  if (error || !p) {
+    mostrarNotFound(`A palavra "${slug}" não foi encontrada.`)
+    return
+  }
+
+  palavraId = p.id
+
+  // atualizar título da página
+  document.getElementById('pageTitle').textContent = `${p.termo} — CyberUniverso`
+  document.getElementById('pageDesc').content = `Significado de ${p.termo}: ${p.significados?.[0]?.descricao?.substring(0, 120) || ''}`
+
+  // carregar reações
+  const reacoes = await carregarReacoes(p.id)
+
+  // renderizar
+  renderPalavra(p, reacoes)
+
+  // carregar comentários depois
+  await carregarComentarios(p.id)
+
+  // carregar palavras vizinhas (navegação alfabética)
+  await carregarVizinhas(p.termo)
+}
+
+// ── REAÇÕES ──
+async function carregarReacoes(pid) {
+  const tipos = ['daora', 'rachei', 'tendnao', 'bizarro', 'amei']
+  const counts = {}
+  for (const tipo of tipos) {
+    const { count } = await sb.from('reacoes').select('*', { count: 'exact', head: true })
+      .eq('palavra_id', pid).eq('tipo', tipo)
+    counts[tipo] = count || 0
+  }
+
+  // verificar se usuário já reagiu
+  if (userSession) {
+    const { data } = await sb.from('reacoes').select('tipo')
+      .eq('palavra_id', pid).eq('usuario_id', userSession.user.id).maybeSingle()
+    reacaoAtiva = data?.tipo || null
+  }
+
+  return counts
+}
+
+// ── RENDER PRINCIPAL ──
+function renderPalavra(p, reacoes) {
+  const tags = (p.tags || []).map(t => t.tags?.nome).filter(Boolean)
+  const sigs = (p.significados || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+  const exemplos = p.exemplos || []
+  const sinonimos = p.sinonimos || []
+  const username = p.perfis?.username || 'anônimo'
+  const dataFormatada = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+
+  const mainCol = document.getElementById('mainCol')
+  mainCol.innerHTML = `
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="index.html">Início</a><span>›</span>
+      <a href="todas.html">Todas</a><span>›</span>
+      <span style="color:var(--ciano)">${p.termo}</span>
     </div>
 
-    <!-- categorias -->
-    <div class="categorias" id="wd-categorias"></div>
+    <!-- TÍTULO -->
+    <h1 class="palavra-titulo" id="palavraTitulo">${p.termo.toUpperCase()}</h1>
 
-    <!-- badges -->
-    <div class="badges" id="wd-badges"></div>
+    <!-- PRONUNCIA -->
+    ${p.pronuncia ? `<div class="pronuncia">🔊 Como pronunciar: <span>${p.pronuncia}</span></div>` : ''}
 
-    <!-- SIGNIFICADO -->
-    <div class="card" style="animation-delay:0.1s" id="card-significado">
+    <!-- META -->
+    <div class="meta-info">
+      <div class="avatar">${username[0].toUpperCase()}</div>
+      <div class="meta-text">Enviado por <strong>${username}</strong> · ${dataFormatada}</div>
+    </div>
+
+    <!-- CATEGORIA -->
+    ${p.categorias ? `
+    <div class="categorias">
+      <a href="categoria.html?c=${p.categorias.id}" class="cat-tag">${p.categorias.icone || '📁'} ${p.categorias.nome}</a>
+    </div>` : ''}
+
+    <!-- TAGS -->
+    ${tags.length ? `
+    <div class="tags-section">
+      <span class="tags-label">#</span>
+      ${tags.map(t => `<a href="todas.html?busca=${t}" class="hash-tag">#${t}</a>`).join('')}
+    </div>` : ''}
+
+    <!-- BADGES -->
+    <div class="badges">
+      ${p.nivel_uso ? `<div class="badge badge-nivel">⚡ ${p.nivel_uso}</div>` : ''}
+      ${p.regiao ? `<div class="badge badge-regiao">📍 ${p.regiao}</div>` : ''}
+      ${p.contexto ? `<div class="badge badge-contexto">🌐 ${p.contexto}</div>` : ''}
+      ${p.epoca ? `<div class="badge badge-epoca">📅 ${p.epoca}</div>` : ''}
+    </div>
+
+    <!-- IMAGEM -->
+    ${p.imagem_url ? `
+    <div class="palavra-imagem">
+      <img src="${p.imagem_url}" alt="${p.termo}">
+    </div>` : ''}
+
+    <!-- SIGNIFICADOS -->
+    ${sigs.length ? `
+    <div class="card" style="animation-delay:0.1s">
       <div class="card-title">📖 Significado</div>
-      <div id="wd-significados"></div>
-    </div>
+      ${sigs.map((s, i) => {
+        // verificar se tem extras (subtítulos) salvos em JSON
+        let texto = s.descricao
+        let extras = []
+        if (texto && texto.includes('[extras]')) {
+          const parts = texto.split('[extras]')
+          texto = parts[0].trim()
+          try { extras = JSON.parse(parts[1]) } catch(e) {}
+        }
+        return `
+        <div class="significado-bloco">
+          <div class="sig-header">
+            <div class="sig-numero">${i + 1}</div>
+          </div>
+          <p class="significado-text">${texto}</p>
+          ${extras.map(ex => `
+            ${ex.titulo ? `<div class="subtitulo">${ex.titulo}</div>` : ''}
+            ${ex.texto ? `<p class="origem-text">${ex.texto}</p>` : ''}
+          `).join('')}
+        </div>`
+      }).join('')}
+    </div>` : ''}
 
     <!-- EXEMPLOS -->
-    <div class="card" style="animation-delay:0.15s" id="card-exemplos" style="display:none">
+    ${exemplos.length ? `
+    <div class="card" style="animation-delay:0.15s">
       <div class="card-title">💬 Exemplos em frases</div>
-      <div id="wd-exemplos"></div>
-    </div>
+      ${exemplos.map(e => `
+        <div class="exemplo">— <strong>${p.termo}</strong>: ${e.frase}</div>
+      `).join('')}
+    </div>` : ''}
 
     <!-- SINÔNIMOS -->
-    <div class="card" style="animation-delay:0.2s" id="card-sinonimos" style="display:none">
+    ${sinonimos.length ? `
+    <div class="card" style="animation-delay:0.2s">
       <div class="card-title">🔄 Sinônimos</div>
-      <div class="tags-list" id="wd-sinonimos"></div>
-    </div>
-
-    <!-- TAGS / RELACIONADAS -->
-    <div class="card" style="animation-delay:0.25s" id="card-tags" style="display:none">
-      <div class="card-title">🔗 Palavras relacionadas</div>
-      <div class="tags-list" id="wd-tags"></div>
-    </div>
+      <div class="tags-list">
+        ${sinonimos.map(s => `<a href="palavra.html?w=${slugify(s.sinonimo)}" class="tag">${s.sinonimo}</a>`).join('')}
+      </div>
+    </div>` : ''}
 
     <!-- REAÇÕES -->
     <div class="card" style="animation-delay:0.3s">
       <div class="card-title">⚡ O que você achou?</div>
-      <div class="reacoes" id="wd-reacoes">
-        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
+      <div class="reacoes">
+        ${[
+          { tipo: 'daora', emoji: '🔥', label: 'DAORA' },
+          { tipo: 'rachei', emoji: '😂', label: 'RACHEI' },
+          { tipo: 'tendnao', emoji: '🤔', label: 'TENDI NÃO' },
+          { tipo: 'bizarro', emoji: '👻', label: 'BIZARRO' },
+          { tipo: 'amei', emoji: '😍', label: 'AMEI' },
+        ].map(r => `
+          <button class="reacao-btn ${reacaoAtiva === r.tipo ? 'ativo' : ''}"
+            onclick="reagir('${r.tipo}', this)"
+            data-tipo="${r.tipo}">
+            <span class="reacao-emoji">${r.emoji}</span>
+            <span class="reacao-count">${reacoes[r.tipo] || 0}</span>
+            <span class="reacao-label">${r.label}</span>
+          </button>
+        `).join('')}
       </div>
-      <div id="reacao-login-hint"></div>
+
+      <!-- ENVIAR NOVO SIGNIFICADO -->
+      <button class="btn-novo-sig" onclick="toggleNovoSig()">
+        ✍️ Conhece outro significado? Envie o seu!
+      </button>
+      <div class="novo-sig-form" id="novoSigForm">
+        <p class="sig-aviso">⏳ Seu significado será revisado antes de aparecer no site.</p>
+        <textarea id="novoSigTexto" placeholder="Descreva o significado que você conhece, com contexto e exemplos..."></textarea>
+        <div class="novo-sig-btns">
+          <button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button>
+          <button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button>
+        </div>
+      </div>
     </div>
 
     <!-- NAV ALFABÉTICA -->
-    <div class="card" style="animation-delay:0.35s" id="card-alfa">
+    <div class="card" id="navAlfaCard" style="animation-delay:0.35s">
       <div class="card-title">🔤 Navegação alfabética</div>
-      <div class="alfa-nav" id="wd-alfa">
-        <span style="color:#4a6fa5;font-size:14px">Carregando…</span>
+      <div class="alfa-nav" id="navAlfa">
+        <div style="color:#4a6fa5;font-size:13px;">Carregando...</div>
       </div>
     </div>
 
@@ -602,401 +477,279 @@
     <div class="card" style="animation-delay:0.4s">
       <div class="card-title">📤 Compartilhar</div>
       <div class="share-btns">
-        <a id="share-wa" href="#" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
-        <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link <span class="copy-ok" id="copy-ok">✓</span></button>
-        <a id="share-x" href="#" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
+        <a href="https://wa.me/?text=Sabia%20o%20que%20significa%20${encodeURIComponent(p.termo)}%3F%20Veja%20no%20CyberUniverso!%20${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
+        <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>
+        <a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20${encodeURIComponent(p.termo)}%3F%20CyberUniverso!" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
       </div>
     </div>
 
     <!-- COMENTÁRIOS -->
     <div class="card" style="animation-delay:0.45s">
-      <div class="card-title">💬 Comentários <span id="comentarios-count" style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;"></span></div>
-
-      <div id="comment-form-area"></div>
-      <div id="comment-list"></div>
-    </div>
-
-  </main>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-
-    <!-- busca -->
-    <div class="sidebar-card">
-      <div class="sidebar-title">🔍 Buscar</div>
-      <div class="sidebar-search">
-        <input type="text" id="sidebar-search-input" placeholder="Buscar palavra...">
-        <button onclick="buscaSidebar()">→</button>
+      <div class="card-title">💬 Comentários <span id="comentariosCount" style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;"></span></div>
+      <div id="comentariosLista"></div>
+      <div class="comment-form">
+        <textarea id="comentarioTexto" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
+        <button class="btn-comentar" onclick="enviarComentario()">COMENTAR</button>
       </div>
     </div>
+  `
 
-    <!-- top 10 -->
-    <div class="sidebar-card">
-      <div class="sidebar-title">🏆 Top 10 Mais Buscadas</div>
-      <div id="sidebar-top">
-        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
+  // ajustar tamanho do título
+  ajustarTitulo()
+}
+
+// ── COMENTÁRIOS ──
+async function carregarComentarios(pid) {
+  const { data } = await sb.from('comentarios')
+    .select('*, perfis(username)')
+    .eq('palavra_id', pid)
+    .order('criado_em', { ascending: false })
+
+  const lista = document.getElementById('comentariosLista')
+  const count = document.getElementById('comentariosCount')
+  if (!lista) return
+
+  count.textContent = `(${data?.length || 0})`
+
+  if (!data || data.length === 0) {
+    lista.innerHTML = '<div style="color:#4a6fa5;font-size:13px;margin-bottom:16px;">Seja o primeiro a comentar!</div>'
+    return
+  }
+
+  lista.innerHTML = data.map(c => `
+    <div class="comentario">
+      <div class="com-avatar">${(c.perfis?.username || 'A')[0].toUpperCase()}</div>
+      <div class="com-body">
+        <div class="com-meta"><strong>${c.perfis?.username || 'Anônimo'}</strong> · ${formatarData(c.criado_em)}</div>
+        <div class="com-text">${c.texto}</div>
       </div>
     </div>
+  `).join('')
+}
 
-    <!-- recentes -->
-    <div class="sidebar-card">
+async function enviarComentario() {
+  if (!userSession) {
+    alert('Você precisa estar logado para comentar!')
+    window.location.href = 'cadastro.html'
+    return
+  }
+  const texto = document.getElementById('comentarioTexto').value.trim()
+  if (!texto) return
+
+  const { error } = await sb.from('comentarios').insert({
+    palavra_id: palavraId,
+    usuario_id: userSession.user.id,
+    texto
+  })
+
+  if (error) { alert('Erro ao enviar comentário.'); return }
+  document.getElementById('comentarioTexto').value = ''
+  await carregarComentarios(palavraId)
+}
+
+// ── REAÇÕES ──
+async function reagir(tipo, btn) {
+  if (!userSession) {
+    alert('Você precisa estar logado para reagir!')
+    window.location.href = 'cadastro.html'
+    return
+  }
+
+  const countEl = btn.querySelector('.reacao-count')
+  const jaAtivo = btn.classList.contains('ativo')
+
+  // remover reação anterior
+  if (reacaoAtiva) {
+    await sb.from('reacoes').delete()
+      .eq('palavra_id', palavraId)
+      .eq('usuario_id', userSession.user.id)
+    document.querySelectorAll('.reacao-btn').forEach(b => b.classList.remove('ativo'))
+  }
+
+  if (!jaAtivo || reacaoAtiva !== tipo) {
+    // adicionar nova reação
+    const { error } = await sb.from('reacoes').insert({
+      palavra_id: palavraId,
+      usuario_id: userSession.user.id,
+      tipo
+    })
+    if (!error) {
+      btn.classList.add('ativo')
+      countEl.textContent = parseInt(countEl.textContent) + 1
+      reacaoAtiva = tipo
+    }
+  } else {
+    reacaoAtiva = null
+    countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1)
+  }
+}
+
+// ── ENVIAR NOVO SIGNIFICADO ──
+function toggleNovoSig() {
+  document.getElementById('novoSigForm').classList.toggle('aberto')
+}
+
+async function enviarSig() {
+  if (!userSession) {
+    alert('Você precisa estar logado!')
+    window.location.href = 'cadastro.html'
+    return
+  }
+  const texto = document.getElementById('novoSigTexto').value.trim()
+  if (!texto) { document.getElementById('novoSigTexto').style.borderColor = '#ff5050'; return }
+
+  const { error } = await sb.from('significados').insert({
+    palavra_id: palavraId,
+    descricao: texto,
+    ordem: 99
+  })
+
+  if (error) { alert('Erro ao enviar.'); return }
+
+  document.getElementById('novoSigForm').classList.remove('aberto')
+  document.getElementById('novoSigTexto').value = ''
+  const btn = document.querySelector('.btn-novo-sig')
+  btn.textContent = '✅ Significado enviado! Aguardando revisão.'
+  btn.style.color = '#64ff96'
+  btn.style.borderColor = 'rgba(100,255,150,0.4)'
+  btn.style.background = 'rgba(100,255,150,0.08)'
+  btn.onclick = null
+}
+
+// ── NAV ALFABÉTICA ──
+async function carregarVizinhas(termo) {
+  const letra = termo[0].toUpperCase()
+
+  const { data: anterior } = await sb.from('palavras')
+    .select('termo, slug')
+    .eq('status', 'aprovada')
+    .lt('termo', termo)
+    .order('termo', { ascending: false })
+    .limit(3)
+
+  const { data: proxima } = await sb.from('palavras')
+    .select('termo, slug')
+    .eq('status', 'aprovada')
+    .gt('termo', termo)
+    .order('termo', { ascending: true })
+    .limit(3)
+
+  const navAlfa = document.getElementById('navAlfa')
+  if (!navAlfa) return
+
+  navAlfa.innerHTML = `
+    <div class="alfa-grupo">
+      <span class="alfa-label">◀ Anterior</span>
+      ${(anterior || []).map(p => `<a href="palavra.html?w=${p.slug}" class="alfa-link">${p.termo}</a>`).join('') || '<span style="color:#2a4a7a">—</span>'}
+    </div>
+    <div class="alfa-sep">|</div>
+    <div class="alfa-grupo direita">
+      <span class="alfa-label">Próxima ▶</span>
+      ${(proxima || []).map(p => `<a href="palavra.html?w=${p.slug}" class="alfa-link">${p.termo}</a>`).join('') || '<span style="color:#2a4a7a">—</span>'}
+    </div>
+  `
+}
+
+// ── SIDEBAR ──
+async function carregarSidebar() {
+  // top palavras
+  const { data: top } = await sb.from('palavras')
+    .select('termo, slug')
+    .eq('status', 'aprovada')
+    .order('criado_em', { ascending: false })
+    .limit(10)
+
+  const sidebarTop = document.getElementById('sidebarTop')
+  if (top && sidebarTop) {
+    sidebarTop.innerHTML = `
+      <div class="sidebar-title">🏆 Top Palavras</div>
+      ${top.map((p, i) => `
+        <a href="palavra.html?w=${p.slug}" class="top-item">
+          <span class="top-rank ${i===0?'ouro':i===1?'prata':i===2?'bronze':''}">${i+1}</span>
+          <span class="top-word">${p.termo}</span>
+        </a>
+      `).join('')}
+    `
+  }
+
+  // recentes
+  const { data: recentes } = await sb.from('palavras')
+    .select('termo, slug, criado_em')
+    .eq('status', 'aprovada')
+    .order('criado_em', { ascending: false })
+    .limit(5)
+
+  const sidebarRecentes = document.getElementById('sidebarRecentes')
+  if (recentes && sidebarRecentes) {
+    sidebarRecentes.innerHTML = `
       <div class="sidebar-title">🆕 Últimas Adicionadas</div>
-      <div id="sidebar-recentes">
-        <span style="color:#4a6fa5;font-size:13px">Carregando…</span>
-      </div>
+      ${recentes.map(p => `
+        <a href="palavra.html?w=${p.slug}" class="recente-item">
+          <span class="recente-dot"></span>
+          <span class="recente-word">${p.termo}</span>
+          <span class="recente-data">${formatarData(p.criado_em)}</span>
+        </a>
+      `).join('')}
+    `
+  }
+}
+
+// ── NOT FOUND ──
+function mostrarNotFound(msg) {
+  document.getElementById('mainCol').innerHTML = `
+    <div class="not-found">
+      <div class="not-found-emoji">🔍</div>
+      <div class="not-found-titulo">PALAVRA NÃO ENCONTRADA</div>
+      <div class="not-found-sub">${msg}</div>
+      <br>
+      <a href="todas.html" style="color:var(--ciano);font-weight:800;font-size:16px;">← Ver todas as palavras</a>
     </div>
+  `
+}
 
-  </aside>
+// ── HELPERS ──
+function ajustarTitulo() {
+  const el = document.getElementById('palavraTitulo')
+  if (!el) return
+  const len = el.textContent.trim().length
+  el.classList.remove('curta', 'media', 'longa', 'muito-longa')
+  if (len <= 6) el.classList.add('curta')
+  else if (len <= 12) el.classList.add('media')
+  else if (len <= 20) el.classList.add('longa')
+  else el.classList.add('muito-longa')
+}
 
-</div>
-<script>
-(async () => {
-  const sb = window._supabase;
-  const $ = id => document.getElementById(id);
+function slugify(texto) {
+  return texto.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
 
-  const params = new URLSearchParams(location.search);
-  const slug = params.get('palavra') || params.get('w') || '';
+function formatarData(str) {
+  if (!str) return ''
+  const d = new Date(str)
+  const diff = Math.floor((Date.now() - d) / 86400000)
+  if (diff === 0) return 'hoje'
+  if (diff === 1) return 'ontem'
+  if (diff < 7) return `${diff} dias`
+  return d.toLocaleDateString('pt-BR')
+}
 
-  function fmtData(iso) {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
-  }
-  function fmtRel(iso) {
-    if (!iso) return '';
-    const d = Math.floor((Date.now() - new Date(iso)) / 86400000);
-    if (d === 0) return 'hoje';
-    if (d === 1) return 'ontem';
-    if (d < 7)  return d + ' dias';
-    if (d < 30) return Math.floor(d/7) + ' sem.';
-    return Math.floor(d/30) + ' mes.';
-  }
-  function erro() {
-    $('loading-overlay').classList.add('hide');
-    $('error-box').style.display = 'block';
-  }
+function copiarLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => alert('Link copiado! 🔗'))
+}
 
-  if (!slug) { erro(); return; }
+function toggleMenu() {
+  document.getElementById('navMobile').classList.toggle('open')
+  document.getElementById('overlay').classList.toggle('open')
+}
 
-  // ── auth ──
-  let session = null, perfil = null;
-  try {
-    const res = await sb.auth.getSession();
-    session = res.data.session;
-    if (session) {
-      $('nav-login').textContent = '👤 Perfil';
-      $('nav-mobile-login').textContent = '👤 Meu Perfil';
-      const { data: p } = await sb.from('perfis')
-        .select('username, is_admin')
-        .eq('id', session.user.id).single();
-      perfil = p;
-      if (p && p.is_admin) {
-        $('nav-admin').style.display = 'inline';
-        $('nav-mobile-admin').style.display = 'block';
-      }
-    }
-  } catch(e) {}
+function buscarSidebar() {
+  const val = document.getElementById('sidebarBusca').value.trim()
+  if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
+}
 
-  // ── busca principal ──
-  const { data: palavra, error } = await sb
-    .from('palavras')
-    .select('id, termo, slug, status, nivel_uso, pronuncia, criado_em, regiao, contexto, epoca, usuario_id, categorias(id, nome)')
-    .eq('slug', slug)
-    .single();
-
-  if (error || !palavra) { erro(); return; }
-
-  // ── busças paralelas ──
-  const [
-    { data: significados },
-    { data: exemplos },
-    { data: ptags },
-    { data: sins },
-    { data: reacoes },
-    { data: comentarios }
-  ] = await Promise.all([
-    sb.from('significados').select('descricao, ordem').eq('palavra_id', palavra.id).order('ordem'),
-    sb.from('exemplos').select('frase, ordem').eq('palavra_id', palavra.id).order('ordem'),
-    sb.from('palavras_tags').select('tags(nome)').eq('palavra_id', palavra.id),
-    sb.from('sinonimos').select('sinonimo').eq('palavra_id', palavra.id),
-    sb.from('reacoes').select('tipo, usuario_id').eq('palavra_id', palavra.id),
-    sb.from('comentarios').select('id, texto, criado_em, usuario_id').eq('palavra_id', palavra.id).order('criado_em')
-  ]);
-
-  let minhaReacao = null;
-  if (session) {
-    const mr = (reacoes || []).find(function(r) { return r.usuario_id === session.user.id; });
-    if (mr) minhaReacao = mr.tipo;
-  }
-
-  // ══ RENDER ══
-
-  const titulo = palavra.termo;
-  const primSig = (significados && significados[0]) ? significados[0].descricao : '';
-
-  $('page-title').textContent = titulo + ' — o que significa? | CyberUniverso';
-  $('meta-desc').content = primSig
-    ? titulo + ': ' + primSig.substring(0, 150)
-    : 'Significado de ' + titulo + ' no dicionário de gírias CyberUniverso.';
-
-  $('wd-titulo').textContent = titulo.toUpperCase();
-  $('bc-palavra').textContent = titulo;
-
-  if (palavra.categorias) {
-    $('bc-categoria').innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '">' + palavra.categorias.nome + '</a>';
-    $('bc-sep').style.display = 'inline';
-  }
-
-  if (palavra.pronuncia) {
-    $('wd-pronuncia-txt').textContent = palavra.pronuncia;
-    $('wd-pronuncia').style.display = 'block';
-  }
-
-  // busca autor separado (sem FK declarada)
-  var nomeAutor = 'anônimo';
-  if (palavra.usuario_id) {
-    var { data: autorData } = await sb.from('perfis').select('username').eq('id', palavra.usuario_id).single();
-    if (autorData && autorData.username) nomeAutor = autorData.username;
-  }
-  $('wd-avatar').textContent = nomeAutor[0].toUpperCase();
-  $('wd-autor').textContent = nomeAutor;
-  $('wd-data').textContent = fmtData(palavra.criado_em);
-
-  if (perfil && perfil.is_admin) {
-    $('btn-editar').href = 'editar-palavra.html?id=' + palavra.id;
-    $('btn-editar').style.display = 'inline-flex';
-  }
-
-  // categorias
-  var catWrap = $('wd-categorias');
-  if (palavra.categorias) {
-    catWrap.innerHTML = '<a href="categoria.html?c=' + palavra.categorias.id + '" class="cat-tag">🗂 ' + palavra.categorias.nome + '</a>';
-  }
-
-  // badges
-  var badgeWrap = $('wd-badges');
-  var nivelMap = { basico: '🟢 Básico', intermediario: '🟡 Intermediário', avancado: '🔴 Avançado' };
-  if (palavra.nivel_uso) {
-    badgeWrap.innerHTML += '<div class="badge badge-nivel">⚡ ' + (nivelMap[palavra.nivel_uso] || palavra.nivel_uso) + '</div>';
-  }
-  if (palavra.regiao) {
-    badgeWrap.innerHTML += '<div class="badge badge-regiao">📍 ' + palavra.regiao + '</div>';
-  }
-  if (palavra.contexto) {
-    badgeWrap.innerHTML += '<div class="badge badge-contexto">🌐 ' + palavra.contexto + '</div>';
-  }
-  if (palavra.epoca) {
-    badgeWrap.innerHTML += '<div class="badge badge-epoca">📅 ' + palavra.epoca + '</div>';
-  }
-  var statusMap = { aprovado: '✅ Aprovada', pendente: '⏳ Pendente', recusado: '❌ Recusada' };
-  if (statusMap[palavra.status]) {
-    badgeWrap.innerHTML += '<div class="badge badge-nivel">' + statusMap[palavra.status] + '</div>';
-  }
-
-  // significados
-  var sigWrap = $('wd-significados');
-  if (significados && significados.length) {
-    significados.forEach(function(s, i) {
-      if (s.subtitulo) {
-        sigWrap.innerHTML += '<div class="subtitulo">▸ ' + s.subtitulo + '</div>';
-      } else if (i > 0) {
-        sigWrap.innerHTML += '<div class="subtitulo">▸ Definição ' + (i+1) + '</div>';
-      }
-      sigWrap.innerHTML += '<p class="significado-text">' + s.descricao + '</p>' + (i < significados.length - 1 ? '<br>' : '');
-    });
-  } else {
-    sigWrap.innerHTML = '<p class="significado-text" style="color:#4a6fa5">Significado ainda não cadastrado.</p>';
-  }
-
-  // exemplos
-  if (exemplos && exemplos.length) {
-    $('card-exemplos').style.display = 'block';
-    var exWrap = $('wd-exemplos');
-    exemplos.forEach(function(ex) {
-      exWrap.innerHTML += '<div class="exemplo">— ' + ex.frase + '</div>';
-    });
-  }
-
-  // sinônimos
-  if (sins && sins.length) {
-    $('card-sinonimos').style.display = 'block';
-    var sinWrap = $('wd-sinonimos');
-    sins.forEach(function(s) {
-      sinWrap.innerHTML += '<a href="palavra.html?palavra=' + (s.slug || '#') + '" class="tag">' + (s.sinonimo || '?') + '</a>';
-    });
-  }
-
-  // tags
-  if (ptags && ptags.length) {
-    $('card-tags').style.display = 'block';
-    var tagWrap = $('wd-tags');
-    ptags.forEach(function(pt) {
-      if (!pt.tags) return;
-      tagWrap.innerHTML += '<a href="todas.html?tag=' + pt.tags.slug + '" class="tag">#' + pt.tags.nome + '</a>';
-    });
-  }
-
-  // reações
-  var TIPOS = [
-    { tipo: 'positivo',  emoji: '🔥', label: 'CLÁSSICA'  },
-    { tipo: 'engracado', emoji: '😂', label: 'ENGRAÇADA' },
-    { tipo: 'duvida',    emoji: '🤔', label: 'CONFUSA'   },
-    { tipo: 'negativo',  emoji: '💀', label: 'MORTA'     },
-    { tipo: 'util',      emoji: '✨', label: 'INCRÍVEL'  }
-  ];
-  var contagem = {};
-  (reacoes || []).forEach(function(r) { contagem[r.tipo] = (contagem[r.tipo] || 0) + 1; });
-
-  var reWrap = $('wd-reacoes');
-  reWrap.innerHTML = '';
-  TIPOS.forEach(function(t) {
-    var btn = document.createElement('button');
-    btn.className = 'reacao-btn' + (minhaReacao === t.tipo ? ' ativo' : '');
-    btn.dataset.tipo = t.tipo;
-    btn.innerHTML = '<span class="reacao-emoji">' + t.emoji + '</span><span class="reacao-count">' + (contagem[t.tipo] || 0) + '</span><span class="reacao-label">' + t.label + '</span>';
-    btn.addEventListener('click', function() { reagir(t.tipo, btn); });
-    reWrap.appendChild(btn);
-  });
-  if (!session) {
-    $('reacao-login-hint').innerHTML = '<p class="reacao-hint-login">⚡ <a href="cadastro.html" style="color:var(--azul);font-weight:800">Faça login</a> para reagir</p>';
-  }
-
-  async function reagir(tipo, btnEl) {
-    if (!session) { location.href = 'cadastro.html'; return; }
-    var jaAtivo = btnEl.classList.contains('ativo');
-    document.querySelectorAll('.reacao-btn').forEach(function(b) { b.classList.remove('ativo'); });
-    if (jaAtivo) {
-      await sb.from('reacoes').delete().eq('palavra_id', palavra.id).eq('usuario_id', session.user.id);
-      var c = btnEl.querySelector('.reacao-count');
-      c.textContent = Math.max(0, parseInt(c.textContent) - 1);
-      minhaReacao = null;
-    } else {
-      if (minhaReacao) {
-        var antBtn = reWrap.querySelector('[data-tipo="' + minhaReacao + '"] .reacao-count');
-        if (antBtn) antBtn.textContent = Math.max(0, parseInt(antBtn.textContent) - 1);
-      }
-      await sb.from('reacoes').upsert(
-        { palavra_id: palavra.id, usuario_id: session.user.id, tipo: tipo },
-        { onConflict: 'palavra_id,usuario_id' }
-      );
-      var c2 = btnEl.querySelector('.reacao-count');
-      c2.textContent = parseInt(c2.textContent) + 1;
-      btnEl.classList.add('ativo');
-      minhaReacao = tipo;
-    }
-  }
-
-  // nav alfabética
-  var alfaWrap = $('wd-alfa');
-  var resAlfa = await Promise.all([
-    sb.from('palavras').select('termo, slug').lt('termo', titulo).order('termo', { ascending: false }).limit(3),
-    sb.from('palavras').select('termo, slug').gt('termo', titulo).order('termo', { ascending: true }).limit(3)
-  ]);
-  var anteriores = resAlfa[0].data;
-  var proximas   = resAlfa[1].data;
-
-  var alfaHTML = '';
-  if (anteriores && anteriores.length) {
-    var linksAnt = anteriores.map(function(p) {
-      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
-    }).join('');
-    alfaHTML += '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + linksAnt + '</div><div class="alfa-sep">|</div>';
-  }
-  if (proximas && proximas.length) {
-    var linksProx = proximas.map(function(p) {
-      return '<a href="palavra.html?palavra=' + p.slug + '" class="alfa-link">' + p.termo + '</a>';
-    }).join('');
-    alfaHTML += '<div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + linksProx + '</div>';
-  }
-  alfaWrap.innerHTML = alfaHTML || '<span style="color:#4a6fa5;font-size:14px">Nenhuma palavra vizinha.</span>';
-
-  // compartilhar
-  var pageUrl = location.href;
-  var shareTexto = 'Descobri o significado de "' + titulo + '" no CyberUniverso! 🤙';
-  $('share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareTexto + '\n' + pageUrl);
-  $('share-x').href  = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareTexto) + '&url=' + encodeURIComponent(pageUrl);
-
-  window.copiarLink = async function() {
-    await navigator.clipboard.writeText(pageUrl).catch(function() {});
-    var ok = $('copy-ok');
-    ok.style.display = 'inline';
-    setTimeout(function() { ok.style.display = 'none'; }, 2000);
-  };
-
-  // comentários
-  $('comentarios-count').textContent = (comentarios && comentarios.length) ? '(' + comentarios.length + ')' : '';
-
-  var formArea = $('comment-form-area');
-  if (session) {
-    formArea.innerHTML = '<div class="comment-form"><textarea id="comment-txt" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea><button class="btn-comentar" id="btn-comentar">COMENTAR</button><span id="comment-msg" style="font-size:12px;margin-left:10px;color:#00ff99;display:none"></span></div>';
-    $('btn-comentar').addEventListener('click', async function() {
-      var txt = $('comment-txt').value.trim();
-      if (!txt) return;
-      $('btn-comentar').disabled = true;
-      var res2 = await sb.from('comentarios').insert({ palavra_id: palavra.id, usuario_id: session.user.id, texto: txt, status: 'pendente' });
-      if (!res2.error) {
-        $('comment-txt').value = '';
-        var msg = $('comment-msg');
-        msg.textContent = '✅ Enviado! Aguarda aprovação.';
-        msg.style.display = 'inline';
-        setTimeout(function() { msg.style.display = 'none'; }, 4000);
-      }
-      $('btn-comentar').disabled = false;
-    });
-  } else {
-    formArea.innerHTML = '<div class="login-prompt"><a href="cadastro.html">Faça login</a> para deixar um comentário 💬</div>';
-  }
-
-  var cList = $('comment-list');
-  if (!comentarios || !comentarios.length) {
-    cList.innerHTML = '<p style="color:#4a6fa5;font-size:14px;margin-top:8px">Seja o primeiro a comentar! 🎉</p>';
-  } else {
-    cList.innerHTML = '';
-    // busca nomes dos autores dos comentarios
-    var uids = comentarios.map(function(c) { return c.usuario_id; }).filter(Boolean);
-    var nomesMap = {};
-    if (uids.length) {
-      var { data: perfisComent } = await sb.from('perfis').select('id, username').in('id', uids);
-      (perfisComent || []).forEach(function(p) { nomesMap[p.id] = p.username; });
-    }
-    var cores = ['linear-gradient(135deg,#f5e800,#f5a800)', 'linear-gradient(135deg,#ff64c8,#a855f7)', 'linear-gradient(135deg,#00eaff,#1a6ef5)', 'linear-gradient(135deg,#00ff99,#1a6ef5)'];
-    comentarios.forEach(function(c) {
-      var nome = nomesMap[c.usuario_id] || 'anônimo';
-      var cor  = cores[nome.charCodeAt(0) % cores.length];
-      var txtColor = cor.indexOf('f5e800') >= 0 ? '#000' : '#fff';
-      cList.innerHTML += '<div class="comentario"><div class="com-avatar" style="background:' + cor + ';color:' + txtColor + '">' + nome[0].toUpperCase() + '</div><div class="com-body"><div class="com-meta"><strong>' + nome + '</strong> · ' + fmtRel(c.criado_em) + '</div><div class="com-text">' + c.texto + '</div></div></div>';
-    });
-  }
-
-  // sidebar
-  var resSidebar = await Promise.all([
-    sb.from('palavras').select('termo, slug').order('termo', { ascending: true }).limit(10),
-    sb.from('palavras').select('termo, slug, criado_em').order('criado_em', { ascending: false }).limit(5)
-  ]);
-  var top10   = resSidebar[0].data;
-  var recentes = resSidebar[1].data;
-
-  var rankClass = ['ouro', 'prata', 'bronze'];
-  $('sidebar-top').innerHTML = (top10 || []).map(function(p, i) {
-    return '<a href="palavra.html?palavra=' + p.slug + '" class="top-item"><span class="top-rank ' + (rankClass[i] || '') + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span><span class="top-busca">—</span></a>';
-  }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
-
-  $('sidebar-recentes').innerHTML = (recentes || []).map(function(p) {
-    return '<a href="palavra.html?palavra=' + p.slug + '" class="recente-item"><span class="recente-dot"></span><span class="recente-word">' + p.termo + '</span><span class="recente-data">' + fmtRel(p.criado_em) + '</span></a>';
-  }).join('') || '<span style="color:#4a6fa5;font-size:13px">Nenhuma palavra ainda.</span>';
-
-  window.buscaSidebar = function() {
-    var q = $('sidebar-search-input').value.trim();
-    if (q) location.href = 'todas.html?q=' + encodeURIComponent(q);
-  };
-  $('sidebar-search-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') window.buscaSidebar();
-  });
-
-  // revela
-  $('loading-overlay').classList.add('hide');
-  $('page-wrap').style.display = 'grid';
-
-})();
+init()
 </script>
 </body>
 </html>
