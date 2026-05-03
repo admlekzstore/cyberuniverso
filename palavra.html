@@ -3,21 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">CyberUniverso — Dicionário de Gírias</title>
-<meta name="description" id="pageDesc" content="Dicionário colaborativo de gírias do português brasileiro.">
+<title id="pageTitle">CyberUniverso</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  :root{
-    --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
-    --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
-    --borda:#1a3a6e;--texto:#d0e4ff;
-  }
-  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;cursor:default;}
+  :root{--azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
-
   nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
-  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
+  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano);letter-spacing:2px;text-decoration:none;}
   .nav-links{display:flex;gap:20px;align-items:center;}
   .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
   .nav-links a:hover{color:var(--amarelo);}
@@ -25,96 +19,73 @@
   .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
   .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
   .nav-mobile.open{display:flex;}
-  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);transition:color 0.2s;}
+  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);}
   .nav-mobile a:hover{color:var(--amarelo);}
   .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
   .overlay.open{display:block;}
-
   .page-wrap{max-width:1100px;margin:0 auto;padding:90px 16px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
-
   .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;}
-  .breadcrumb a{color:#4a6fa5;text-decoration:none;transition:color 0.2s;}
+  .breadcrumb a{color:#4a6fa5;text-decoration:none;}
   .breadcrumb a:hover{color:var(--ciano);}
-  .breadcrumb span{color:#2a4a7a;}
-
-  .palavra-titulo{font-family:'Bangers',cursive;font-size:clamp(28px,12vw,100px);line-height:1.05;letter-spacing:3px;color:var(--amarelo);text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro),0 0 40px rgba(245,232,0,0.3);-webkit-text-stroke:2px var(--azul);animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;margin-bottom:16px;word-break:break-word;}
+  .palavra-titulo{font-family:'Bangers',cursive;font-size:clamp(28px,12vw,100px);line-height:1.05;letter-spacing:3px;color:var(--amarelo);text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro);-webkit-text-stroke:2px var(--azul);animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;margin-bottom:16px;word-break:break-word;}
   .palavra-titulo.curta{font-size:clamp(60px,15vw,100px);}
   .palavra-titulo.media{font-size:clamp(40px,10vw,72px);}
   .palavra-titulo.longa{font-size:clamp(28px,7vw,52px);}
   .palavra-titulo.muito-longa{font-size:clamp(22px,5vw,38px);letter-spacing:1px;}
   @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
-
-  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;animation:fadeUp 0.5s 0.2s both;}
+  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;}
   .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
-
-  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;animation:fadeUp 0.5s 0.25s both;}
-  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;}
+  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;}
   .meta-text{font-size:13px;color:#4a6fa5;}
   .meta-text strong{color:var(--ciano);font-weight:800;}
-
-  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;animation:fadeUp 0.5s 0.3s both;}
-  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
-  .cat-tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
-
-  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;animation:fadeUp 0.5s 0.32s both;align-items:center;}
+  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
+  .cat-tag:hover{background:var(--azul);color:#fff;}
+  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;align-items:center;}
   .tags-label{font-size:11px;color:#2a4a7a;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
   .hash-tag{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);color:#4ab8cc;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
-  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);border-color:var(--ciano);}
-
-  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;animation:fadeUp 0.5s 0.35s both;}
-  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:0.5px;}
+  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;}
   .badge-nivel{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);color:var(--ciano);}
   .badge-regiao{background:rgba(245,232,0,0.1);border:1px solid rgba(245,232,0,0.3);color:var(--amarelo);}
   .badge-contexto{background:rgba(255,100,200,0.1);border:1px solid rgba(255,100,200,0.3);color:#ff64c8;}
   .badge-epoca{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
-
-  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
-  .palavra-imagem{width:100%;border-radius:14px;overflow:hidden;margin-bottom:16px;border:1px solid var(--borda);animation:fadeUp 0.5s 0.38s both;}
+  .palavra-imagem{width:100%;border-radius:14px;overflow:hidden;margin-bottom:16px;border:1px solid var(--borda);}
   .palavra-imagem img{width:100%;max-height:320px;object-fit:cover;display:block;}
-  .palavra-imagem-caption{padding:8px 14px;background:var(--card);font-size:12px;color:#4a6fa5;font-weight:700;}
-
-  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp 0.5s both;position:relative;overflow:hidden;}
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
   .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
   .card-title{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-
   .significado-bloco{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda);}
   .significado-bloco:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-  .sig-numero{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;font-family:'Bangers',cursive;font-size:15px;margin-bottom:10px;flex-shrink:0;}
   .sig-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .sig-numero{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;font-family:'Bangers',cursive;font-size:15px;}
   .significado-text{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;}
-  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
+  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;}
   .origem-text{font-size:15px;color:var(--texto);line-height:1.7;}
-
   .exemplo{background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:10px;font-size:15px;font-style:italic;color:#b0ccff;line-height:1.6;}
-  .exemplo strong{color:var(--ciano);font-style:normal;}
-
   .tags-list{display:flex;flex-wrap:wrap;gap:8px;}
-  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;cursor:pointer;}
-  .tag:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
-
+  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;}
+  .tag:hover{background:var(--azul);color:#fff;}
   .reacoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
   .reacao-btn{background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:10px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;min-width:70px;}
   .reacao-btn:hover{border-color:var(--azul);transform:translateY(-3px);}
   .reacao-btn.ativo{background:rgba(26,110,245,0.2);border-color:var(--azul);}
   .reacao-emoji{font-size:26px;}
   .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
-  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;letter-spacing:0.3px;}
-
+  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;}
   .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;}
-  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);border-color:#a3ff4a;}
+  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);}
   .novo-sig-form{display:none;margin-top:14px;background:rgba(163,255,74,0.04);border:1px solid rgba(163,255,74,0.2);border-radius:12px;padding:16px;}
   .novo-sig-form.aberto{display:block;}
-  .novo-sig-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;transition:border-color 0.2s;margin-bottom:10px;}
-  .novo-sig-form textarea:focus{border-color:#a3ff4a;}
-  .novo-sig-form textarea::placeholder{color:#2a4a7a;}
+  .novo-sig-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;margin-bottom:10px;}
   .novo-sig-btns{display:flex;gap:8px;}
-  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
-  .btn-enviar-sig:hover{background:#8fee2a;}
+  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;}
   .btn-cancelar-sig{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:10px 16px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;}
   .sig-aviso{font-size:12px;color:#4a6fa5;margin-bottom:10px;}
-
   .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
   .alfa-grupo.direita{text-align:right;align-items:flex-end;}
@@ -122,103 +93,72 @@
   .alfa-link{color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;transition:color 0.2s;}
   .alfa-link:hover{color:var(--amarelo);}
   .alfa-sep{color:var(--borda);font-size:24px;}
-
   .share-btns{display:flex;gap:10px;flex-wrap:wrap;}
   .share-btn{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
   .share-btn:hover{transform:translateY(-2px);}
   .share-wpp{background:#25d366;color:#fff;}
   .share-copy{background:var(--card2);border:1px solid var(--borda);color:var(--texto);}
   .share-twitter{background:#1da1f2;color:#fff;}
-
   .comentario{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda);}
   .com-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#f5e800,#f5a800);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;}
   .com-meta{font-size:12px;color:#4a6fa5;margin-bottom:4px;}
   .com-meta strong{color:var(--ciano);}
   .com-text{font-size:14px;color:var(--texto);line-height:1.5;}
   .comment-form{margin-top:16px;}
-  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;transition:border-color 0.2s;outline:none;}
+  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;}
   .comment-form textarea:focus{border-color:var(--azul);}
   .comment-form textarea::placeholder{color:#2a4a7a;}
-  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
-  .btn-comentar:hover{background:#0050cc;transform:translateY(-2px);}
-
+  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;}
+  .btn-comentar:hover{background:#0050cc;}
   .sidebar{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;}
   .sidebar-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
   .sidebar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
-  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;}
+  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;}
   .top-item:last-child{border-bottom:none;}
   .top-item:hover .top-word{color:var(--amarelo);}
-  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;flex-shrink:0;}
+  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;}
   .top-rank.ouro{color:#ffd700;}.top-rank.prata{color:#c0c0c0;}.top-rank.bronze{color:#cd7f32;}
-  .top-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
-  .top-busca{font-size:11px;color:#4a6fa5;font-weight:700;}
-  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;transition:all 0.2s;}
+  .top-word{font-size:14px;font-weight:800;color:var(--texto);flex:1;}
+  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;}
   .recente-item:last-child{border-bottom:none;}
   .recente-item:hover .recente-word{color:var(--ciano);}
-  .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);flex-shrink:0;}
-  .recente-word{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;flex:1;}
+  .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);}
+  .recente-word{font-size:14px;font-weight:800;color:var(--texto);flex:1;}
   .recente-data{font-size:11px;color:#4a6fa5;}
-  .sidebar-search{display:flex;gap:0;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
+  .sidebar-search{display:flex;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
   .sidebar-search input{flex:1;background:var(--card2);border:none;outline:none;padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;}
   .sidebar-search input::placeholder{color:#2a4a7a;}
-  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;transition:background 0.2s;}
-  .sidebar-search button:hover{background:#0050cc;}
-
-  /* not found */
-  .not-found{text-align:center;padding:80px 20px;grid-column:1/-1;}
+  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;}
+  .not-found{text-align:center;padding:80px 20px;}
   .not-found-emoji{font-size:64px;margin-bottom:16px;}
-  .not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho,#ff5050);letter-spacing:2px;margin-bottom:8px;}
+  .not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:#ff5050;letter-spacing:2px;margin-bottom:8px;}
   .not-found-sub{color:#4a6fa5;font-size:15px;}
-
-  /* skeleton */
-  .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:8px;}
-  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-
-  @media(max-width:768px){
-    .page-wrap{grid-template-columns:1fr;}
-    .sidebar{position:static;}
-    .nav-links{display:none;}
-    .menu-btn{display:flex;}
-  }
+  @media(max-width:768px){.page-wrap{grid-template-columns:1fr;}.sidebar{position:static;}.nav-links{display:none;}.menu-btn{display:flex;}}
 </style>
 </head>
 <body>
-
 <nav>
   <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html">Todas</a>
     <a href="categorias.html">Categorias</a>
-    <a href="rimas.html">Rimas</a>
-    <a href="tarot.html">Tarot</a>
     <a href="cadastro.html" id="navEntrar">Entrar</a>
   </div>
   <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
 </nav>
-
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <nav class="nav-mobile" id="navMobile">
   <button class="close-nav" onclick="toggleMenu()">✕</button>
   <a href="index.html">🏠 Início</a>
   <a href="todas.html">📖 Todas as Palavras</a>
   <a href="categorias.html">🗂️ Categorias</a>
-  <a href="rimas.html">🎵 Rimas</a>
-  <a href="tarot.html">🃏 Tarot de Gírias</a>
   <a href="cadastro.html">👤 Entrar / Cadastrar</a>
 </nav>
-
-<div class="page-wrap" id="pageWrap">
-  <!-- conteúdo carregado via JS -->
-  <main class="main-col" id="mainCol">
-    <!-- skeleton -->
-    <div class="skeleton" style="height:40px;width:60%;margin-bottom:20px;"></div>
-    <div class="skeleton" style="height:80px;margin-bottom:16px;"></div>
-    <div class="skeleton" style="height:200px;margin-bottom:16px;"></div>
-    <div class="skeleton" style="height:150px;margin-bottom:16px;"></div>
-  </main>
-  <aside class="sidebar" id="sidebarCol">
+<div class="page-wrap">
+  <main id="mainCol"><p style="color:#4a6fa5;padding:40px;text-align:center;">Carregando...</p></main>
+  <aside class="sidebar">
     <div class="sidebar-card">
       <div class="sidebar-title">🔍 Buscar</div>
       <div class="sidebar-search">
@@ -226,528 +166,285 @@
         <button onclick="buscarSidebar()">→</button>
       </div>
     </div>
-    <div class="sidebar-card" id="sidebarTop">
-      <div class="sidebar-title">🏆 Top Palavras</div>
-      <div class="skeleton" style="height:200px;"></div>
-    </div>
-    <div class="sidebar-card" id="sidebarRecentes">
-      <div class="sidebar-title">🆕 Últimas Adicionadas</div>
-      <div class="skeleton" style="height:150px;"></div>
-    </div>
+    <div class="sidebar-card" id="sidebarTop"><div class="sidebar-title">🏆 Top Palavras</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
+    <div class="sidebar-card" id="sidebarRecentes"><div class="sidebar-title">🆕 Últimas Adicionadas</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
   </aside>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
 const params = new URLSearchParams(window.location.search)
 const slug = params.get('w')
-
 let palavraId = null
 let userSession = null
 let reacaoAtiva = null
 
-// ── INIT ──
 async function init() {
-  // verificar sessão
   const { data: { session } } = await sb.auth.getSession()
   userSession = session
-  if (session) {
-    document.getElementById('navEntrar').textContent = 'Minha Conta'
-  }
-
-  if (!slug) {
-    mostrarNotFound('Nenhuma palavra especificada.')
-    return
-  }
-
-  await Promise.all([
-    carregarPalavra(),
-    carregarSidebar()
-  ])
+  if (session) document.getElementById('navEntrar').textContent = 'Minha Conta'
+  if (!slug) { mostrarNotFound('Nenhuma palavra especificada.'); return }
+  await Promise.all([carregarPalavra(), carregarSidebar()])
 }
 
-// ── CARREGAR PALAVRA ──
 async function carregarPalavra() {
-  const { data: p, error } = await sb.from('palavras')
-    .select(`
-      *,
-      significados(*),
-      exemplos(*),
-      sinonimos(*),
-      categorias(id, nome, icone),
-      tags:palavras_tags(tags(nome)),
-
-    `)
+  const { data: p, error } = await sb
+    .from('palavras')
+    .select('id, termo, slug, pronuncia, imagem_url, nivel_uso, regiao, contexto, epoca, criado_em, categoria_id, status')
     .eq('slug', slug)
     .eq('status', 'aprovada')
     .single()
 
-  if (error || !p) {
-    mostrarNotFound(`A palavra "${slug}" não foi encontrada.`)
-    return
-  }
+  if (error || !p) { mostrarNotFound('A palavra "' + slug + '" não foi encontrada.'); return }
 
   palavraId = p.id
+  document.getElementById('pageTitle').textContent = p.termo + ' — CyberUniverso'
 
-  // atualizar título da página
-  document.getElementById('pageTitle').textContent = `${p.termo} — CyberUniverso`
-  document.getElementById('pageDesc').content = `Significado de ${p.termo}: ${p.significados?.[0]?.descricao?.substring(0, 120) || ''}`
+  // buscar dados relacionados separadamente
+  const [
+    { data: significados },
+    { data: exemplos },
+    { data: sinonimos },
+    { data: categoria },
+    { data: tagsRel }
+  ] = await Promise.all([
+    sb.from('significados').select('descricao, ordem').eq('palavra_id', p.id).order('ordem'),
+    sb.from('exemplos').select('frase').eq('palavra_id', p.id),
+    sb.from('sinonimos').select('sinonimo').eq('palavra_id', p.id),
+    p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
+    sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id)
+  ])
 
-  // carregar reações
+  const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
   const reacoes = await carregarReacoes(p.id)
 
-  // renderizar
-  renderPalavra(p, reacoes)
-
-  // carregar comentários depois
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes)
   await carregarComentarios(p.id)
-
-  // carregar palavras vizinhas (navegação alfabética)
   await carregarVizinhas(p.termo)
 }
 
-// ── REAÇÕES ──
 async function carregarReacoes(pid) {
   const tipos = ['daora', 'rachei', 'tendnao', 'bizarro', 'amei']
   const counts = {}
   for (const tipo of tipos) {
-    const { count } = await sb.from('reacoes').select('*', { count: 'exact', head: true })
-      .eq('palavra_id', pid).eq('tipo', tipo)
+    const { count } = await sb.from('reacoes').select('*', { count: 'exact', head: true }).eq('palavra_id', pid).eq('tipo', tipo)
     counts[tipo] = count || 0
   }
-
-  // verificar se usuário já reagiu
   if (userSession) {
-    const { data } = await sb.from('reacoes').select('tipo')
-      .eq('palavra_id', pid).eq('usuario_id', userSession.user.id).maybeSingle()
+    const { data } = await sb.from('reacoes').select('tipo').eq('palavra_id', pid).eq('usuario_id', userSession.user.id).maybeSingle()
     reacaoAtiva = data?.tipo || null
   }
-
   return counts
 }
 
-// ── RENDER PRINCIPAL ──
-function renderPalavra(p, reacoes) {
-  const tags = (p.tags || []).map(t => t.tags?.nome).filter(Boolean)
-  const sigs = (p.significados || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
-  const exemplos = p.exemplos || []
-  const sinonimos = p.sinonimos || []
-  const username = 'CyberUniverso'
-  const dataFormatada = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes) {
+  const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const main = document.getElementById('mainCol')
+  main.innerHTML =
+    '<div class="breadcrumb"><a href="index.html">Início</a><span style="color:#2a4a7a"> › </span><a href="todas.html">Todas</a><span style="color:#2a4a7a"> › </span><span style="color:var(--ciano)">' + p.termo + '</span></div>' +
+    '<h1 class="palavra-titulo" id="palavraTitulo">' + p.termo.toUpperCase() + '</h1>' +
+    (p.pronuncia ? '<div class="pronuncia">🔊 Como pronunciar: <span>' + p.pronuncia + '</span></div>' : '') +
+    '<div class="meta-info"><div class="avatar">C</div><div class="meta-text">Adicionado em <strong>' + dataFmt + '</strong></div></div>' +
+    (categoria ? '<div class="categorias"><a href="categoria.html?c=' + categoria.id + '" class="cat-tag">' + (categoria.icone || '📁') + ' ' + categoria.nome + '</a></div>' : '') +
+    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="todas.html?busca=' + t + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
+    '<div class="badges">' +
+    (p.nivel_uso ? '<div class="badge badge-nivel">⚡ ' + p.nivel_uso + '</div>' : '') +
+    (p.regiao ? '<div class="badge badge-regiao">📍 ' + p.regiao + '</div>' : '') +
+    (p.contexto ? '<div class="badge badge-contexto">🌐 ' + p.contexto + '</div>' : '') +
+    (p.epoca ? '<div class="badge badge-epoca">📅 ' + p.epoca + '</div>' : '') +
+    '</div>' +
+    (p.imagem_url ? '<div class="palavra-imagem"><img src="' + p.imagem_url + '" alt="' + p.termo + '"></div>' : '') +
+    (significados.length ? renderSignificados(significados, p.termo) : '') +
+    (exemplos.length ? renderExemplos(exemplos) : '') +
+    (sinonimos.length ? renderSinonimos(sinonimos) : '') +
+    renderReacoes(reacoes) +
+    '<div class="card" id="navAlfaCard"><div class="card-title">🔤 Navegação alfabética</div><div class="alfa-nav" id="navAlfa"><span style="color:#4a6fa5">Carregando...</span></div></div>' +
+    renderCompartilhar(p.termo) +
+    '<div class="card"><div class="card-title">💬 Comentários <span id="comentariosCount" style="font-size:14px;color:#4a6fa5;font-family:Nunito,sans-serif;font-weight:700;"></span></div><div id="comentariosLista"></div><div class="comment-form"><textarea id="comentarioTexto" placeholder="Deixe seu comentário..."></textarea><button class="btn-comentar" onclick="enviarComentario()">COMENTAR</button></div></div>'
 
-  const mainCol = document.getElementById('mainCol')
-  mainCol.innerHTML = `
-    <!-- BREADCRUMB -->
-    <div class="breadcrumb">
-      <a href="index.html">Início</a><span>›</span>
-      <a href="todas.html">Todas</a><span>›</span>
-      <span style="color:var(--ciano)">${p.termo}</span>
-    </div>
-
-    <!-- TÍTULO -->
-    <h1 class="palavra-titulo" id="palavraTitulo">${p.termo.toUpperCase()}</h1>
-
-    <!-- PRONUNCIA -->
-    ${p.pronuncia ? `<div class="pronuncia">🔊 Como pronunciar: <span>${p.pronuncia}</span></div>` : ''}
-
-    <!-- META -->
-    <div class="meta-info">
-      <div class="avatar">${username[0].toUpperCase()}</div>
-      <div class="meta-text">Enviado por <strong>${username}</strong> · ${dataFormatada}</div>
-    </div>
-
-    <!-- CATEGORIA -->
-    ${p.categorias ? `
-    <div class="categorias">
-      <a href="categoria.html?c=${p.categorias.id}" class="cat-tag">${p.categorias.icone || '📁'} ${p.categorias.nome}</a>
-    </div>` : ''}
-
-    <!-- TAGS -->
-    ${tags.length ? `
-    <div class="tags-section">
-      <span class="tags-label">#</span>
-      ${tags.map(t => `<a href="todas.html?busca=${t}" class="hash-tag">#${t}</a>`).join('')}
-    </div>` : ''}
-
-    <!-- BADGES -->
-    <div class="badges">
-      ${p.nivel_uso ? `<div class="badge badge-nivel">⚡ ${p.nivel_uso}</div>` : ''}
-      ${p.regiao ? `<div class="badge badge-regiao">📍 ${p.regiao}</div>` : ''}
-      ${p.contexto ? `<div class="badge badge-contexto">🌐 ${p.contexto}</div>` : ''}
-      ${p.epoca ? `<div class="badge badge-epoca">📅 ${p.epoca}</div>` : ''}
-    </div>
-
-    <!-- IMAGEM -->
-    ${p.imagem_url ? `
-    <div class="palavra-imagem">
-      <img src="${p.imagem_url}" alt="${p.termo}">
-    </div>` : ''}
-
-    <!-- SIGNIFICADOS -->
-    ${sigs.length ? `
-    <div class="card" style="animation-delay:0.1s">
-      <div class="card-title">📖 Significado</div>
-      ${sigs.map((s, i) => {
-        // verificar se tem extras (subtítulos) salvos em JSON
-        let texto = s.descricao
-        let extras = []
-        if (texto && texto.includes('[extras]')) {
-          const parts = texto.split('[extras]')
-          texto = parts[0].trim()
-          try { extras = JSON.parse(parts[1]) } catch(e) {}
-        }
-        return `
-        <div class="significado-bloco">
-          <div class="sig-header">
-            <div class="sig-numero">${i + 1}</div>
-          </div>
-          <p class="significado-text">${texto}</p>
-          ${extras.map(ex => `
-            ${ex.titulo ? `<div class="subtitulo">${ex.titulo}</div>` : ''}
-            ${ex.texto ? `<p class="origem-text">${ex.texto}</p>` : ''}
-          `).join('')}
-        </div>`
-      }).join('')}
-    </div>` : ''}
-
-    <!-- EXEMPLOS -->
-    ${exemplos.length ? `
-    <div class="card" style="animation-delay:0.15s">
-      <div class="card-title">💬 Exemplos em frases</div>
-      ${exemplos.map(e => `
-        <div class="exemplo">— <strong>${p.termo}</strong>: ${e.frase}</div>
-      `).join('')}
-    </div>` : ''}
-
-    <!-- SINÔNIMOS -->
-    ${sinonimos.length ? `
-    <div class="card" style="animation-delay:0.2s">
-      <div class="card-title">🔄 Sinônimos</div>
-      <div class="tags-list">
-        ${sinonimos.map(s => `<a href="palavra.html?w=${slugify(s.sinonimo)}" class="tag">${s.sinonimo}</a>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- REAÇÕES -->
-    <div class="card" style="animation-delay:0.3s">
-      <div class="card-title">⚡ O que você achou?</div>
-      <div class="reacoes">
-        ${[
-          { tipo: 'daora', emoji: '🔥', label: 'DAORA' },
-          { tipo: 'rachei', emoji: '😂', label: 'RACHEI' },
-          { tipo: 'tendnao', emoji: '🤔', label: 'TENDI NÃO' },
-          { tipo: 'bizarro', emoji: '👻', label: 'BIZARRO' },
-          { tipo: 'amei', emoji: '😍', label: 'AMEI' },
-        ].map(r => `
-          <button class="reacao-btn ${reacaoAtiva === r.tipo ? 'ativo' : ''}"
-            onclick="reagir('${r.tipo}', this)"
-            data-tipo="${r.tipo}">
-            <span class="reacao-emoji">${r.emoji}</span>
-            <span class="reacao-count">${reacoes[r.tipo] || 0}</span>
-            <span class="reacao-label">${r.label}</span>
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- ENVIAR NOVO SIGNIFICADO -->
-      <button class="btn-novo-sig" onclick="toggleNovoSig()">
-        ✍️ Conhece outro significado? Envie o seu!
-      </button>
-      <div class="novo-sig-form" id="novoSigForm">
-        <p class="sig-aviso">⏳ Seu significado será revisado antes de aparecer no site.</p>
-        <textarea id="novoSigTexto" placeholder="Descreva o significado que você conhece, com contexto e exemplos..."></textarea>
-        <div class="novo-sig-btns">
-          <button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button>
-          <button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- NAV ALFABÉTICA -->
-    <div class="card" id="navAlfaCard" style="animation-delay:0.35s">
-      <div class="card-title">🔤 Navegação alfabética</div>
-      <div class="alfa-nav" id="navAlfa">
-        <div style="color:#4a6fa5;font-size:13px;">Carregando...</div>
-      </div>
-    </div>
-
-    <!-- COMPARTILHAR -->
-    <div class="card" style="animation-delay:0.4s">
-      <div class="card-title">📤 Compartilhar</div>
-      <div class="share-btns">
-        <a href="https://wa.me/?text=Sabia%20o%20que%20significa%20${encodeURIComponent(p.termo)}%3F%20Veja%20no%20CyberUniverso!%20${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>
-        <button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>
-        <a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20${encodeURIComponent(p.termo)}%3F%20CyberUniverso!" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>
-      </div>
-    </div>
-
-    <!-- COMENTÁRIOS -->
-    <div class="card" style="animation-delay:0.45s">
-      <div class="card-title">💬 Comentários <span id="comentariosCount" style="font-size:14px;color:#4a6fa5;font-family:'Nunito',sans-serif;font-weight:700;"></span></div>
-      <div id="comentariosLista"></div>
-      <div class="comment-form">
-        <textarea id="comentarioTexto" placeholder="Deixe seu comentário ou exemplo de uso..."></textarea>
-        <button class="btn-comentar" onclick="enviarComentario()">COMENTAR</button>
-      </div>
-    </div>
-  `
-
-  // ajustar tamanho do título
   ajustarTitulo()
 }
 
-// ── COMENTÁRIOS ──
-async function carregarComentarios(pid) {
-  const { data } = await sb.from('comentarios')
-    .select('id, texto, criado_em')
-    .eq('palavra_id', pid)
-    .order('criado_em', { ascending: false })
+function renderSignificados(sigs, termo) {
+  var html = '<div class="card"><div class="card-title">📖 Significado</div>'
+  sigs.forEach(function(s, i) {
+    var texto = s.descricao
+    var extras = []
+    if (texto && texto.indexOf('[extras]') !== -1) {
+      var parts = texto.split('[extras]')
+      texto = parts[0].trim()
+      try { extras = JSON.parse(parts[1]) } catch(e) {}
+    }
+    html += '<div class="significado-bloco"><div class="sig-header"><div class="sig-numero">' + (i+1) + '</div></div><p class="significado-text">' + texto + '</p>'
+    extras.forEach(function(ex) {
+      if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
+      if (ex.texto) html += '<p class="origem-text">' + ex.texto + '</p>'
+    })
+    html += '</div>'
+  })
+  html += '<button class="btn-novo-sig" onclick="toggleNovoSig()">✍️ Conhece outro significado? Envie o seu!</button>'
+  html += '<div class="novo-sig-form" id="novoSigForm"><p class="sig-aviso">⏳ Será revisado antes de aparecer.</p><textarea id="novoSigTexto" placeholder="Descreva o significado..."></textarea><div class="novo-sig-btns"><button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button><button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button></div></div>'
+  html += '</div>'
+  return html
+}
 
+function renderExemplos(exemplos) {
+  var html = '<div class="card"><div class="card-title">💬 Exemplos em frases</div>'
+  exemplos.forEach(function(e) { html += '<div class="exemplo">— ' + e.frase + '</div>' })
+  html += '</div>'
+  return html
+}
+
+function renderSinonimos(sinonimos) {
+  var html = '<div class="card"><div class="card-title">🔄 Sinônimos</div><div class="tags-list">'
+  sinonimos.forEach(function(s) {
+    var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + s.sinonimo + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderReacoes(reacoes) {
+  var tipos = [
+    { tipo: 'daora', emoji: '🔥', label: 'DAORA' },
+    { tipo: 'rachei', emoji: '😂', label: 'RACHEI' },
+    { tipo: 'tendnao', emoji: '🤔', label: 'TENDI NÃO' },
+    { tipo: 'bizarro', emoji: '👻', label: 'BIZARRO' },
+    { tipo: 'amei', emoji: '😍', label: 'AMEI' }
+  ]
+  var html = '<div class="card"><div class="card-title">⚡ O que você achou?</div><div class="reacoes">'
+  tipos.forEach(function(r) {
+    var ativo = reacaoAtiva === r.tipo ? ' ativo' : ''
+    html += '<button class="reacao-btn' + ativo + '" onclick="reagir(\'' + r.tipo + '\',this)" data-tipo="' + r.tipo + '">'
+    html += '<span class="reacao-emoji">' + r.emoji + '</span>'
+    html += '<span class="reacao-count">' + (reacoes[r.tipo] || 0) + '</span>'
+    html += '<span class="reacao-label">' + r.label + '</span>'
+    html += '</button>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderCompartilhar(termo) {
+  var url = encodeURIComponent(window.location.href)
+  var t = encodeURIComponent(termo)
+  return '<div class="card"><div class="card-title">📤 Compartilhar</div><div class="share-btns">' +
+    '<a href="https://wa.me/?text=Sabia%20o%20que%20significa%20' + t + '%3F%20' + url + '" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>' +
+    '<button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>' +
+    '<a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20' + t + '%3F" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>' +
+    '</div></div>'
+}
+
+async function carregarComentarios(pid) {
+  const { data } = await sb.from('comentarios').select('id, texto, criado_em').eq('palavra_id', pid).order('criado_em', { ascending: false })
   const lista = document.getElementById('comentariosLista')
   const count = document.getElementById('comentariosCount')
   if (!lista) return
-
-  count.textContent = `(${data?.length || 0})`
-
-  if (!data || data.length === 0) {
-    lista.innerHTML = '<div style="color:#4a6fa5;font-size:13px;margin-bottom:16px;">Seja o primeiro a comentar!</div>'
-    return
-  }
-
-  lista.innerHTML = data.map(c => `
-    <div class="comentario">
-      <div class="com-avatar">${(c.perfis?.username || 'A')[0].toUpperCase()}</div>
-      <div class="com-body">
-        <div class="com-meta"><strong>${'Usuário'}</strong> · ${formatarData(c.criado_em)}</div>
-        <div class="com-text">${c.texto}</div>
-      </div>
-    </div>
-  `).join('')
+  count.textContent = '(' + (data ? data.length : 0) + ')'
+  if (!data || data.length === 0) { lista.innerHTML = '<div style="color:#4a6fa5;font-size:13px;margin-bottom:16px;">Seja o primeiro a comentar!</div>'; return }
+  lista.innerHTML = data.map(function(c) {
+    return '<div class="comentario"><div class="com-avatar">U</div><div class="com-body"><div class="com-meta"><strong>Usuário</strong> · ' + formatarData(c.criado_em) + '</div><div class="com-text">' + c.texto + '</div></div></div>'
+  }).join('')
 }
 
 async function enviarComentario() {
-  if (!userSession) {
-    alert('Você precisa estar logado para comentar!')
-    window.location.href = 'cadastro.html'
-    return
-  }
-  const texto = document.getElementById('comentarioTexto').value.trim()
+  if (!userSession) { alert('Você precisa estar logado para comentar!'); window.location.href = 'cadastro.html'; return }
+  var texto = document.getElementById('comentarioTexto').value.trim()
   if (!texto) return
-
-  const { error } = await sb.from('comentarios').insert({
-    palavra_id: palavraId,
-    usuario_id: userSession.user.id,
-    texto
-  })
-
-  if (error) { alert('Erro ao enviar comentário.'); return }
+  await sb.from('comentarios').insert({ palavra_id: palavraId, usuario_id: userSession.user.id, texto: texto })
   document.getElementById('comentarioTexto').value = ''
   await carregarComentarios(palavraId)
 }
 
-// ── REAÇÕES ──
 async function reagir(tipo, btn) {
-  if (!userSession) {
-    alert('Você precisa estar logado para reagir!')
-    window.location.href = 'cadastro.html'
-    return
-  }
-
-  const countEl = btn.querySelector('.reacao-count')
-  const jaAtivo = btn.classList.contains('ativo')
-
-  // remover reação anterior
+  if (!userSession) { alert('Você precisa estar logado para reagir!'); window.location.href = 'cadastro.html'; return }
+  var countEl = btn.querySelector('.reacao-count')
+  var jaAtivo = btn.classList.contains('ativo')
   if (reacaoAtiva) {
-    await sb.from('reacoes').delete()
-      .eq('palavra_id', palavraId)
-      .eq('usuario_id', userSession.user.id)
-    document.querySelectorAll('.reacao-btn').forEach(b => b.classList.remove('ativo'))
+    await sb.from('reacoes').delete().eq('palavra_id', palavraId).eq('usuario_id', userSession.user.id)
+    document.querySelectorAll('.reacao-btn').forEach(function(b) { b.classList.remove('ativo') })
   }
-
   if (!jaAtivo || reacaoAtiva !== tipo) {
-    // adicionar nova reação
-    const { error } = await sb.from('reacoes').insert({
-      palavra_id: palavraId,
-      usuario_id: userSession.user.id,
-      tipo
-    })
-    if (!error) {
-      btn.classList.add('ativo')
-      countEl.textContent = parseInt(countEl.textContent) + 1
-      reacaoAtiva = tipo
-    }
+    var res = await sb.from('reacoes').insert({ palavra_id: palavraId, usuario_id: userSession.user.id, tipo: tipo })
+    if (!res.error) { btn.classList.add('ativo'); countEl.textContent = parseInt(countEl.textContent) + 1; reacaoAtiva = tipo }
   } else {
     reacaoAtiva = null
     countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1)
   }
 }
 
-// ── ENVIAR NOVO SIGNIFICADO ──
-function toggleNovoSig() {
-  document.getElementById('novoSigForm').classList.toggle('aberto')
-}
+function toggleNovoSig() { document.getElementById('novoSigForm').classList.toggle('aberto') }
 
 async function enviarSig() {
-  if (!userSession) {
-    alert('Você precisa estar logado!')
-    window.location.href = 'cadastro.html'
-    return
-  }
-  const texto = document.getElementById('novoSigTexto').value.trim()
-  if (!texto) { document.getElementById('novoSigTexto').style.borderColor = '#ff5050'; return }
-
-  const { error } = await sb.from('significados').insert({
-    palavra_id: palavraId,
-    descricao: texto,
-    ordem: 99
-  })
-
-  if (error) { alert('Erro ao enviar.'); return }
-
+  if (!userSession) { alert('Você precisa estar logado!'); window.location.href = 'cadastro.html'; return }
+  var texto = document.getElementById('novoSigTexto').value.trim()
+  if (!texto) return
+  await sb.from('significados').insert({ palavra_id: palavraId, descricao: texto, ordem: 99 })
   document.getElementById('novoSigForm').classList.remove('aberto')
   document.getElementById('novoSigTexto').value = ''
-  const btn = document.querySelector('.btn-novo-sig')
-  btn.textContent = '✅ Significado enviado! Aguardando revisão.'
-  btn.style.color = '#64ff96'
-  btn.style.borderColor = 'rgba(100,255,150,0.4)'
-  btn.style.background = 'rgba(100,255,150,0.08)'
+  var btn = document.querySelector('.btn-novo-sig')
+  btn.textContent = '✅ Enviado! Aguardando revisão.'
   btn.onclick = null
 }
 
-// ── NAV ALFABÉTICA ──
 async function carregarVizinhas(termo) {
-  const letra = termo[0].toUpperCase()
-
-  const { data: anterior } = await sb.from('palavras')
-    .select('termo, slug')
-    .eq('status', 'aprovada')
-    .lt('termo', termo)
-    .order('termo', { ascending: false })
-    .limit(3)
-
-  const { data: proxima } = await sb.from('palavras')
-    .select('termo, slug')
-    .eq('status', 'aprovada')
-    .gt('termo', termo)
-    .order('termo', { ascending: true })
-    .limit(3)
-
-  const navAlfa = document.getElementById('navAlfa')
+  var anterior = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').lt('termo', termo).order('termo', { ascending: false }).limit(3)
+  var proxima = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').gt('termo', termo).order('termo', { ascending: true }).limit(3)
+  var navAlfa = document.getElementById('navAlfa')
   if (!navAlfa) return
-
-  navAlfa.innerHTML = `
-    <div class="alfa-grupo">
-      <span class="alfa-label">◀ Anterior</span>
-      ${(anterior || []).map(p => `<a href="palavra.html?w=${p.slug}" class="alfa-link">${p.termo}</a>`).join('') || '<span style="color:#2a4a7a">—</span>'}
-    </div>
-    <div class="alfa-sep">|</div>
-    <div class="alfa-grupo direita">
-      <span class="alfa-label">Próxima ▶</span>
-      ${(proxima || []).map(p => `<a href="palavra.html?w=${p.slug}" class="alfa-link">${p.termo}</a>`).join('') || '<span style="color:#2a4a7a">—</span>'}
-    </div>
-  `
+  var antHtml = (anterior.data || []).map(function(p) { return '<a href="palavra.html?w=' + p.slug + '" class="alfa-link">' + p.termo + '</a>' }).join('') || '<span style="color:#2a4a7a">—</span>'
+  var proxHtml = (proxima.data || []).map(function(p) { return '<a href="palavra.html?w=' + p.slug + '" class="alfa-link">' + p.termo + '</a>' }).join('') || '<span style="color:#2a4a7a">—</span>'
+  navAlfa.innerHTML = '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + antHtml + '</div><div class="alfa-sep">|</div><div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + proxHtml + '</div>'
 }
 
-// ── SIDEBAR ──
 async function carregarSidebar() {
-  // top palavras
-  const { data: top } = await sb.from('palavras')
-    .select('termo, slug')
-    .eq('status', 'aprovada')
-    .order('criado_em', { ascending: false })
-    .limit(10)
-
-  const sidebarTop = document.getElementById('sidebarTop')
-  if (top && sidebarTop) {
-    sidebarTop.innerHTML = `
-      <div class="sidebar-title">🏆 Top Palavras</div>
-      ${top.map((p, i) => `
-        <a href="palavra.html?w=${p.slug}" class="top-item">
-          <span class="top-rank ${i===0?'ouro':i===1?'prata':i===2?'bronze':''}">${i+1}</span>
-          <span class="top-word">${p.termo}</span>
-        </a>
-      `).join('')}
-    `
+  var top = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
+  var st = document.getElementById('sidebarTop')
+  if (top.data && st) {
+    st.innerHTML = '<div class="sidebar-title">🏆 Top Palavras</div>' + top.data.map(function(p, i) {
+      var cls = i===0?'ouro':i===1?'prata':i===2?'bronze':''
+      return '<a href="palavra.html?w=' + p.slug + '" class="top-item"><span class="top-rank ' + cls + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span></a>'
+    }).join('')
   }
-
-  // recentes
-  const { data: recentes } = await sb.from('palavras')
-    .select('termo, slug, criado_em')
-    .eq('status', 'aprovada')
-    .order('criado_em', { ascending: false })
-    .limit(5)
-
-  const sidebarRecentes = document.getElementById('sidebarRecentes')
-  if (recentes && sidebarRecentes) {
-    sidebarRecentes.innerHTML = `
-      <div class="sidebar-title">🆕 Últimas Adicionadas</div>
-      ${recentes.map(p => `
-        <a href="palavra.html?w=${p.slug}" class="recente-item">
-          <span class="recente-dot"></span>
-          <span class="recente-word">${p.termo}</span>
-          <span class="recente-data">${formatarData(p.criado_em)}</span>
-        </a>
-      `).join('')}
-    `
+  var rec = await sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(5)
+  var sr = document.getElementById('sidebarRecentes')
+  if (rec.data && sr) {
+    sr.innerHTML = '<div class="sidebar-title">🆕 Últimas Adicionadas</div>' + rec.data.map(function(p) {
+      return '<a href="palavra.html?w=' + p.slug + '" class="recente-item"><span class="recente-dot"></span><span class="recente-word">' + p.termo + '</span><span class="recente-data">' + formatarData(p.criado_em) + '</span></a>'
+    }).join('')
   }
 }
 
-// ── NOT FOUND ──
 function mostrarNotFound(msg) {
-  document.getElementById('mainCol').innerHTML = `
-    <div class="not-found">
-      <div class="not-found-emoji">🔍</div>
-      <div class="not-found-titulo">PALAVRA NÃO ENCONTRADA</div>
-      <div class="not-found-sub">${msg}</div>
-      <br>
-      <a href="todas.html" style="color:var(--ciano);font-weight:800;font-size:16px;">← Ver todas as palavras</a>
-    </div>
-  `
+  document.getElementById('mainCol').innerHTML = '<div class="not-found"><div class="not-found-emoji">🔍</div><div class="not-found-titulo">PALAVRA NÃO ENCONTRADA</div><div class="not-found-sub">' + msg + '</div><br><a href="todas.html" style="color:var(--ciano);font-weight:800;font-size:16px;">← Ver todas as palavras</a></div>'
 }
 
-// ── HELPERS ──
 function ajustarTitulo() {
-  const el = document.getElementById('palavraTitulo')
+  var el = document.getElementById('palavraTitulo')
   if (!el) return
-  const len = el.textContent.trim().length
-  el.classList.remove('curta', 'media', 'longa', 'muito-longa')
+  var len = el.textContent.trim().length
+  el.classList.remove('curta','media','longa','muito-longa')
   if (len <= 6) el.classList.add('curta')
   else if (len <= 12) el.classList.add('media')
   else if (len <= 20) el.classList.add('longa')
   else el.classList.add('muito-longa')
 }
 
-function slugify(texto) {
-  return texto.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
-
 function formatarData(str) {
   if (!str) return ''
-  const d = new Date(str)
-  const diff = Math.floor((Date.now() - d) / 86400000)
+  var d = new Date(str)
+  var diff = Math.floor((Date.now() - d) / 86400000)
   if (diff === 0) return 'hoje'
   if (diff === 1) return 'ontem'
-  if (diff < 7) return `${diff} dias`
+  if (diff < 7) return diff + ' dias'
   return d.toLocaleDateString('pt-BR')
 }
 
-function copiarLink() {
-  navigator.clipboard.writeText(window.location.href).then(() => alert('Link copiado! 🔗'))
-}
-
-function toggleMenu() {
-  document.getElementById('navMobile').classList.toggle('open')
-  document.getElementById('overlay').classList.toggle('open')
-}
-
-function buscarSidebar() {
-  const val = document.getElementById('sidebarBusca').value.trim()
-  if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
-}
+function copiarLink() { navigator.clipboard.writeText(window.location.href).then(function() { alert('Link copiado! 🔗') }) }
+function toggleMenu() { document.getElementById('navMobile').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open') }
+function buscarSidebar() { var val = document.getElementById('sidebarBusca').value.trim(); if (val) window.location.href = 'todas.html?busca=' + encodeURIComponent(val) }
 
 init()
 </script>
