@@ -396,9 +396,8 @@ function selecionarBadge(tipo, valor, el) {
 // ── TAGS ──
 function adicionarTag() {
   const inp = document.getElementById('tag-input')
-  const val = inp.value.trim().toLowerCase().replace(/\s+/g,'-')
-  if (!val || tagsAtuais.includes(val)) { inp.value=''; return }
-  tagsAtuais.push(val)
+  const vals = inp.value.split(',').map(v => v.trim().toLowerCase().replace(/\s+/g,'-')).filter(v => v && !tagsAtuais.includes(v))
+  tagsAtuais = [...tagsAtuais, ...vals]
   renderTags()
   inp.value = ''
 }
