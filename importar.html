@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Importar Palavras — CyberUniverso Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;--verde:#64ff96;--vermelho:#ff5050;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(5,8,15,0.95);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .btn-voltar{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:8px 14px;color:var(--texto);font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .btn-voltar:hover{border-color:var(--azul);color:var(--ciano);}
+  .topbar-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:var(--amarelo);}
+
+  .page-wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px;}
+
+  .secao-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;}
+  .secao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .secao-titulo{font-family:'Bangers',cursive;font-size:20px;letter-spacing:1px;color:var(--ciano);margin-bottom:14px;}
+
+  .campo label{display:block;font-size:12px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+  .campo input{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:10px;}
+  .campo input:focus{border-color:var(--azul);}
+  .campo input::placeholder{color:#2a4a7a;}
+
+  .textarea-grande{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:280px;outline:none;transition:border-color 0.2s;line-height:1.6;}
+  .textarea-grande:focus{border-color:var(--azul);}
+  .textarea-grande::placeholder{color:#2a4a7a;}
+
+  .btn-extrair{width:100%;background:var(--amarelo);color:#000;border:none;border-radius:10px;padding:14px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:10px;}
+  .btn-extrair:hover{background:#e0d200;transform:translateY(-2px);}
+
+  .btn-importar{width:100%;background:var(--verde);color:#000;border:none;border-radius:10px;padding:14px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:10px;}
+  .btn-importar:hover{background:#50e07a;transform:translateY(-2px);}
+  .btn-importar:disabled{background:#1a3a6e;color:#4a6fa5;cursor:not-allowed;transform:none;}
+
+  .btn-limpar{width:100%;background:var(--card2);color:#4a6fa5;border:1px solid var(--borda);border-radius:10px;padding:10px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;margin-top:8px;}
+  .btn-limpar:hover{border-color:var(--vermelho);color:var(--vermelho);}
+
+  /* preview */
+  .preview-campo{margin-bottom:16px;}
+  .preview-label{font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block;}
+  .preview-valor{background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--texto);min-height:36px;line-height:1.5;}
+  .preview-input{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .preview-input:focus{border-color:var(--azul);}
+  .preview-textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:80px;outline:none;transition:border-color 0.2s;}
+  .preview-textarea:focus{border-color:var(--azul);}
+
+  .sig-preview{background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:10px;padding:14px;margin-bottom:10px;}
+  .sig-preview-num{font-size:11px;font-weight:800;color:#4a6fa5;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+  .sig-preview textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:60px;padding-bottom:8px;margin-bottom:8px;}
+  .sub-preview{background:rgba(0,234,255,0.04);border:1px solid rgba(0,234,255,0.15);border-radius:8px;padding:10px;margin-top:8px;}
+  .sub-preview input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:'Bangers',cursive;font-size:15px;letter-spacing:1px;padding:2px 0 6px;margin-bottom:6px;}
+  .sub-preview textarea{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:50px;}
+
+  .tags-preview{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag-badge{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;color:#7ab0ff;}
+
+  /* status */
+  .status-box{border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;margin-top:12px;display:none;}
+  .status-box.visivel{display:block;}
+  .status-sucesso{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:var(--verde);}
+  .status-erro{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:var(--vermelho);}
+  .status-info{background:rgba(26,110,245,0.1);border:1px solid rgba(26,110,245,0.3);color:#7ab0ff;}
+
+  .dica{background:rgba(245,232,0,0.06);border:1px solid rgba(245,232,0,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:#b0a000;margin-bottom:16px;line-height:1.6;}
+  .dica strong{color:var(--amarelo);}
+
+  .loading{text-align:center;padding:40px;color:#4a6fa5;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="admin.html" class="btn-voltar">← Voltar</a>
+    <div class="topbar-titulo">📥 IMPORTAR PALAVRA</div>
+  </div>
+</div>
+
+<div class="page-wrap" id="pageWrap">
+  <div class="loading">Verificando acesso...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+let categoriasDisponiveis = []
+let dadosExtraidos = null
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession()
+  if (!session) { window.location.href = 'cadastro.html'; return }
+  const { data: perfil } = await sb.from('perfis').select('is_admin').eq('id', session.user.id).maybeSingle()
+  if (!perfil?.is_admin) { document.getElementById('pageWrap').innerHTML = '<div class="loading">🚫 Acesso negado</div>'; return }
+
+  const { data: cats } = await sb.from('categorias').select('id, nome').order('nome')
+  categoriasDisponiveis = cats || []
+
+  renderPagina()
+}
+
+function renderPagina() {
+  document.getElementById('pageWrap').innerHTML = `
+    <div class="dica">
+      <strong>Como usar:</strong><br>
+      1. Acesse a palavra no Wayback Machine<br>
+      2. Selecione todo o texto da página (Ctrl+A) e copie (Ctrl+C)<br>
+      3. Cole abaixo no campo de texto<br>
+      4. Digite o nome da palavra no campo "Nome da palavra"<br>
+      5. Clique em "Extrair dados" — vai preencher tudo automaticamente<br>
+      6. Revise, ajuste se precisar, e clique em "Importar para o banco"
+    </div>
+
+    <!-- PASSO 1: COLAR TEXTO -->
+    <div class="secao-card">
+      <div class="secao-titulo">📋 Passo 1 — Cole o texto da página</div>
+      <div class="campo">
+        <label>Nome da palavra (obrigatório)</label>
+        <input type="text" id="inp-termo" placeholder="ex: Resenha">
+      </div>
+      <textarea class="textarea-grande" id="inp-texto" placeholder="Cole aqui todo o texto copiado da página do Wayback Machine..."></textarea>
+      <button class="btn-extrair" onclick="extrairDados()">🔍 EXTRAIR DADOS</button>
+    </div>
+
+    <!-- PASSO 2: REVISAR -->
+    <div class="secao-card" id="sec-preview" style="display:none;">
+      <div class="secao-titulo">✅ Passo 2 — Revise e ajuste</div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Palavra</span>
+        <input class="preview-input" id="prev-termo" type="text">
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Slug (URL)</span>
+        <input class="preview-input" id="prev-slug" type="text">
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Categoria principal</span>
+        <select class="preview-input" id="prev-categoria" style="background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;color:var(--texto);">
+          <option value="">Sem categoria</option>
+          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Significados</span>
+        <div id="prev-sigs"></div>
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Exemplos</span>
+        <textarea class="preview-textarea" id="prev-exemplos" placeholder="Um exemplo por linha..."></textarea>
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Sinônimos (separados por vírgula)</span>
+        <input class="preview-input" id="prev-sinonimos" type="text">
+      </div>
+
+      <div class="preview-campo">
+        <span class="preview-label">Tags (separadas por vírgula)</span>
+        <input class="preview-input" id="prev-tags" type="text">
+      </div>
+
+      <button class="btn-importar" id="btn-importar" onclick="importar()">💾 IMPORTAR PARA O BANCO</button>
+      <button class="btn-limpar" onclick="limpar()">🗑️ Limpar e começar de novo</button>
+
+      <div class="status-box" id="status-box"></div>
+    </div>
+  `
+}
+
+// ── EXTRAIR DADOS ──
+function extrairDados() {
+  const termo = document.getElementById('inp-termo').value.trim()
+  const texto = document.getElementById('inp-texto').value
+
+  if (!termo) { alert('Digite o nome da palavra primeiro!'); return }
+  if (!texto.trim()) { alert('Cole o texto da página primeiro!'); return }
+
+  const linhas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+
+  // ── SIGNIFICADOS ──
+  // Pega linhas numeradas: "1. texto" ou "1. texto\n2. texto"
+  const significados = []
+  const regexSig = /^\d+\.\s+(.+)/
+
+  // também pega subtítulos com emoji (ex: "Origem de resenha 📝")
+  // estratégia: percorrer linhas e identificar blocos
+  let i = 0
+  let dentroDosSigs = false
+  let sigsTexto = []
+
+  // primeiro: encontrar os significados numerados
+  for (const linha of linhas) {
+    if (regexSig.test(linha)) {
+      const match = linha.match(regexSig)
+      sigsTexto.push(match[1].trim())
+    }
+  }
+
+  // subtítulos: linhas que terminam com emoji e não são numeradas
+  // e que vêm depois dos significados numerados
+  const regexSubtitulo = /^(.+)\s[\u{1F300}-\u{1FFFF}✅📝🎊🎉😸🌌💡]$/u
+  const subtitulos = []
+  let capturandoSub = false
+  let subAtual = null
+
+  for (let j = 0; j < linhas.length; j++) {
+    const l = linhas[j]
+
+    // detectar se chegou na seção de subtítulos
+    if (regexSubtitulo.test(l) && !regexSig.test(l) && !l.startsWith('Sinônimos') && !l.startsWith('Marcações') && !l.startsWith('Tags')) {
+      if (subAtual) subtitulos.push(subAtual)
+      subAtual = { titulo: l, texto: '' }
+      capturandoSub = true
+      continue
+    }
+
+    if (capturandoSub && subAtual) {
+      // para de capturar se chegou em seções conhecidas
+      if (l.startsWith('Sinônimos:') || l.startsWith('Marcações:') || l.startsWith('Tags') ||
+          l.startsWith('Exemplo') || l.startsWith('O que achou') || l.startsWith('Facebook') ||
+          l.startsWith('Em alta') || l.startsWith('Categorias') || l.startsWith('Política')) {
+        capturandoSub = false
+        if (subAtual) subtitulos.push(subAtual)
+        subAtual = null
+        continue
+      }
+      if (regexSubtitulo.test(l)) {
+        if (subAtual) subtitulos.push(subAtual)
+        subAtual = { titulo: l, texto: '' }
+        continue
+      }
+      subAtual.texto += (subAtual.texto ? '\n' : '') + l
+    }
+  }
+  if (subAtual) subtitulos.push(subAtual)
+
+  // ── SINÔNIMOS ──
+  let sinonimos = []
+  const linhasSin = linhas.filter(l => l.startsWith('Sinônimos:'))
+  if (linhasSin.length > 0) {
+    const partesSin = linhasSin[0].replace('Sinônimos:', '').trim()
+    sinonimos = partesSin.split(',').map(s => s.trim()).filter(s => s)
+  }
+
+  // ── EXEMPLOS ──
+  let exemplos = []
+  let capturandoEx = false
+  for (const linha of linhas) {
+    if (linha.startsWith('Exemplo:') || linha === 'Exemplo:') { capturandoEx = true; continue }
+    if (capturandoEx) {
+      if (linha.startsWith('Marcações:') || linha.startsWith('Tags') || linha.startsWith('Em alta')) break
+      // pega linhas com aspas ou numeradas
+      const semNum = linha.replace(/^\d+\.\s*/, '').replace(/^[""]|[""]$/g, '').trim()
+      if (semNum && semNum.length > 3) exemplos.push(semNum)
+    }
+  }
+
+  // ── TAGS ──
+  let tags = []
+  const linhaMarcacoes = linhas.find(l => l.startsWith('Marcações:'))
+  if (linhaMarcacoes) {
+    // tags coladas sem separador — tenta separar por maiúsculas
+    const raw = linhaMarcacoes.replace('Marcações:', '').trim()
+    // se tem vírgula usa vírgula, senão separa por maiúsculas
+    if (raw.includes(',')) {
+      tags = raw.split(',').map(t => t.trim().toLowerCase()).filter(t => t)
+    } else {
+      // separa onde começa letra maiúscula
+      tags = raw.split(/(?=[A-Z])/).map(t => t.trim().toLowerCase()).filter(t => t && t.length > 1)
+    }
+  }
+
+  // ── CATEGORIAS DO TEXTO ──
+  // tenta detectar categoria a partir das linhas do cabeçalho
+  let categoriaDetectada = ''
+  const linhasCat = linhas.find(l =>
+    l.includes('Gírias de') || l.includes('Gírias do') || l.includes('Gírias da') ||
+    l.includes('Memes') || l.includes('Expressões') || l.includes('Abreviações')
+  )
+  if (linhasCat) {
+    // pega a primeira categoria mencionada
+    const primeiraCat = linhasCat.split(',')[0].trim()
+    const catEncontrada = categoriasDisponiveis.find(c =>
+      c.nome.toLowerCase() === primeiraCat.toLowerCase()
+    )
+    if (catEncontrada) categoriaDetectada = catEncontrada.id
+  }
+
+  // ── SLUG ──
+  const slug = termo.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+  dadosExtraidos = { termo, slug, sigsTexto, subtitulos, sinonimos, exemplos, tags, categoriaDetectada }
+
+  // mostrar preview
+  document.getElementById('sec-preview').style.display = 'block'
+  document.getElementById('prev-termo').value = termo
+  document.getElementById('prev-slug').value = slug
+  if (categoriaDetectada) document.getElementById('prev-categoria').value = categoriaDetectada
+
+  // significados
+  const sigsDiv = document.getElementById('prev-sigs')
+  sigsDiv.innerHTML = ''
+
+  if (sigsTexto.length > 0) {
+    sigsTexto.forEach((sig, idx) => {
+      const div = document.createElement('div')
+      div.className = 'sig-preview'
+      div.innerHTML = `
+        <div class="sig-preview-num">Significado ${idx + 1}</div>
+        <textarea placeholder="Significado...">${sig}</textarea>
+      `
+      sigsDiv.appendChild(div)
+    })
+  } else {
+    // sem numeração — cria um campo vazio
+    sigsDiv.innerHTML = '<div class="sig-preview"><div class="sig-preview-num">Significado 1</div><textarea placeholder="Digite o significado..."></textarea></div>'
+  }
+
+  // adicionar subtítulos ao primeiro significado
+  if (subtitulos.length > 0) {
+    const primeiraSig = sigsDiv.querySelector('.sig-preview')
+    subtitulos.forEach(sub => {
+      const subDiv = document.createElement('div')
+      subDiv.className = 'sub-preview'
+      subDiv.innerHTML = `
+        <input type="text" value="${sub.titulo.replace(/"/g, '&quot;')}" placeholder="Título do subtópico">
+        <textarea placeholder="Texto...">${sub.texto}</textarea>
+      `
+      primeiraSig.appendChild(subDiv)
+    })
+  }
+
+  document.getElementById('prev-exemplos').value = exemplos.join('\n')
+  document.getElementById('prev-sinonimos').value = sinonimos.join(', ')
+  document.getElementById('prev-tags').value = tags.join(', ')
+
+  // scroll para o preview
+  document.getElementById('sec-preview').scrollIntoView({ behavior: 'smooth' })
+}
+
+// ── IMPORTAR ──
+async function importar() {
+  const termo = document.getElementById('prev-termo').value.trim()
+  const slug = document.getElementById('prev-slug').value.trim()
+  const catId = document.getElementById('prev-categoria').value || null
+
+  if (!termo || !slug) { mostrarStatus('⚠️ Preencha o nome e o slug da palavra!', 'erro'); return }
+
+  const btn = document.getElementById('btn-importar')
+  btn.disabled = true; btn.textContent = 'Importando...'
+
+  // verificar se slug já existe
+  const { data: existe } = await sb.from('palavras').select('id').eq('slug', slug).maybeSingle()
+  if (existe) {
+    mostrarStatus('⚠️ Já existe uma palavra com este slug! Altere o slug e tente de novo.', 'erro')
+    btn.disabled = false; btn.textContent = '💾 IMPORTAR PARA O BANCO'
+    return
+  }
+
+  // inserir palavra
+  const { data: palavraInserida, error: errPalavra } = await sb.from('palavras').insert({
+    termo, slug,
+    status: 'aprovada',
+    categoria_id: catId || null
+  }).select().single()
+
+  if (errPalavra) {
+    mostrarStatus('❌ Erro ao inserir palavra: ' + errPalavra.message, 'erro')
+    btn.disabled = false; btn.textContent = '💾 IMPORTAR PARA O BANCO'
+    return
+  }
+
+  const id = palavraInserida.id
+
+  // significados
+  const sigBlocos = document.getElementById('prev-sigs').querySelectorAll('.sig-preview')
+  let ordemSig = 1
+  for (const bloco of sigBlocos) {
+    const textoEl = bloco.querySelector('textarea')
+    const texto = textoEl ? textoEl.value.trim() : ''
+    if (!texto) continue
+
+    // subtítulos
+    const subs = [...bloco.querySelectorAll('.sub-preview')].map(s => ({
+      titulo: s.querySelector('input').value.trim(),
+      texto: s.querySelector('textarea').value.trim()
+    })).filter(s => s.titulo || s.texto)
+
+    const descricao = subs.length ? texto + '\n\n[extras]' + JSON.stringify(subs) : texto
+    await sb.from('significados').insert({ palavra_id: id, descricao, ordem: ordemSig++ })
+  }
+
+  // exemplos
+  const exemplosRaw = document.getElementById('prev-exemplos').value
+  const exemplos = exemplosRaw.split('\n').map(e => e.trim()).filter(e => e)
+  for (const frase of exemplos) {
+    await sb.from('exemplos').insert({ palavra_id: id, frase })
+  }
+
+  // sinônimos
+  const sinRaw = document.getElementById('prev-sinonimos').value
+  const sinonimos = sinRaw.split(',').map(s => s.trim()).filter(s => s)
+  for (const sinonimo of sinonimos) {
+    await sb.from('sinonimos').insert({ palavra_id: id, sinonimo })
+  }
+
+  // tags
+  const tagsRaw = document.getElementById('prev-tags').value
+  const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase().replace(/\s+/g,'-')).filter(t => t)
+  for (const tagNome of tags) {
+    let { data: tag } = await sb.from('tags').select('id').eq('nome', tagNome).maybeSingle()
+    if (!tag) {
+      const { data: nova } = await sb.from('tags').insert({ nome: tagNome }).select().single()
+      tag = nova
+    }
+    if (tag) await sb.from('palavras_tags').insert({ palavra_id: id, tag_id: tag.id })
+  }
+
+  // categoria múltipla
+  if (catId) {
+    await sb.from('palavras_categorias').insert({ palavra_id: id, categoria_id: catId })
+  }
+
+  btn.disabled = false; btn.textContent = '💾 IMPORTAR PARA O BANCO'
+  mostrarStatus(`✅ "${termo}" importada com sucesso! <a href="palavra.html?w=${slug}" target="_blank" style="color:var(--ciano)">Ver palavra →</a>`, 'sucesso')
+
+  // limpar para próxima importação
+  setTimeout(() => {
+    document.getElementById('inp-termo').value = ''
+    document.getElementById('inp-texto').value = ''
+    document.getElementById('sec-preview').style.display = 'none'
+    document.getElementById('inp-termo').focus()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, 3000)
+}
+
+function limpar() {
+  document.getElementById('inp-termo').value = ''
+  document.getElementById('inp-texto').value = ''
+  document.getElementById('sec-preview').style.display = 'none'
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function mostrarStatus(msg, tipo) {
+  const box = document.getElementById('status-box')
+  box.innerHTML = msg
+  box.className = `status-box visivel status-${tipo}`
+}
+
+init()
+</script>
+</body>
+</html>
