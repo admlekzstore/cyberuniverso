@@ -207,19 +207,23 @@ async function carregarPalavra() {
     { data: exemplos },
     { data: sinonimos },
     { data: categoria },
-    { data: tagsRel }
+    { data: tagsRel },
+    { data: catsMultiplas },
+    { data: relacionadas }
   ] = await Promise.all([
     sb.from('significados').select('descricao, ordem').eq('palavra_id', p.id).order('ordem'),
     sb.from('exemplos').select('frase').eq('palavra_id', p.id),
     sb.from('sinonimos').select('sinonimo').eq('palavra_id', p.id),
     p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
-    sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id)
+    sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id),
+    sb.from('palavras_categorias').select('categoria_id, subcategoria_id, categorias(id, nome, icone), subcategorias(id, nome)').eq('palavra_id', p.id),
+    sb.from('palavras_relacionadas').select('relacionada').eq('palavra_id', p.id)
   ])
 
   const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
   const reacoes = await carregarReacoes(p.id)
 
-  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes)
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [])
   await carregarComentarios(p.id)
   await carregarVizinhas(p.termo)
 }
@@ -238,7 +242,7 @@ async function carregarReacoes(pid) {
   return counts
 }
 
-function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes) {
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas) {
   const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   const main = document.getElementById('mainCol')
   main.innerHTML =
@@ -246,7 +250,20 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     '<h1 class="palavra-titulo" id="palavraTitulo">' + p.termo.toUpperCase() + '</h1>' +
     (p.pronuncia ? '<div class="pronuncia">🔊 Como pronunciar: <span>' + p.pronuncia + '</span></div>' : '') +
     '<div class="meta-info"><div class="avatar">C</div><div class="meta-text">Adicionado em <strong>' + dataFmt + '</strong></div></div>' +
-    (categoria ? '<div class="categorias"><a href="categoria.html?c=' + categoria.id + '" class="cat-tag">' + (categoria.icone || '📁') + ' ' + categoria.nome + '</a></div>' : '') +
+    (function() {
+      // múltiplas categorias
+      var catsParaExibir = catsMultiplas && catsMultiplas.length > 0 ? catsMultiplas : (categoria ? [{ categorias: categoria, subcategorias: null }] : [])
+      if (!catsParaExibir.length) return ''
+      var html = '<div class="categorias">'
+      catsParaExibir.forEach(function(c) {
+        var cat = c.categorias
+        var sub = c.subcategorias
+        if (!cat) return
+        html += '<a href="categoria.html?c=' + cat.id + '" class="cat-tag">' + (cat.icone || '📁') + ' ' + cat.nome + (sub ? ' › ' + sub.nome : '') + '</a>'
+      })
+      html += '</div>'
+      return html
+    })() +
     (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="todas.html?busca=' + t + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
     '<div class="badges">' +
     (p.nivel_uso ? '<div class="badge badge-nivel">⚡ ' + p.nivel_uso + '</div>' : '') +
@@ -258,6 +275,7 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     (significados.length ? renderSignificados(significados, p.termo) : '') +
     (exemplos.length ? renderExemplos(exemplos) : '') +
     (sinonimos.length ? renderSinonimos(sinonimos) : '') +
+    (relacionadas && relacionadas.length ? renderRelacionadas(relacionadas) : '') +
     renderReacoes(reacoes) +
     '<div class="card" id="navAlfaCard"><div class="card-title">🔤 Navegação alfabética</div><div class="alfa-nav" id="navAlfa"><span style="color:#4a6fa5">Carregando...</span></div></div>' +
     renderCompartilhar(p.termo) +
@@ -276,10 +294,10 @@ function renderSignificados(sigs, termo) {
       texto = parts[0].trim()
       try { extras = JSON.parse(parts[1]) } catch(e) {}
     }
-    html += '<p class="significado-text">' + texto.replace(/\n/g, '<br>') + '</p>'
+    html += '<div class="significado-bloco"><div class="sig-header"><div class="sig-numero">' + (i+1) + '</div></div><p class="significado-text">' + texto + '</p>'
     extras.forEach(function(ex) {
       if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
-      if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
+      if (ex.texto) html += '<p class="origem-text">' + ex.texto + '</p>'
     })
     html += '</div>'
   })
@@ -301,6 +319,16 @@ function renderSinonimos(sinonimos) {
   sinonimos.forEach(function(s) {
     var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
     html += '<a href="palavra.html?w=' + sl + '" class="tag">' + s.sinonimo + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderRelacionadas(relacionadas) {
+  var html = '<div class="card"><div class="card-title">🔀 Palavras Relacionadas</div><div class="tags-list">'
+  relacionadas.forEach(function(r) {
+    var sl = r.relacionada.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + r.relacionada + '</a>'
   })
   html += '</div></div>'
   return html
