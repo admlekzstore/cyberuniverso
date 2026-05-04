@@ -596,7 +596,7 @@ async function salvarTudo() {
 
   btn.disabled = false; btn.textContent = '💾 SALVAR TUDO'
   mostrarToast('✅ Palavra salva com sucesso!', 'sucesso')
-  // setTimeout(() => window.location.href = 'admin.html', 1500)
+  setTimeout(() => window.location.href = 'admin.html', 3000)
 }
 
 function mostrarToast(msg, tipo = 'sucesso') {
