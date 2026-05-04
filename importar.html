@@ -190,22 +190,20 @@ function extrairDados() {
   const linhas = texto.split('\n').map(l => l.trim()).filter(l => l.length > 0)
 
   // ── SIGNIFICADOS ──
-  // Pega linhas numeradas: "1. texto" ou "1. texto\n2. texto"
-  const significados = []
+  // Todos os itens numerados viram UM único significado
   const regexSig = /^\d+\.\s+(.+)/
-
-  // também pega subtítulos com emoji (ex: "Origem de resenha 📝")
-  // estratégia: percorrer linhas e identificar blocos
-  let i = 0
-  let dentroDosSigs = false
   let sigsTexto = []
+  const itensNumerados = []
 
-  // primeiro: encontrar os significados numerados
   for (const linha of linhas) {
     if (regexSig.test(linha)) {
       const match = linha.match(regexSig)
-      sigsTexto.push(match[1].trim())
+      itensNumerados.push(match[1].trim())
     }
+  }
+
+  if (itensNumerados.length > 0) {
+    sigsTexto = [itensNumerados.join('\n')]
   }
 
   // subtítulos: linhas que terminam com emoji e não são numeradas
@@ -271,14 +269,60 @@ function extrairDados() {
   let tags = []
   const linhaMarcacoes = linhas.find(l => l.startsWith('Marcações:'))
   if (linhaMarcacoes) {
-    // tags coladas sem separador — tenta separar por maiúsculas
     const raw = linhaMarcacoes.replace('Marcações:', '').trim()
-    // se tem vírgula usa vírgula, senão separa por maiúsculas
     if (raw.includes(',')) {
+      // já tem vírgula — fácil
       tags = raw.split(',').map(t => t.trim().toLowerCase()).filter(t => t)
     } else {
-      // separa onde começa letra maiúscula
-      tags = raw.split(/(?=[A-Z])/).map(t => t.trim().toLowerCase()).filter(t => t && t.length > 1)
+      // sem separador — usa lista de palavras conhecidas do site antigo para separar
+      const palavrasConhecidas = [
+        'abreviação','amigo','amor','beleza','blz','brother','cara','contração','cria',
+        'de boa','dicionário','e aí','eita','esporte','expressão','gíria','incrível',
+        'interjeição','jogo','legal','leke','letra','mano','mec','meme','menino','meu faixa',
+        'mlk','oi','ok','oq','significa','o que significa','o que é','origem','parceiro','parça',
+        'rima com ar','rima com ê','sigla','significado','suave','tranquilo','twitter',
+        'véi','whatsapp','festa','bagunça','brincadeira','diversão','divertida','divertido',
+        'engraçada','engraçado','frevo','revoada','rolê','social','zuera','resenha',
+        'funk','surf','internet','nordeste','bahia','escola','rio de janeiro','são paulo',
+        'favela','futebol','games','pirata','roupa','espanhol','facebook','instagram','tiktok',
+        'furry','mecânico','adjetivo','onomatopeia','verbo','apelido','namorada','namorado',
+        'crush','cumprimento','saudação','sigla','abreviação'
+      ].sort((a,b) => b.length - a.length) // mais longas primeiro
+
+      const rawLower = raw.toLowerCase()
+      let resto = rawLower
+      const encontradas = []
+
+      for (const palavra of palavrasConhecidas) {
+        const idx = resto.indexOf(palavra.toLowerCase())
+        if (idx !== -1) {
+          encontradas.push({ palavra, idx })
+          resto = resto.replace(palavra.toLowerCase(), ' '.repeat(palavra.length))
+        }
+      }
+
+      // o que sobrou (sem espaços) separa por maiúsculas do original
+      const rawRestante = raw
+      let posicoes = encontradas.map(e => ({ start: rawLower.indexOf(e.palavra.toLowerCase()), end: rawLower.indexOf(e.palavra.toLowerCase()) + e.palavra.length, tag: e.palavra }))
+      
+      // adiciona palavras encontradas como tags
+      tags = encontradas.map(e => e.palavra.toLowerCase().replace(/\s+/g,'-'))
+
+      // o que sobrou tenta separar por maiúsculas
+      const rawSemConhecidas = rawLower.replace(/[a-z\s]/g, c => c)
+      const sobrando = raw.split('').reduce((acc, char, i) => {
+        const pos = rawLower[i]
+        return acc
+      }, '')
+
+      // fallback: separa por maiúsculas o original inteiro
+      const porMaiusculas = raw.split(/(?=[A-Z])/).map(t => t.trim().toLowerCase()).filter(t => t && t.length > 1)
+      // adiciona apenas os que não estão já
+      for (const t of porMaiusculas) {
+        if (!tags.includes(t)) tags.push(t)
+      }
+
+      tags = [...new Set(tags)].filter(t => t && t.length > 1)
     }
   }
 
