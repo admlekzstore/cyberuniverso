@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gírias de Surf — CyberCity Dicionário</title>
-<meta name="description" content="Todas as gírias de surf do CyberCity.">
+<title id="pageTitle">Categoria — CyberUniverso</title>
+<meta name="description" id="pageDesc" content="Explore as gírias desta categoria no CyberUniverso.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -29,19 +29,12 @@
 
   .page-wrap{max-width:900px;margin:0 auto;padding:90px 16px 60px;}
 
-  /* breadcrumb */
   .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:24px;flex-wrap:wrap;}
   .breadcrumb a{color:#4a6fa5;text-decoration:none;transition:color 0.2s;}
   .breadcrumb a:hover{color:var(--ciano);}
   .breadcrumb span{color:#2a4a7a;}
 
-  /* hero categoria */
-  .cat-hero{
-    background:var(--card);border:1px solid var(--borda);border-radius:20px;
-    padding:32px 28px;margin-bottom:28px;
-    position:relative;overflow:hidden;
-    animation:fadeUp 0.5s both;
-  }
+  .cat-hero{background:var(--card);border:1px solid var(--borda);border-radius:20px;padding:32px 28px;margin-bottom:28px;position:relative;overflow:hidden;animation:fadeUp 0.5s both;}
   .cat-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
   @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
@@ -55,12 +48,6 @@
   .stat-num{font-family:'Bangers',cursive;font-size:22px;color:var(--ciano);}
   .stat-label{font-size:11px;color:#4a6fa5;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
 
-  /* categorias relacionadas */
-  .cats-rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
-  .cat-rel-tag{background:rgba(26,110,245,0.1);border:1px solid rgba(26,110,245,0.3);color:#7ab0ff;border-radius:50px;padding:4px 12px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
-  .cat-rel-tag:hover{background:var(--azul);color:#fff;}
-
-  /* ordenação */
   .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
   .ordem-btns{display:flex;gap:8px;}
   .ordem-btn{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
@@ -71,47 +58,37 @@
   .busca-mini input::placeholder{color:#2a4a7a;}
   .busca-mini button{background:none;border:none;padding:0 10px;color:#4a6fa5;cursor:pointer;}
 
-  /* grid palavras */
   .palavras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
-
-  .palavra-card{
-    background:var(--card);border:1px solid var(--borda);border-radius:14px;
-    padding:16px 18px;text-decoration:none;
-    transition:all 0.2s;position:relative;overflow:hidden;
-    display:flex;flex-direction:column;gap:6px;
-    animation:fadeUp 0.4s both;
-  }
+  .palavra-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:16px 18px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;animation:fadeUp 0.4s both;}
   .palavra-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--azul);transform:scaleY(0);transition:transform 0.25s;transform-origin:bottom;}
   .palavra-card:hover{border-color:var(--azul);transform:translateY(-3px);}
   .palavra-card:hover::before{transform:scaleY(1);}
-
   .pc-nome{font-family:'Bangers',cursive;font-size:22px;letter-spacing:1px;color:var(--amarelo);transition:color 0.2s;}
   .palavra-card:hover .pc-nome{color:var(--ciano);}
   .pc-def{font-size:13px;color:#4a6fa5;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .pc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
-  .pc-autor{font-size:11px;color:#2a4a7a;font-weight:700;}
   .pc-seta{font-size:14px;color:#2a4a7a;transition:color 0.2s;}
   .palavra-card:hover .pc-seta{color:var(--ciano);}
 
-  /* paginação */
-  .paginacao{display:flex;justify-content:center;gap:8px;margin-top:32px;flex-wrap:wrap;}
-  .pag-btn{background:var(--card);border:1px solid var(--borda);color:var(--texto);width:40px;height:40px;border-radius:8px;font-weight:800;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;font-size:15px;}
-  .pag-btn:hover,.pag-btn.ativo{background:var(--azul);color:#fff;border-color:var(--azul);}
-  .pag-btn.seta{width:auto;padding:0 16px;font-size:13px;}
+  .vazio{text-align:center;padding:60px 20px;color:#4a6fa5;}
+  .vazio-emoji{font-size:48px;margin-bottom:12px;}
+  .vazio-texto{font-family:'Fredoka One',cursive;font-size:20px;}
+
+  .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:14px;height:100px;}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 
   @media(max-width:600px){
     .palavras-grid{grid-template-columns:1fr;}
     .nav-links{display:none;}
     .menu-btn{display:flex;}
     .toolbar{flex-direction:column;align-items:flex-start;}
-    .busca-mini input{width:120px;}
   }
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="logo-main">CyberCity</a>
+  <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html">Todas</a>
@@ -141,119 +118,207 @@
     <span>›</span>
     <a href="categorias.html">Categorias</a>
     <span>›</span>
-    <span style="color:var(--ciano)" id="breadNome">Gírias de Surf</span>
+    <span style="color:var(--ciano)" id="breadNome">...</span>
   </div>
 
-  <!-- Hero da categoria -->
-  <div class="cat-hero">
+  <div class="cat-hero" id="catHero">
     <div class="cat-hero-top">
-      <div class="cat-hero-emoji" id="catEmoji">🏄</div>
+      <div class="cat-hero-emoji" id="catEmoji">📁</div>
       <div class="cat-hero-info">
-        <div class="cat-hero-nome" id="catNome">GÍRIAS DE SURF</div>
-        <div class="cat-hero-desc" id="catDesc">Expressões e gírias usadas na cultura do surf — da praia pro seu vocabulário.</div>
+        <div class="cat-hero-nome" id="catNome">Carregando...</div>
+        <div class="cat-hero-desc" id="catDesc"></div>
       </div>
     </div>
     <div class="cat-hero-stats">
       <div class="stat">
-        <div class="stat-num" id="statTotal">21</div>
+        <div class="stat-num" id="statTotal">—</div>
         <div class="stat-label">Palavras</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">🔥</div>
-        <div class="stat-label">Popular</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">🌊</div>
-        <div class="stat-label">Litoral</div>
-      </div>
-    </div>
-    <div class="cats-rel" style="margin-top:16px;">
-      <span style="font-size:12px;color:#4a6fa5;font-weight:700;align-self:center;">Ver também:</span>
-      <a href="categoria.html?c=girias-praia" class="cat-rel-tag">🌊 Gírias da Praia</a>
-      <a href="categoria.html?c=girias-havai" class="cat-rel-tag">🌺 Do Havaí</a>
-      <a href="categoria.html?c=girias-cariocas" class="cat-rel-tag">🏙️ Cariocas</a>
     </div>
   </div>
 
-  <!-- toolbar -->
   <div class="toolbar">
     <div class="ordem-btns">
       <button class="ordem-btn ativo" onclick="ordenar('az',this)">A-Z</button>
-      <button class="ordem-btn" onclick="ordenar('populares',this)">🔥 Populares</button>
       <button class="ordem-btn" onclick="ordenar('novas',this)">🆕 Novas</button>
     </div>
     <div class="busca-mini">
-      <input type="text" placeholder="Filtrar..." oninput="filtrar(this.value)">
+      <input type="text" id="buscaInput" placeholder="Filtrar..." oninput="filtrarLocal(this.value)">
       <button>🔍</button>
     </div>
   </div>
 
-  <div class="palavras-grid" id="palavrasGrid"></div>
-
-  <div class="paginacao">
-    <button class="pag-btn seta">← Anterior</button>
-    <button class="pag-btn ativo">1</button>
-    <button class="pag-btn">2</button>
-    <button class="pag-btn">3</button>
-    <button class="pag-btn seta">Próxima →</button>
+  <div class="palavras-grid" id="palavrasGrid">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
   </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 <script>
-  // Dados de exemplo — virão do Supabase futuramente
-  const palavrasCategoria = [
-    {nome:'Aloha',def:'Saudação havaiana usada como oi e tchau na cultura do surf.',autor:'rodrigo_surf',slug:'aloha'},
-    {nome:'Shaka',def:'Gesto e expressão de paz, tranquilidade e energia positiva. 🤙',autor:'mari_carioca',slug:'shaka'},
-    {nome:'Tubo',def:'A parte oca da onda onde o surfista entra e sai — o momento mais radical.',autor:'wave_rider',slug:'tubo'},
-    {nome:'Mana',def:'Energia vital havaiana. Usado pra falar de alguém com presença forte.',autor:'surf_br',slug:'mana'},
-    {nome:'Bail',def:'Quando o surfista cai da prancha. "Levou um bail feio!"',autor:'joao_surf',slug:'bail'},
-    {nome:'Drop',def:'A descida inicial na onda — o momento de entrar na onda.',autor:'prancha99',slug:'drop'},
-    {nome:'Barril',def:'Sinônimo de tubo. A onda fechando sobre o surfista.',autor:'rodrigo_surf',slug:'barril'},
-    {nome:'Cutback',def:'Manobra de retorno à parte mais poderosa da onda.',autor:'surf_br',slug:'cutback'},
-    {nome:'Floater',def:'Manobra onde o surfista desliza sobre a parte que está quebrando.',autor:'wave_rider',slug:'floater'},
-    {nome:'Wipeout',def:'Tombo espetacular. Quando a onda te engole do jeito errado.',autor:'mari_carioca',slug:'wipeout'},
-    {nome:'Grom',def:'Surfista jovem, iniciante, geralmente criança ou adolescente.',autor:'joao_surf',slug:'grom'},
-    {nome:'Local',def:'Surfista que domina um pico específico por morar ali há anos.',autor:'prancha99',slug:'local'},
-  ];
+const sb = window._supabase
+const params = new URLSearchParams(window.location.search)
+const catId = params.get('c')
+const isSub = params.get('sub') === '1'
 
-  let lista = [...palavrasCategoria];
+let todasPalavras = []
+let ordemAtual = 'az'
 
-  function renderizar(palavras){
-    const grid = document.getElementById('palavrasGrid');
-    grid.innerHTML = palavras.map((p,i)=>`
-      <a href="palavra.html?w=${p.slug}" class="palavra-card" style="animation-delay:${i*0.05}s">
-        <div class="pc-nome">${p.nome}</div>
-        <div class="pc-def">${p.def}</div>
+async function init() {
+  if (!catId) {
+    window.location.href = 'categorias.html'
+    return
+  }
+
+  // buscar info da categoria ou subcategoria
+  if (isSub) {
+    const { data: sub } = await sb.from('subcategorias').select('id, nome, descricao, categorias(id, nome, icone)').eq('id', catId).single()
+    if (sub) {
+      const catPai = sub.categorias
+      document.getElementById('pageTitle').textContent = sub.nome + ' — CyberUniverso'
+      document.getElementById('breadNome').textContent = sub.nome
+      document.getElementById('catEmoji').textContent = catPai?.icone || '📂'
+      document.getElementById('catNome').textContent = sub.nome.toUpperCase()
+      document.getElementById('catDesc').textContent = sub.descricao || (catPai ? 'Subcategoria de ' + catPai.nome : '')
+    }
+    await carregarPalavrasSubcat(catId)
+  } else {
+    const { data: cat } = await sb.from('categorias').select('id, nome, icone, descricao').eq('id', catId).single()
+    if (cat) {
+      document.getElementById('pageTitle').textContent = cat.nome + ' — CyberUniverso'
+      document.getElementById('breadNome').textContent = cat.nome
+      document.getElementById('catEmoji').textContent = cat.icone || '📁'
+      document.getElementById('catNome').textContent = cat.nome.toUpperCase()
+      document.getElementById('catDesc').textContent = cat.descricao || ''
+    }
+    await carregarPalavrasCategoria(catId)
+  }
+}
+
+// ── PALAVRAS DE UMA CATEGORIA (principal + múltiplas) ──
+async function carregarPalavrasCategoria(id) {
+  // busca pela categoria_id principal
+  const { data: p1 } = await sb.from('palavras')
+    .select('id, termo, slug, criado_em, significados(descricao, ordem)')
+    .eq('categoria_id', id)
+    .eq('status', 'aprovada')
+    .order('termo')
+
+  // busca pela tabela palavras_categorias (múltiplas)
+  const { data: pCats } = await sb.from('palavras_categorias')
+    .select('palavras(id, termo, slug, criado_em, significados(descricao, ordem))')
+    .eq('categoria_id', id)
+
+  // juntar e deduplicar
+  const mapaIds = new Set()
+  const todas = []
+
+  for (const p of (p1 || [])) {
+    if (!mapaIds.has(p.id)) { mapaIds.add(p.id); todas.push(p) }
+  }
+  for (const pc of (pCats || [])) {
+    const p = pc.palavras
+    if (p && !mapaIds.has(p.id)) { mapaIds.add(p.id); todas.push(p) }
+  }
+
+  todasPalavras = todas.sort((a, b) => a.termo.localeCompare(b.termo))
+  document.getElementById('statTotal').textContent = todasPalavras.length
+  renderizar(todasPalavras)
+}
+
+// ── PALAVRAS DE UMA SUBCATEGORIA ──
+async function carregarPalavrasSubcat(id) {
+  // pela subcategoria_id principal
+  const { data: p1 } = await sb.from('palavras')
+    .select('id, termo, slug, criado_em, significados(descricao, ordem)')
+    .eq('subcategoria_id', id)
+    .eq('status', 'aprovada')
+    .order('termo')
+
+  // pela tabela palavras_categorias
+  const { data: pCats } = await sb.from('palavras_categorias')
+    .select('palavras(id, termo, slug, criado_em, significados(descricao, ordem))')
+    .eq('subcategoria_id', id)
+
+  const mapaIds = new Set()
+  const todas = []
+
+  for (const p of (p1 || [])) {
+    if (!mapaIds.has(p.id)) { mapaIds.add(p.id); todas.push(p) }
+  }
+  for (const pc of (pCats || [])) {
+    const p = pc.palavras
+    if (p && !mapaIds.has(p.id)) { mapaIds.add(p.id); todas.push(p) }
+  }
+
+  todasPalavras = todas.sort((a, b) => a.termo.localeCompare(b.termo))
+  document.getElementById('statTotal').textContent = todasPalavras.length
+  renderizar(todasPalavras)
+}
+
+// ── RENDERIZAR ──
+function renderizar(lista) {
+  const grid = document.getElementById('palavrasGrid')
+
+  if (!lista || lista.length === 0) {
+    grid.innerHTML = `
+      <div class="vazio" style="grid-column:1/-1">
+        <div class="vazio-emoji">🔍</div>
+        <div class="vazio-texto">Nenhuma palavra nesta categoria ainda</div>
+      </div>`
+    return
+  }
+
+  grid.innerHTML = lista.map((p, i) => {
+    // pegar primeiro significado (limpo, sem [extras])
+    const sigs = (p.significados || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+    let def = sigs.length > 0 ? sigs[0].descricao || '' : ''
+    if (def.includes('[extras]')) def = def.split('[extras]')[0].trim()
+
+    return `
+      <a href="palavra.html?w=${p.slug}" class="palavra-card" style="animation-delay:${i * 0.04}s">
+        <div class="pc-nome">${p.termo}</div>
+        ${def ? `<div class="pc-def">${def}</div>` : ''}
         <div class="pc-footer">
-          <span class="pc-autor">por ${p.autor}</span>
           <span class="pc-seta">→</span>
         </div>
-      </a>
-    `).join('');
-  }
+      </a>`
+  }).join('')
+}
 
-  function ordenar(tipo, btn){
-    document.querySelectorAll('.ordem-btn').forEach(b=>b.classList.remove('ativo'));
-    btn.classList.add('ativo');
-    if(tipo==='az') lista.sort((a,b)=>a.nome.localeCompare(b.nome));
-    else if(tipo==='populares') lista.sort(()=>Math.random()-0.5);
-    else lista.sort(()=>Math.random()-0.5);
-    renderizar(lista);
-  }
+// ── ORDENAR ──
+function ordenar(tipo, btn) {
+  document.querySelectorAll('.ordem-btn').forEach(b => b.classList.remove('ativo'))
+  btn.classList.add('ativo')
+  ordemAtual = tipo
 
-  function filtrar(q){
-    const f = q.toLowerCase().trim();
-    const filtrado = f ? palavrasCategoria.filter(p=>p.nome.toLowerCase().includes(f)||p.def.toLowerCase().includes(f)) : [...palavrasCategoria];
-    renderizar(filtrado);
-  }
+  const lista = [...todasPalavras]
+  if (tipo === 'az') lista.sort((a, b) => a.termo.localeCompare(b.termo))
+  else if (tipo === 'novas') lista.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em))
 
-  function toggleMenu(){
-    document.getElementById('navMobile').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
-  }
+  renderizar(lista)
+}
 
-  renderizar(lista);
+// ── FILTRAR LOCAL ──
+function filtrarLocal(q) {
+  const f = q.toLowerCase().trim()
+  if (!f) { renderizar(todasPalavras); return }
+  const filtrado = todasPalavras.filter(p => p.termo.toLowerCase().includes(f))
+  renderizar(filtrado)
+}
+
+function toggleMenu() {
+  document.getElementById('navMobile').classList.toggle('open')
+  document.getElementById('overlay').classList.toggle('open')
+}
+
+init()
 </script>
 </body>
 </html>
