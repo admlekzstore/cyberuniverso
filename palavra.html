@@ -294,10 +294,10 @@ function renderSignificados(sigs, termo) {
       texto = parts[0].trim()
       try { extras = JSON.parse(parts[1]) } catch(e) {}
     }
-    html += '<div class="significado-bloco"><div class="sig-header"><div class="sig-numero">' + (i+1) + '</div></div><p class="significado-text">' + texto + '</p>'
+    html += '<div class="significado-bloco"><div class="sig-header"><div class="sig-numero">' + (i+1) + '</div></div><p class="significado-text">' + texto.replace(/\n/g, '<br>') + '</p>'
     extras.forEach(function(ex) {
       if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
-      if (ex.texto) html += '<p class="origem-text">' + ex.texto + '</p>'
+      if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
     })
     html += '</div>'
   })
