@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Categorias — CyberCity Dicionário</title>
-<meta name="description" content="Explore todas as categorias de gírias e expressões do CyberCity.">
+<title>Categorias — CyberUniverso</title>
+<meta name="description" content="Explore todas as categorias de gírias e expressões do CyberUniverso.">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -47,7 +47,6 @@
   .grupo-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:var(--ciano);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
   .grupo-titulo::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--borda),transparent);}
 
-  /* categoria principal */
   .cat-principal{background:var(--card);border:1px solid var(--borda);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color 0.3s;}
   .cat-principal.aberta{border-color:var(--azul);}
 
@@ -66,9 +65,8 @@
   .cat-seta{font-size:16px;color:#4a6fa5;transition:transform 0.35s,color 0.2s;}
   .cat-principal.aberta .cat-seta{transform:rotate(180deg);color:var(--ciano);}
 
-  /* subcategorias */
   .subcats-wrap{max-height:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1);}
-  .subcats-wrap.aberta{max-height:700px;}
+  .subcats-wrap.aberta{max-height:800px;}
   .subcats-inner{padding:4px 16px 18px;border-top:1px solid var(--borda);background:rgba(0,0,0,0.25);}
 
   .ver-todos-link{display:flex;align-items:center;gap:8px;padding:12px 4px;text-decoration:none;border-bottom:1px solid var(--borda);margin-bottom:14px;transition:opacity 0.2s;}
@@ -86,6 +84,10 @@
   .subcat-nome{font-size:14px;font-weight:800;color:var(--texto);transition:color 0.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .subcat-count{font-size:11px;color:#4a6fa5;font-weight:700;}
 
+  /* skeleton */
+  .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:12px;height:72px;margin-bottom:12px;}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
   .sem-resultado{text-align:center;padding:60px 20px;display:none;}
   .sem-resultado.visivel{display:block;}
 
@@ -100,7 +102,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="logo-main">CyberCity</a>
+  <a href="index.html" class="logo-main">CyberUniverso</a>
   <div class="nav-links">
     <a href="index.html">Início</a>
     <a href="todas.html">Todas</a>
@@ -124,194 +126,139 @@
 </nav>
 
 <div class="page-wrap">
-
   <div class="page-hero">
     <h1 class="page-titulo">🗂️ CATEGORIAS</h1>
-    <p class="page-sub">Clique numa categoria para ver as subcategorias</p>
+    <p class="page-sub" id="pageSub">Carregando categorias...</p>
   </div>
 
   <div class="busca-wrap">
     <div class="busca-row">
       <input type="text" id="buscaInput" placeholder="Buscar categoria ou subcategoria..." oninput="filtrar()">
-      <button>🔍</button>
+      <button onclick="filtrar()">🔍</button>
     </div>
   </div>
 
-  <div id="conteudo"></div>
+  <div id="conteudo">
+    <!-- skeletons enquanto carrega -->
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
   <div class="sem-resultado" id="semResultado">
     <div style="font-size:48px">🤔</div>
     <div style="font-family:'Fredoka One',cursive;font-size:20px;color:#4a6fa5;margin-top:12px;">Nenhuma categoria encontrada</div>
   </div>
-
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 <script>
-const dados = [
-  {
-    grupo:"🌍 Por Região",
-    cats:[
-      {
-        emoji:"📍", nome:"Gírias Locais", slug:"girias-locais",
-        desc:"Gírias de cada região e cidade do Brasil e do mundo",
-        total:148,
-        subcats:[
-          {emoji:"🏙️", nome:"São Paulo", slug:"sao-paulo", count:45},
-          {emoji:"🌊", nome:"Rio de Janeiro", slug:"rio-de-janeiro", count:38},
-          {emoji:"🤠", nome:"Rio Grande do Sul", slug:"rio-grande-do-sul", count:22},
-          {emoji:"🌴", nome:"Nordeste", slug:"nordeste", count:29},
-          {emoji:"🌿", nome:"Minas Gerais", slug:"minas-gerais", count:19},
-          {emoji:"🐊", nome:"Norte do Brasil", slug:"norte", count:14},
-          {emoji:"🌸", nome:"Japão", slug:"japao", count:11},
-          {emoji:"🇺🇸", nome:"Estados Unidos", slug:"eua", count:9},
-          {emoji:"🌺", nome:"Havaí", slug:"havai", count:8},
-          {emoji:"🇪🇸", nome:"Espanha", slug:"espanha", count:7},
-        ]
-      },
-    ]
-  },
-  {
-    grupo:"📱 Por Plataforma",
-    cats:[
-      {
-        emoji:"🌐", nome:"Gírias da Internet", slug:"girias-internet",
-        desc:"Expressões que nasceram e vivem no mundo digital",
-        total:134,
-        subcats:[
-          {emoji:"🎵", nome:"TikTok", slug:"tiktok", count:41},
-          {emoji:"💬", nome:"WhatsApp", slug:"whatsapp", count:35},
-          {emoji:"📸", nome:"Instagram", slug:"instagram", count:28},
-          {emoji:"▶️", nome:"YouTube", slug:"youtube", count:22},
-          {emoji:"🎮", nome:"Twitch", slug:"twitch", count:18},
-          {emoji:"🐦", nome:"Twitter / X", slug:"twitter", count:15},
-          {emoji:"👾", nome:"Discord", slug:"discord", count:12},
-          {emoji:"🔵", nome:"Facebook", slug:"facebook", count:9},
-        ]
-      },
-    ]
-  },
-  {
-    grupo:"📅 Por Época",
-    cats:[
-      {
-        emoji:"⏳", nome:"Gírias por Época", slug:"girias-epoca",
-        desc:"Como a linguagem evoluiu ao longo das décadas",
-        total:220,
-        subcats:[
-          {emoji:"📼", nome:"Anos 80", slug:"anos-80", count:31},
-          {emoji:"💿", nome:"Anos 90", slug:"anos-90", count:44},
-          {emoji:"📀", nome:"Anos 2000", slug:"anos-2000", count:38},
-          {emoji:"📱", nome:"Anos 2010", slug:"anos-2010", count:55},
-          {emoji:"🚀", nome:"Anos 2020 até hoje", slug:"anos-2020", count:52},
-        ]
-      },
-    ]
-  },
-  {
-    grupo:"🎵 Por Cultura",
-    cats:[
-      {
-        emoji:"🎤", nome:"Gírias do Funk", slug:"girias-funk",
-        desc:"Do baile pra rua — o vocabulário do funk brasileiro",
-        total:52,
-        subcats:[
-          {emoji:"🎶", nome:"Funk Carioca", slug:"funk-carioca", count:24},
-          {emoji:"🎸", nome:"Funk Ostentação", slug:"funk-ostentacao", count:18},
-          {emoji:"💃", nome:"Funk Melody", slug:"funk-melody", count:10},
-        ]
-      },
-      {
-        emoji:"🏄", nome:"Gírias do Surf", slug:"girias-surf",
-        desc:"Da praia pro seu vocabulário — cultura do surf",
-        total:21,
-        subcats:[
-          {emoji:"🌊", nome:"Manobras", slug:"manobras-surf", count:12},
-          {emoji:"🌺", nome:"Cultura Havaiana", slug:"cultura-havaiana", count:9},
-        ]
-      },
-      {
-        emoji:"🛹", nome:"Gírias do Skate", slug:"girias-skate",
-        desc:"O vocabulário das pistas e ruas",
-        total:27,
-        subcats:[
-          {emoji:"🛹", nome:"Manobras de Skate", slug:"manobras-skate", count:15},
-          {emoji:"🏙️", nome:"Street Skate", slug:"street-skate", count:12},
-        ]
-      },
-      {
-        emoji:"🎮", nome:"Gírias do Game", slug:"girias-game",
-        desc:"Linguagem dos jogadores e streamers",
-        total:43,
-        subcats:[
-          {emoji:"⚔️", nome:"RPG", slug:"rpg", count:14},
-          {emoji:"🔫", nome:"FPS / Shooter", slug:"fps", count:16},
-          {emoji:"⚽", nome:"Futebol Virtual", slug:"futebol-virtual", count:8},
-          {emoji:"📱", nome:"Mobile Games", slug:"mobile-games", count:5},
-        ]
-      },
-    ]
-  },
-  {
-    grupo:"💬 Por Situação",
-    cats:[
-      {emoji:"👋", nome:"Cumprimentos", slug:"cumprimentos", desc:"Formas de cumprimentar e se despedir", total:33, subcats:[]},
-      {
-        emoji:"❤️", nome:"Gírias de Amor", slug:"girias-amor",
-        desc:"Expressões do coração e dos relacionamentos",
-        total:28,
-        subcats:[
-          {emoji:"😍", nome:"Paquera", slug:"paquera", count:12},
-          {emoji:"💑", nome:"Relacionamento", slug:"relacionamento", count:10},
-          {emoji:"💔", nome:"Término", slug:"termino", count:6},
-        ]
-      },
-      {emoji:"😡", nome:"Xingamentos", slug:"xingamentos", desc:"Palavrões e xingamentos do vocabulário urbano", total:41, subcats:[]},
-      {emoji:"😂", nome:"Expressões de Humor", slug:"humor", desc:"Pra morrer de rir ou fazer alguém rir", total:35, subcats:[]},
-    ]
-  },
-  {
-    grupo:"🌍 Por Origem",
-    cats:[
-      {emoji:"🇧🇷", nome:"Criadas no Brasil", slug:"criadas-brasil", desc:"Gírias 100% tupiniquins!", total:89, subcats:[]},
-      {emoji:"🇺🇸", nome:"Do Inglês", slug:"do-ingles", desc:"Palavras absorvidas do inglês", total:48, subcats:[]},
-      {emoji:"🌺", nome:"Do Havaiano", slug:"do-havaiano", desc:"A influência da cultura havaiana", total:8, subcats:[]},
-    ]
-  },
-];
+const sb = window._supabase
+let dadosOriginais = []
 
-function renderizar(lista){
-  const conteudo = document.getElementById('conteudo');
-  const sem = document.getElementById('semResultado');
-  if(!lista.length){
-    conteudo.innerHTML='';
-    sem.classList.add('visivel');
-    return;
+async function init() {
+  // carregar categorias com subcategorias e contagem de palavras
+  const { data: cats, error } = await sb
+    .from('categorias')
+    .select('id, nome, icone, descricao, subcategorias(id, nome, icone, descricao)')
+    .order('nome')
+
+  if (error || !cats) {
+    document.getElementById('conteudo').innerHTML = '<p style="color:#4a6fa5;text-align:center;padding:40px;">Erro ao carregar categorias.</p>'
+    return
   }
-  sem.classList.remove('visivel');
-  conteudo.innerHTML = lista.map((grupo,gi)=>`
-    <div class="grupo-secao" style="animation-delay:${gi*0.07}s">
+
+  // contar palavras por categoria
+  const counts = {}
+  const { data: palavrasCats } = await sb
+    .from('palavras')
+    .select('categoria_id')
+    .eq('status', 'aprovada')
+
+  if (palavrasCats) {
+    palavrasCats.forEach(p => {
+      if (p.categoria_id) counts[p.categoria_id] = (counts[p.categoria_id] || 0) + 1
+    })
+  }
+
+  // contar palavras por subcategoria
+  const subCounts = {}
+  const { data: palavrasSubs } = await sb
+    .from('palavras')
+    .select('subcategoria_id')
+    .eq('status', 'aprovada')
+
+  if (palavrasSubs) {
+    palavrasSubs.forEach(p => {
+      if (p.subcategoria_id) subCounts[p.subcategoria_id] = (subCounts[p.subcategoria_id] || 0) + 1
+    })
+  }
+
+  // montar estrutura — agrupar em uma única seção já que não temos grupo no banco
+  // agrupa por initial do nome para ficar organizado
+  dadosOriginais = [{
+    grupo: '🗂️ Todas as Categorias',
+    cats: cats.map(c => ({
+      id: c.id,
+      emoji: c.icone || '📁',
+      nome: c.nome,
+      desc: c.descricao || '',
+      total: counts[c.id] || 0,
+      subcats: (c.subcategorias || []).map(s => ({
+        id: s.id,
+        emoji: s.icone || '📂',
+        nome: s.nome,
+        count: subCounts[s.id] || 0
+      })).sort((a, b) => b.count - a.count)
+    })).sort((a, b) => b.total - a.total)
+  }]
+
+  const totalCats = cats.length
+  const totalSubs = cats.reduce((acc, c) => acc + (c.subcategorias?.length || 0), 0)
+  document.getElementById('pageSub').textContent = totalCats + ' categorias · ' + totalSubs + ' subcategorias · Clique para expandir'
+
+  renderizar(dadosOriginais)
+}
+
+function renderizar(lista) {
+  const conteudo = document.getElementById('conteudo')
+  const sem = document.getElementById('semResultado')
+
+  const totalCats = lista.reduce((acc, g) => acc + g.cats.length, 0)
+  if (!totalCats) {
+    conteudo.innerHTML = ''
+    sem.classList.add('visivel')
+    return
+  }
+  sem.classList.remove('visivel')
+
+  conteudo.innerHTML = lista.map((grupo, gi) => `
+    <div class="grupo-secao" style="animation-delay:${gi * 0.07}s">
       <div class="grupo-titulo">${grupo.grupo}</div>
-      ${grupo.cats.map(cat=> cat.subcats.length > 0 ? `
-        <div class="cat-principal" id="cat-${cat.slug}">
-          <div class="cat-header" onclick="toggleCat('${cat.slug}')">
+      ${grupo.cats.map(cat => cat.subcats.length > 0 ? `
+        <div class="cat-principal" id="cat-${cat.id}">
+          <div class="cat-header" onclick="toggleCat(${cat.id})">
             <div class="cat-emoji-grande">${cat.emoji}</div>
             <div class="cat-info">
               <div class="cat-nome-principal">${cat.nome}</div>
-              <div class="cat-desc-principal">${cat.desc}</div>
+              ${cat.desc ? `<div class="cat-desc-principal">${cat.desc}</div>` : ''}
             </div>
             <div class="cat-meta">
               <div class="cat-total">${cat.total} palavras</div>
               <div class="cat-seta">▼</div>
             </div>
           </div>
-          <div class="subcats-wrap" id="sub-${cat.slug}">
+          <div class="subcats-wrap" id="sub-${cat.id}">
             <div class="subcats-inner">
-              <a href="categoria.html?c=${cat.slug}" class="ver-todos-link">
+              <a href="categoria.html?c=${cat.id}" class="ver-todos-link">
                 <span class="ver-todos-texto">🔍 Ver todas em ${cat.nome}</span>
                 <span class="ver-todos-count">${cat.total} palavras →</span>
               </a>
               <div class="subcats-grid">
-                ${cat.subcats.map(sub=>`
-                  <a href="categoria.html?c=${sub.slug}" class="subcat-card">
+                ${cat.subcats.map(sub => `
+                  <a href="categoria.html?c=${sub.id}&sub=1" class="subcat-card">
                     <span class="subcat-emoji">${sub.emoji}</span>
                     <div class="subcat-body">
                       <div class="subcat-nome">${sub.nome}</div>
@@ -324,12 +271,12 @@ function renderizar(lista){
           </div>
         </div>
       ` : `
-        <div class="cat-principal" id="cat-${cat.slug}">
-          <a href="categoria.html?c=${cat.slug}" class="cat-header link-direto">
+        <div class="cat-principal" id="cat-${cat.id}">
+          <a href="categoria.html?c=${cat.id}" class="cat-header link-direto">
             <div class="cat-emoji-grande">${cat.emoji}</div>
             <div class="cat-info">
               <div class="cat-nome-principal">${cat.nome}</div>
-              <div class="cat-desc-principal">${cat.desc}</div>
+              ${cat.desc ? `<div class="cat-desc-principal">${cat.desc}</div>` : ''}
             </div>
             <div class="cat-meta">
               <div class="cat-total">${cat.total} palavras</div>
@@ -339,40 +286,40 @@ function renderizar(lista){
         </div>
       `).join('')}
     </div>
-  `).join('');
+  `).join('')
 }
 
-function toggleCat(slug){
-  const card = document.getElementById('cat-'+slug);
-  const sub = document.getElementById('sub-'+slug);
-  if(!sub) return;
-  const aberta = card.classList.contains('aberta');
-  document.querySelectorAll('.cat-principal').forEach(c=>c.classList.remove('aberta'));
-  document.querySelectorAll('.subcats-wrap').forEach(s=>s.classList.remove('aberta'));
-  if(!aberta){ card.classList.add('aberta'); sub.classList.add('aberta'); }
+function toggleCat(id) {
+  const card = document.getElementById('cat-' + id)
+  const sub = document.getElementById('sub-' + id)
+  if (!sub) return
+  const aberta = card.classList.contains('aberta')
+  document.querySelectorAll('.cat-principal').forEach(c => c.classList.remove('aberta'))
+  document.querySelectorAll('.subcats-wrap').forEach(s => s.classList.remove('aberta'))
+  if (!aberta) { card.classList.add('aberta'); sub.classList.add('aberta') }
 }
 
-function filtrar(){
-  const q = document.getElementById('buscaInput').value.toLowerCase().trim();
-  if(!q){ renderizar(dados); return; }
-  const filtrado = dados.map(grupo=>{
-    const cats = grupo.cats.map(cat=>{
-      if(cat.nome.toLowerCase().includes(q)||cat.desc.toLowerCase().includes(q)) return cat;
-      const subcatsOk = cat.subcats.filter(s=>s.nome.toLowerCase().includes(q));
-      if(subcatsOk.length) return {...cat, subcats:subcatsOk};
-      return null;
-    }).filter(Boolean);
-    return cats.length ? {...grupo, cats} : null;
-  }).filter(Boolean);
-  renderizar(filtrado);
+function filtrar() {
+  const q = document.getElementById('buscaInput').value.toLowerCase().trim()
+  if (!q) { renderizar(dadosOriginais); return }
+  const filtrado = dadosOriginais.map(grupo => {
+    const cats = grupo.cats.map(cat => {
+      if (cat.nome.toLowerCase().includes(q) || cat.desc.toLowerCase().includes(q)) return cat
+      const subcatsOk = cat.subcats.filter(s => s.nome.toLowerCase().includes(q))
+      if (subcatsOk.length) return { ...cat, subcats: subcatsOk }
+      return null
+    }).filter(Boolean)
+    return cats.length ? { ...grupo, cats } : null
+  }).filter(Boolean)
+  renderizar(filtrado)
 }
 
-function toggleMenu(){
-  document.getElementById('navMobile').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
+function toggleMenu() {
+  document.getElementById('navMobile').classList.toggle('open')
+  document.getElementById('overlay').classList.toggle('open')
 }
 
-renderizar(dados);
+init()
 </script>
 </body>
 </html>
