@@ -593,7 +593,7 @@
     }
 
     debounceTimer = setTimeout(async () => {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('palavras')
         .select('termo, slug')
         .ilike('termo', `${val}%`)
@@ -629,7 +629,7 @@
 
   // ── CARREGAR PALAVRAS EM ALTA ──
   async function carregarEmAlta() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('palavras')
       .select('termo, slug')
       .eq('status', 'aprovada')
@@ -649,7 +649,7 @@
 
   // ── CARREGAR RECENTES ──
   async function carregarRecentes() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('palavras')
       .select('termo, slug')
       .eq('status', 'aprovada')
