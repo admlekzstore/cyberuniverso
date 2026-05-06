@@ -162,7 +162,7 @@ async function init() {
   // carregar categorias com subcategorias e contagem de palavras
   const { data: cats, error } = await sb
     .from('categorias')
-    .select('id, nome, icone, descricao, subcategorias(id, nome)')
+    .select('id, nome, icone, descricao, subcategorias(id, nome, icone, descricao)')
     .order('nome')
 
   if (error || !cats) {
@@ -170,29 +170,33 @@ async function init() {
     return
   }
 
-  // contar palavras por categoria
+  // contar palavras por categoria (principal + múltiplas)
   const counts = {}
-  const { data: palavrasCats } = await sb
+  const subCounts = {}
+
+  // pela categoria_id principal
+  const { data: palavrasPrinc } = await sb
     .from('palavras')
-    .select('categoria_id')
+    .select('categoria_id, subcategoria_id')
     .eq('status', 'aprovada')
 
-  if (palavrasCats) {
-    palavrasCats.forEach(p => {
+  if (palavrasPrinc) {
+    palavrasPrinc.forEach(p => {
       if (p.categoria_id) counts[p.categoria_id] = (counts[p.categoria_id] || 0) + 1
+      if (p.subcategoria_id) subCounts[p.subcategoria_id] = (subCounts[p.subcategoria_id] || 0) + 1
     })
   }
 
-  // contar palavras por subcategoria
-  const subCounts = {}
-  const { data: palavrasSubs } = await sb
-    .from('palavras')
-    .select('subcategoria_id')
-    .eq('status', 'aprovada')
+  // pela tabela palavras_categorias (múltiplas)
+  const { data: multCats } = await sb
+    .from('palavras_categorias')
+    .select('categoria_id, subcategoria_id, palavras!inner(status)')
+    .eq('palavras.status', 'aprovada')
 
-  if (palavrasSubs) {
-    palavrasSubs.forEach(p => {
-      if (p.subcategoria_id) subCounts[p.subcategoria_id] = (subCounts[p.subcategoria_id] || 0) + 1
+  if (multCats) {
+    multCats.forEach(pc => {
+      if (pc.categoria_id) counts[pc.categoria_id] = (counts[pc.categoria_id] || 0) + 1
+      if (pc.subcategoria_id) subCounts[pc.subcategoria_id] = (subCounts[pc.subcategoria_id] || 0) + 1
     })
   }
 
