@@ -162,7 +162,7 @@ async function init() {
   // carregar categorias com subcategorias e contagem de palavras
   const { data: cats, error } = await sb
     .from('categorias')
-    .select('id, nome, icone, descricao, subcategorias(id, nome, icone, descricao)')
+    .select('id, nome, icone, descricao, subcategorias(id, nome)')
     .order('nome')
 
   if (error || !cats) {
