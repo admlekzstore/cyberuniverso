@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">CyberUniverso</title>
+<meta name="description" id="metaDesc" content="Dicionário de gírias e expressões do português brasileiro.">
+<meta property="og:title" id="ogTitle" content="CyberUniverso">
+<meta property="og:description" id="ogDesc" content="Dicionário de gírias e expressões do português brasileiro.">
+<meta property="og:type" content="article">
+<meta property="og:url" id="ogUrl" content="">
+<meta property="og:site_name" content="CyberUniverso">
+<link rel="canonical" id="canonicalUrl" href="">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -192,7 +199,23 @@ async function carregarPalavra() {
   if (error || !p) { mostrarNotFound('A palavra "' + slug + '" não foi encontrada.'); return }
 
   palavraId = p.id
-  document.getElementById('pageTitle').textContent = p.termo + ' — CyberUniverso'
+  // Título do Google (diferente do visual da página)
+  document.getElementById('pageTitle').textContent = 'O que é ' + p.termo + '? - Significado e origem da gíria | CyberUniverso'
+
+  // Meta description
+  var primeiroSig = ''
+  // será preenchido após carregar significados — veja injetarSEO()
+
+  // URL canônica
+  var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+  var canonical = document.getElementById('canonicalUrl')
+  if (canonical) canonical.setAttribute('href', urlCanonica)
+  var ogUrl = document.getElementById('ogUrl')
+  if (ogUrl) ogUrl.setAttribute('content', urlCanonica)
+
+  // OG title
+  var ogTitle = document.getElementById('ogTitle')
+  if (ogTitle) ogTitle.setAttribute('content', 'O que é ' + p.termo + '? Significado e origem da gíria')
 
   // buscar dados relacionados separadamente
   const [
@@ -217,6 +240,40 @@ async function carregarPalavra() {
   const reacoes = await carregarReacoes(p.id)
 
   renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [])
+
+  // SEO: meta description + schema com o primeiro significado
+  var sigTexto = ''
+  if (significados && significados.length > 0) {
+    var raw = significados[0].descricao || ''
+    sigTexto = raw.includes('[extras]') ? raw.split('[extras]')[0].trim() : raw.trim()
+    sigTexto = sigTexto.replace(/\n/g, ' ').substring(0, 155)
+  }
+  var descSEO = sigTexto
+    ? p.termo + ': ' + sigTexto + '...'
+    : 'Veja o significado de ' + p.termo + ' no CyberUniverso, o dicionário de gírias do português brasileiro.'
+
+  var metaDesc = document.getElementById('metaDesc')
+  if (metaDesc) metaDesc.setAttribute('content', descSEO)
+  var ogDesc = document.getElementById('ogDesc')
+  if (ogDesc) ogDesc.setAttribute('content', descSEO)
+
+  // Schema JSON-LD
+  var schema = {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    "name": p.termo,
+    "description": descSEO,
+    "inDefinedTermSet": {
+      "@type": "DefinedTermSet",
+      "name": "CyberUniverso",
+      "url": "https://cyberuniverso.com"
+    },
+    "url": 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+  }
+  var scriptSchema = document.createElement('script')
+  scriptSchema.type = 'application/ld+json'
+  scriptSchema.textContent = JSON.stringify(schema)
+  document.head.appendChild(scriptSchema)
   await carregarComentarios(p.id)
   await carregarVizinhas(p.termo)
 }
