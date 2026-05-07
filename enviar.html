@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enviar Palavra — CyberUniverso</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;--verde:#64ff96;--vermelho:#ff5050;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(5,8,15,0.95);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .btn-voltar{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:8px 14px;color:var(--texto);font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .btn-voltar:hover{border-color:var(--azul);color:var(--ciano);}
+  .topbar-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:var(--amarelo);}
+  .btn-enviar-top{background:var(--azul);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+  .btn-enviar-top:hover{background:#0050cc;}
+  .btn-enviar-top:disabled{background:#1a3a6e;cursor:not-allowed;opacity:0.7;}
+
+  /* BANNER DE BOAS VINDAS */
+  .banner-publico{background:linear-gradient(135deg,rgba(26,110,245,0.12),rgba(0,234,255,0.06));border:1px solid rgba(0,234,255,0.2);border-radius:14px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px;}
+  .banner-publico .icone{font-size:28px;flex-shrink:0;margin-top:2px;}
+  .banner-publico .txt{font-size:14px;line-height:1.6;color:#7ab0ff;}
+  .banner-publico .txt strong{color:var(--ciano);font-size:15px;display:block;margin-bottom:4px;}
+
+  .page-wrap{max-width:900px;margin:0 auto;padding:28px 16px 60px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+  .secao-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;}
+  .secao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .secao-titulo{font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;color:var(--ciano);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+  .secao-desc{font-size:13px;color:#4a6fa5;margin-bottom:14px;line-height:1.5;}
+
+  .campo{margin-bottom:14px;}
+  .campo label{display:block;font-size:12px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+  .campo .obrigatorio{color:var(--amarelo);margin-left:2px;}
+  .campo input,.campo select,.campo textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--azul);}
+  .campo input::placeholder,.campo textarea::placeholder{color:#2a4a7a;}
+  .campo select option{background:var(--card2);}
+  .campo textarea{resize:vertical;min-height:80px;}
+  .campo .hint{font-size:12px;color:#2a4a7a;margin-top:5px;}
+
+  /* ── SIGNIFICADOS ── */
+  .sig-lista{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;}
+  .sig-bloco-wrap{display:flex;gap:8px;align-items:flex-start;}
+  .sig-bloco{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:14px;transition:border-color 0.2s;}
+  .sig-bloco:focus-within{border-color:var(--azul);}
+  .sig-numero{font-size:11px;font-weight:800;color:#4a6fa5;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .sig-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:70px;}
+  .sig-texto::placeholder{color:#2a4a7a;}
+  .sig-extras{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .sig-extra-item{background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;position:relative;}
+  .sig-extra-titulo{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;padding:4px 0 6px;margin-bottom:6px;}
+  .sig-extra-titulo::placeholder{color:#2a4a7a;font-family:'Nunito',sans-serif;font-size:13px;letter-spacing:0;}
+  .sig-extra-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:60px;}
+  .sig-extra-texto::placeholder{color:#2a4a7a;}
+  .btn-rem-extra{position:absolute;top:8px;right:8px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:var(--vermelho);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:800;cursor:pointer;}
+  .btn-rem-extra:hover{background:var(--vermelho);color:#fff;}
+  .sig-acoes{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--borda);}
+  .btn-add-sub{background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.3);color:var(--ciano);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s;}
+  .btn-add-sub:hover{background:rgba(0,234,255,0.15);}
+
+  /* ── LISTAS SIMPLES ── */
+  .lista-dinamica{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .lista-item{display:flex;gap:8px;align-items:flex-start;}
+  .lista-item input,.lista-item textarea{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .lista-item input:focus,.lista-item textarea:focus{border-color:var(--azul);}
+  .lista-item input::placeholder,.lista-item textarea::placeholder{color:#2a4a7a;}
+  .btn-remover{background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.3);color:var(--vermelho);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px;transition:all 0.2s;white-space:nowrap;margin-top:2px;}
+  .btn-remover:hover{background:var(--vermelho);color:#fff;}
+  .btn-adicionar-item{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.08);border:1.5px dashed rgba(26,110,245,0.3);color:#4a8aff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;}
+  .btn-adicionar-item:hover{background:rgba(26,110,245,0.15);border-color:var(--azul);}
+
+  /* ── TAGS ── */
+  .tags-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .tag-item{display:flex;align-items:center;gap:4px;background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:#7ab0ff;}
+  .tag-item button{background:none;border:none;color:#4a6fa5;cursor:pointer;font-size:14px;line-height:1;padding:0 2px;}
+  .tag-item button:hover{color:var(--vermelho);}
+  .tag-input-row{display:flex;gap:8px;}
+  .tag-input-row input{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .tag-input-row input:focus{border-color:var(--azul);}
+  .tag-input-row button{background:var(--azul);border:none;border-radius:10px;padding:9px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;}
+
+  /* ── CATEGORIAS MÚLTIPLAS ── */
+  .cats-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+  .cat-par{background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .cat-par-info{flex:1;font-size:14px;font-weight:700;color:var(--ciano);}
+  .cat-par-sub{font-size:12px;color:#4a6fa5;font-weight:600;margin-top:2px;}
+  .btn-rem-cat{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:var(--vermelho);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;}
+  .btn-rem-cat:hover{background:var(--vermelho);color:#fff;}
+  .cat-add-bloco{background:rgba(26,110,245,0.05);border:1.5px dashed rgba(26,110,245,0.3);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+  .cat-add-bloco select{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .cat-add-bloco select:focus{border-color:var(--azul);}
+  .cat-add-bloco select option{background:var(--card2);}
+  .btn-add-cat{background:var(--azul);border:none;border-radius:10px;padding:10px;color:#fff;font-family:'Bangers',cursive;font-size:16px;letter-spacing:1px;cursor:pointer;width:100%;}
+  .btn-add-cat:hover{background:#0050cc;}
+
+  /* ── BADGES ── */
+  .badges-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .badge-opcao{background:var(--card2);border:1.5px solid var(--borda);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;color:#4a6fa5;}
+  .badge-opcao.selecionado{background:rgba(26,110,245,0.2);border-color:var(--azul);color:#7ab0ff;}
+  .badge-opcao:hover{border-color:var(--azul);}
+
+  /* ── SUCESSO ── */
+  .tela-sucesso{display:none;text-align:center;padding:60px 20px;}
+  .tela-sucesso .icone-ok{font-size:72px;margin-bottom:20px;animation:pulse 1s ease;}
+  @keyframes pulse{0%{transform:scale(0.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .tela-sucesso h2{font-family:'Bangers',cursive;font-size:36px;letter-spacing:2px;color:var(--verde);margin-bottom:12px;}
+  .tela-sucesso p{font-size:15px;color:#7ab0ff;line-height:1.7;max-width:480px;margin:0 auto 28px;}
+  .tela-sucesso .btn-novo{background:var(--azul);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:1px;cursor:pointer;}
+  .tela-sucesso .btn-novo:hover{background:#0050cc;}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;}
+  .toast.visivel{transform:translateY(0);opacity:1;}
+  .toast.sucesso{border-color:rgba(100,255,150,0.4);color:var(--verde);}
+  .toast.erro{border-color:rgba(255,80,80,0.4);color:var(--vermelho);}
+
+  @media(max-width:600px){.grid-2{grid-template-columns:1fr;}.topbar{flex-wrap:wrap;gap:10px;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="btn-voltar">← Voltar</a>
+    <div class="topbar-titulo">💡 ENVIAR PALAVRA</div>
+  </div>
+  <button class="btn-enviar-top" id="btnEnviarTop" onclick="enviarPalavra()">🚀 ENVIAR</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="page-wrap">
+
+  <!-- TELA DE SUCESSO (oculta inicialmente) -->
+  <div class="tela-sucesso" id="telaSucesso">
+    <div class="icone-ok">🎉</div>
+    <h2>PALAVRA ENVIADA!</h2>
+    <p>Obrigado pela contribuição! Sua palavra foi enviada e será revisada pela equipe do CyberUniverso antes de aparecer no site.</p>
+    <button class="btn-novo" onclick="reiniciar()">➕ Enviar outra palavra</button>
+  </div>
+
+  <!-- FORMULÁRIO PRINCIPAL -->
+  <div id="formulario">
+
+    <!-- BANNER -->
+    <div class="banner-publico">
+      <div class="icone">🌐</div>
+      <div class="txt">
+        <strong>Contribua com o dicionário!</strong>
+        Qualquer pessoa pode enviar uma gíria. Sua contribuição será revisada antes de aparecer no site. Só o nome da palavra é obrigatório — o resto é opcional, mas quanto mais detalhes, melhor!
+      </div>
+    </div>
+
+    <!-- BÁSICO -->
+    <div class="secao-card">
+      <div class="secao-titulo">📝 Informações Básicas</div>
+      <div class="campo">
+        <label>Palavra / Gíria <span class="obrigatorio">*</span></label>
+        <input type="text" id="f-termo" placeholder="ex: Simbora, Bora Bill, Oxe...">
+        <div class="hint">Único campo obrigatório.</div>
+      </div>
+      <div class="campo">
+        <label>Seu apelido ou nome <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <input type="text" id="f-apelido" placeholder="ex: João, Funkeiro da Silva, Anônimo...">
+        <div class="hint">Apareceça como colaborador da palavra. Se deixar vazio, aparecerá como "Visitante".</div>
+      </div>
+    </div>
+
+    <!-- SIGNIFICADOS -->
+    <div class="secao-card">
+      <div class="secao-titulo">📖 Significados</div>
+      <p class="secao-desc">Explique o que significa a palavra. Você pode adicionar mais de um significado e incluir subtítulos extras (ex: Origem, Curiosidade...).</p>
+      <div class="sig-lista" id="lista-significados">
+        <div class="sig-bloco-wrap">
+          <div class="sig-bloco">
+            <div class="sig-numero">Significado 1</div>
+            <textarea class="sig-texto" placeholder="Descreva o significado..."></textarea>
+            <div class="sig-extras"></div>
+            <div class="sig-acoes">
+              <button class="btn-add-sub" onclick="adicionarExtra(this)">➕ Título adicional</button>
+            </div>
+          </div>
+          <button class="btn-remover" onclick="removerSig(this)" style="margin-top:2px;">🗑️</button>
+        </div>
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarSignificado()">➕ Adicionar significado</button>
+    </div>
+
+    <!-- EXEMPLOS -->
+    <div class="secao-card">
+      <div class="secao-titulo">💬 Exemplos de Frases</div>
+      <p class="secao-desc">Mostre a palavra sendo usada numa frase real.</p>
+      <div class="lista-dinamica" id="lista-exemplos">
+        <div class="lista-item">
+          <input type="text" placeholder='Ex: "Simbora pra praia!"'>
+          <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+        </div>
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarExemplo()">➕ Adicionar exemplo</button>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="secao-card">
+      <div class="secao-titulo">🗂️ Categorias</div>
+      <p class="secao-desc">Adicione quantas categorias e subcategorias quiser.</p>
+      <div class="cats-lista" id="cats-lista">
+        <p style="color:#2a4a7a;font-size:13px;margin-bottom:8px;">Nenhuma categoria adicionada ainda.</p>
+      </div>
+      <div class="cat-add-bloco" id="catAddBloco">
+        <select id="cat-select-nova" onchange="atualizarSubsNovas()">
+          <option value="">Carregando categorias...</option>
+        </select>
+        <select id="sub-select-nova">
+          <option value="">Subcategoria (opcional)...</option>
+        </select>
+        <button class="btn-add-cat" onclick="adicionarCategoria()">➕ Adicionar esta categoria</button>
+      </div>
+    </div>
+
+    <!-- CLASSIFICAÇÃO -->
+    <div class="secao-card">
+      <div class="secao-titulo">🏷️ Classificação</div>
+      <div class="grid-2">
+        <div class="campo">
+          <label>Nível de Uso</label>
+          <div class="badges-grid">
+            <div class="badge-opcao" onclick="selecionarBadge('nivel','Muito usado',this)">Muito usado</div>
+            <div class="badge-opcao" onclick="selecionarBadge('nivel','Usado',this)">Usado</div>
+            <div class="badge-opcao" onclick="selecionarBadge('nivel','Pouco usado',this)">Pouco usado</div>
+            <div class="badge-opcao" onclick="selecionarBadge('nivel','Raro',this)">Raro</div>
+          </div>
+          <input type="hidden" id="f-nivel" value="">
+        </div>
+        <div class="campo">
+          <label>Contexto</label>
+          <div class="badges-grid">
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Informal',this)">Informal</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Internet',this)">Internet</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Funk',this)">Funk</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Surf',this)">Surf</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Periferia',this)">Periferia</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Jovem',this)">Jovem</div>
+            <div class="badge-opcao" onclick="selecionarBadge('contexto','Geral',this)">Geral</div>
+          </div>
+          <input type="hidden" id="f-contexto" value="">
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:14px;">
+        <div class="campo">
+          <label>Região</label>
+          <div class="badges-grid">
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Nacional',this)">Nacional</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','São Paulo',this)">São Paulo</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Rio de Janeiro',this)">Rio de Janeiro</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Sul',this)">Sul</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Nordeste',this)">Nordeste</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Centro-Oeste',this)">Centro-Oeste</div>
+            <div class="badge-opcao" onclick="selecionarBadge('regiao','Norte',this)">Norte</div>
+          </div>
+          <input type="hidden" id="f-regiao" value="">
+        </div>
+        <div class="campo">
+          <label>Época</label>
+          <div class="badges-grid">
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Atual',this)">Atual</div>
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Anos 2010',this)">Anos 2010</div>
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Anos 2000',this)">Anos 2000</div>
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Anos 90',this)">Anos 90</div>
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Anos 80',this)">Anos 80</div>
+            <div class="badge-opcao" onclick="selecionarBadge('epoca','Clássica',this)">Clássica</div>
+          </div>
+          <input type="hidden" id="f-epoca" value="">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAGS -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔖 Tags</div>
+      <p class="secao-desc">Palavras-chave que ajudam a encontrar essa gíria. Separe por vírgula.</p>
+      <div class="tags-wrap" id="tags-wrap"></div>
+      <div class="tag-input-row">
+        <input type="text" id="tag-input" placeholder="ex: amor, amizade, diversão" onkeydown="if(event.key==='Enter'){adicionarTag();event.preventDefault()}">
+        <button onclick="adicionarTag()">Adicionar</button>
+      </div>
+    </div>
+
+    <!-- SINÔNIMOS -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔗 Sinônimos</div>
+      <p class="secao-desc">Palavras com significado parecido.</p>
+      <div class="lista-dinamica" id="lista-sinonimos">
+        <div class="lista-item">
+          <input type="text" placeholder="ex: Bora, Vamo, Vamos">
+          <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+        </div>
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarSinonimo()">➕ Adicionar sinônimo</button>
+    </div>
+
+    <!-- PALAVRAS RELACIONADAS -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔀 Palavras Relacionadas</div>
+      <p class="secao-desc">Palavras ligadas ao tema, mas que não são sinônimos.</p>
+      <div class="lista-dinamica" id="lista-relacionadas">
+        <div class="lista-item">
+          <input type="text" placeholder="ex: Surf, Praia, Havaí">
+          <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+        </div>
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarRelacionada()">➕ Adicionar relacionada</button>
+    </div>
+
+    <!-- BOTÃO FINAL -->
+    <button class="btn-enviar-top" style="width:100%;padding:16px;font-size:22px;border-radius:12px;" onclick="enviarPalavra()">🚀 ENVIAR PALAVRA</button>
+
+  </div><!-- /formulario -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+let tagsAtuais = []
+let categoriasDisponiveis = []
+let categoriasSelecionadas = []
+
+async function init() {
+  const { data: cats } = await sb.from('categorias').select('id, nome, subcategorias(id, nome)').order('nome')
+  categoriasDisponiveis = cats || []
+  const sel = document.getElementById('cat-select-nova')
+  sel.innerHTML = '<option value="">Selecionar categoria...</option>' +
+    categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')
+}
+
+// ── CATEGORIAS ──
+function renderCatsLista() {
+  if (categoriasSelecionadas.length === 0) {
+    return '<p style="color:#2a4a7a;font-size:13px;margin-bottom:8px;">Nenhuma categoria adicionada ainda.</p>'
+  }
+  return categoriasSelecionadas.map((par, i) => {
+    const cat = categoriasDisponiveis.find(c => c.id == par.categoria_id)
+    const sub = cat?.subcategorias?.find(s => s.id == par.subcategoria_id)
+    return `
+      <div class="cat-par">
+        <div class="cat-par-info">
+          📁 ${cat?.nome || '—'}
+          ${sub ? `<div class="cat-par-sub">↳ ${sub.nome}</div>` : ''}
+        </div>
+        <button class="btn-rem-cat" onclick="removerCategoria(${i})">✕ Remover</button>
+      </div>`
+  }).join('')
+}
+
+function atualizarSubsNovas() {
+  const catId = document.getElementById('cat-select-nova').value
+  const cat = categoriasDisponiveis.find(c => c.id == catId)
+  const subs = cat?.subcategorias || []
+  document.getElementById('sub-select-nova').innerHTML =
+    '<option value="">Subcategoria (opcional)...</option>' +
+    subs.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')
+}
+
+function adicionarCategoria() {
+  const catId = document.getElementById('cat-select-nova').value
+  const subId = document.getElementById('sub-select-nova').value || null
+  if (!catId) { mostrarToast('⚠️ Selecione uma categoria', 'erro'); return }
+  const jaExiste = categoriasSelecionadas.some(p => p.categoria_id == catId && p.subcategoria_id == subId)
+  if (jaExiste) { mostrarToast('⚠️ Esta combinação já foi adicionada', 'erro'); return }
+  categoriasSelecionadas.push({ categoria_id: String(catId), subcategoria_id: subId ? String(subId) : null })
+  document.getElementById('cats-lista').innerHTML = renderCatsLista()
+  document.getElementById('cat-select-nova').value = ''
+  document.getElementById('sub-select-nova').innerHTML = '<option value="">Subcategoria (opcional)...</option>'
+}
+
+function removerCategoria(i) {
+  categoriasSelecionadas.splice(i, 1)
+  document.getElementById('cats-lista').innerHTML = renderCatsLista()
+}
+
+// ── SIGNIFICADOS ──
+function criarBlocoSignificado(num) {
+  return `
+    <div class="sig-bloco-wrap">
+      <div class="sig-bloco">
+        <div class="sig-numero">Significado ${num}</div>
+        <textarea class="sig-texto" placeholder="Descreva o significado..."></textarea>
+        <div class="sig-extras"></div>
+        <div class="sig-acoes">
+          <button class="btn-add-sub" onclick="adicionarExtra(this)">➕ Título adicional</button>
+        </div>
+      </div>
+      <button class="btn-remover" onclick="removerSig(this)" style="margin-top:2px;">🗑️</button>
+    </div>`
+}
+
+function adicionarExtra(btn) {
+  const extrasDiv = btn.closest('.sig-bloco').querySelector('.sig-extras')
+  const div = document.createElement('div')
+  div.className = 'sig-extra-item'
+  div.innerHTML = `
+    <button class="btn-rem-extra" onclick="this.closest('.sig-extra-item').remove()">✕</button>
+    <input class="sig-extra-titulo" type="text" placeholder="Título adicional (ex: Origem, Curiosidade...)">
+    <textarea class="sig-extra-texto" placeholder="Texto adicional..."></textarea>`
+  extrasDiv.appendChild(div)
+}
+
+function adicionarSignificado() {
+  const lista = document.getElementById('lista-significados')
+  const num = lista.querySelectorAll('.sig-bloco-wrap').length + 1
+  lista.insertAdjacentHTML('beforeend', criarBlocoSignificado(num))
+}
+
+function removerSig(btn) {
+  const lista = document.getElementById('lista-significados')
+  if (lista.querySelectorAll('.sig-bloco-wrap').length > 1) {
+    btn.closest('.sig-bloco-wrap').remove()
+    lista.querySelectorAll('.sig-numero').forEach((el, i) => el.textContent = `Significado ${i + 1}`)
+  }
+}
+
+// ── LISTAS SIMPLES ──
+function removerItem(btn) {
+  const lista = btn.closest('.lista-dinamica')
+  if (lista.querySelectorAll('.lista-item').length > 1) btn.closest('.lista-item').remove()
+}
+
+function adicionarExemplo() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder='Ex: "Usa a palavra em uma frase..."'><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-exemplos').appendChild(div)
+}
+
+function adicionarSinonimo() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Sinônimo..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-sinonimos').appendChild(div)
+}
+
+function adicionarRelacionada() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Palavra relacionada..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-relacionadas').appendChild(div)
+}
+
+// ── BADGES ──
+function selecionarBadge(tipo, valor, el) {
+  el.closest('.badges-grid').querySelectorAll('.badge-opcao').forEach(b => b.classList.remove('selecionado'))
+  el.classList.add('selecionado')
+  document.getElementById('f-' + tipo).value = valor
+}
+
+// ── TAGS ──
+function adicionarTag() {
+  const inp = document.getElementById('tag-input')
+  const vals = inp.value.split(',').map(v => v.trim().toLowerCase().replace(/\s+/g, '-')).filter(v => v && !tagsAtuais.includes(v))
+  tagsAtuais = [...tagsAtuais, ...vals]
+  renderTags()
+  inp.value = ''
+}
+
+function removerTag(tag) {
+  tagsAtuais = tagsAtuais.filter(t => t !== tag)
+  renderTags()
+}
+
+function renderTags() {
+  document.getElementById('tags-wrap').innerHTML =
+    tagsAtuais.map(t => `<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')
+}
+
+// ── ENVIAR ──
+async function enviarPalavra() {
+  const termo = document.getElementById('f-termo').value.trim()
+  if (!termo) { mostrarToast('⚠️ Preencha pelo menos o nome da palavra!', 'erro'); document.getElementById('f-termo').focus(); return }
+
+  const btn = document.getElementById('btnEnviarTop')
+  const btnFinal = document.querySelector('.btn-enviar-top:last-of-type')
+  btn.disabled = true; btn.textContent = 'Enviando...'
+
+  // Gerar slug a partir do termo
+  const slug = termo.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    + '-' + Date.now() // sufixo para evitar conflito de slug
+
+  const apelido = document.getElementById('f-apelido').value.trim() || 'Visitante'
+  const catPrincipal = categoriasSelecionadas.length > 0 ? categoriasSelecionadas[0].categoria_id : null
+
+  const dadosPalavra = {
+    termo,
+    slug,
+    status: 'pendente',
+    user_id: null,
+    enviado_por: apelido,
+    categoria_id: catPrincipal || null,
+    nivel_uso: document.getElementById('f-nivel').value || null,
+    contexto: document.getElementById('f-contexto').value || null,
+    regiao: document.getElementById('f-regiao').value || null,
+    epoca: document.getElementById('f-epoca').value || null,
+  }
+
+  const { data: novaPalavra, error: errPalavra } = await sb.from('palavras').insert(dadosPalavra).select().single()
+  if (errPalavra) {
+    mostrarToast('Erro ao enviar: ' + errPalavra.message, 'erro')
+    btn.disabled = false; btn.textContent = '🚀 ENVIAR'
+    return
+  }
+
+  const id = novaPalavra.id
+
+  // Significados
+  const blocos = document.getElementById('lista-significados').querySelectorAll('.sig-bloco')
+  const significados = []
+  blocos.forEach((bloco, i) => {
+    const texto = bloco.querySelector('.sig-texto').value.trim()
+    if (!texto) return
+    const extras = [...bloco.querySelectorAll('.sig-extra-item')].map(e => ({
+      titulo: e.querySelector('.sig-extra-titulo').value.trim(),
+      texto: e.querySelector('.sig-extra-texto').value.trim()
+    })).filter(e => e.titulo || e.texto)
+    const descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
+    significados.push({ palavra_id: id, descricao, ordem: i + 1 })
+  })
+  if (significados.length) await sb.from('significados').insert(significados)
+
+  // Exemplos
+  const exemplos = [...document.getElementById('lista-exemplos').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, frase: i.value.trim() })).filter(e => e.frase)
+  if (exemplos.length) await sb.from('exemplos').insert(exemplos)
+
+  // Sinônimos
+  const sinonimos = [...document.getElementById('lista-sinonimos').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, sinonimo: i.value.trim() })).filter(s => s.sinonimo)
+  if (sinonimos.length) await sb.from('sinonimos').insert(sinonimos)
+
+  // Palavras relacionadas
+  const relacionadas = [...document.getElementById('lista-relacionadas').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, relacionada: i.value.trim() })).filter(r => r.relacionada)
+  if (relacionadas.length) await sb.from('palavras_relacionadas').insert(relacionadas)
+
+  // Categorias múltiplas
+  for (const par of categoriasSelecionadas) {
+    await sb.from('palavras_categorias').insert({
+      palavra_id: id,
+      categoria_id: par.categoria_id,
+      subcategoria_id: par.subcategoria_id || null
+    })
+  }
+
+  // Tags
+  for (const tagNome of tagsAtuais) {
+    let { data: tag } = await sb.from('tags').select('id').eq('nome', tagNome).maybeSingle()
+    if (!tag) {
+      const { data: nova } = await sb.from('tags').insert({ nome: tagNome }).select().single()
+      tag = nova
+    }
+    if (tag) await sb.from('palavras_tags').insert({ palavra_id: id, tag_id: tag.id })
+  }
+
+  // Mostrar tela de sucesso
+  document.getElementById('formulario').style.display = 'none'
+  document.getElementById('telaSucesso').style.display = 'block'
+  btn.disabled = false; btn.textContent = '🚀 ENVIAR'
+}
+
+function reiniciar() {
+  window.location.reload()
+}
+
+function mostrarToast(msg, tipo = 'sucesso') {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = `toast visivel ${tipo}`
+  setTimeout(() => t.classList.remove('visivel'), 3500)
+}
+
+init()
+</script>
+</body>
+</html>
