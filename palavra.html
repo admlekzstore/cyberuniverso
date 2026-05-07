@@ -77,15 +77,8 @@
   .reacao-emoji{font-size:26px;}
   .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
   .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;}
-  .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;}
+  .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;text-decoration:none;}
   .btn-novo-sig:hover{background:rgba(163,255,74,0.15);}
-  .novo-sig-form{display:none;margin-top:14px;background:rgba(163,255,74,0.04);border:1px solid rgba(163,255,74,0.2);border-radius:12px;padding:16px;}
-  .novo-sig-form.aberto{display:block;}
-  .novo-sig-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;margin-bottom:10px;}
-  .novo-sig-btns{display:flex;gap:8px;}
-  .btn-enviar-sig{flex:1;background:#a3ff4a;color:#000;border:none;border-radius:8px;padding:10px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;}
-  .btn-cancelar-sig{background:var(--card2);border:1px solid var(--borda);color:var(--texto);border-radius:8px;padding:10px 16px;font-family:'Bangers',cursive;font-size:16px;cursor:pointer;}
-  .sig-aviso{font-size:12px;color:#4a6fa5;margin-bottom:10px;}
   .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
   .alfa-grupo.direita{text-align:right;align-items:flex-end;}
@@ -301,8 +294,7 @@ function renderSignificados(sigs, termo) {
     })
     html += '</div>'
   })
-  html += '<button class="btn-novo-sig" onclick="toggleNovoSig()">✍️ Conhece outro significado? Envie o seu!</button>'
-  html += '<div class="novo-sig-form" id="novoSigForm"><p class="sig-aviso">⏳ Será revisado antes de aparecer.</p><textarea id="novoSigTexto" placeholder="Descreva o significado..."></textarea><div class="novo-sig-btns"><button class="btn-cancelar-sig" onclick="toggleNovoSig()">CANCELAR</button><button class="btn-enviar-sig" onclick="enviarSig()">ENVIAR ✓</button></div></div>'
+  html += '<a class="btn-novo-sig" href="enviar.html?termo=' + encodeURIComponent(termo) + '">✍️ Conhece outro significado? Envie o seu!</a>'
   html += '</div>'
   return html
 }
@@ -403,19 +395,7 @@ async function reagir(tipo, btn) {
   }
 }
 
-function toggleNovoSig() { document.getElementById('novoSigForm').classList.toggle('aberto') }
 
-async function enviarSig() {
-  if (!userSession) { alert('Você precisa estar logado!'); window.location.href = 'cadastro.html'; return }
-  var texto = document.getElementById('novoSigTexto').value.trim()
-  if (!texto) return
-  await sb.from('significados').insert({ palavra_id: palavraId, descricao: texto, ordem: 99 })
-  document.getElementById('novoSigForm').classList.remove('aberto')
-  document.getElementById('novoSigTexto').value = ''
-  var btn = document.querySelector('.btn-novo-sig')
-  btn.textContent = '✅ Enviado! Aguardando revisão.'
-  btn.onclick = null
-}
 
 async function carregarVizinhas(termo) {
   var anterior = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').lt('termo', termo).order('termo', { ascending: false }).limit(3)
