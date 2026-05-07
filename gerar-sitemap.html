@@ -129,7 +129,7 @@ async function gerarSitemap() {
     prog.textContent = `⏳ Buscando palavras... (${todas.length} encontradas)`
     const { data, error } = await sb
       .from('palavras')
-      .select('slug, atualizado_em, criado_em')
+      .select('slug, updated_at, created_at')
       .eq('status', 'aprovada')
       .order('termo', { ascending: true })
       .range(from, from + pageSize - 1)
@@ -170,7 +170,7 @@ async function gerarSitemap() {
 
   // Palavras
   todas.forEach(p => {
-    const data = p.atualizado_em || p.criado_em || hoje
+    const data = p.updated_at || p.created_at || hoje
     const dataFmt = data.split('T')[0]
     xml += `  <url>\n`
     xml += `    <loc>${BASE_URL}/palavra.html?w=${encodeURIComponent(p.slug)}</loc>\n`
