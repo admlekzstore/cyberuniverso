@@ -583,7 +583,16 @@ function mostrarToast(msg, tipo = 'sucesso') {
   setTimeout(() => t.classList.remove('visivel'), 3500)
 }
 
-init()
+async function initComParams() {
+  await init()
+  const params = new URLSearchParams(window.location.search)
+  const termo = params.get('termo')
+  if (termo) {
+    document.getElementById('f-termo').value = decodeURIComponent(termo)
+  }
+}
+
+initComParams()
 </script>
 </body>
 </html>
