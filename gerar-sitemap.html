@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerar Sitemap — CyberUniverso Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;--verde:#64ff96;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);padding:30px 16px 60px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+  .titulo{font-family:'Bangers',sans-serif;font-size:28px;letter-spacing:2px;color:var(--amarelo);}
+  .btn-voltar{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:8px 14px;color:var(--texto);font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;}
+  .btn-voltar:hover{border-color:var(--azul);color:var(--ciano);}
+
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .card-titulo{font-family:'Bangers',sans-serif;font-size:18px;letter-spacing:1px;color:var(--ciano);margin-bottom:16px;}
+
+  .info-box{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.7;color:#7ab0ff;margin-bottom:20px;}
+  .info-box strong{color:var(--ciano);display:block;margin-bottom:4px;}
+
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+  .stat{background:var(--card2);border:1px solid var(--borda);border-radius:10px;padding:12px 18px;text-align:center;flex:1;min-width:100px;}
+  .stat-num{font-family:'Bangers',sans-serif;font-size:32px;color:var(--amarelo);display:block;}
+  .stat-label{font-size:12px;color:#4a6fa5;font-weight:700;}
+
+  .btn-gerar{background:var(--azul);color:#fff;border:none;border-radius:10px;padding:14px 32px;font-family:'Bangers',sans-serif;font-size:20px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;width:100%;}
+  .btn-gerar:hover{background:#0050cc;}
+  .btn-gerar:disabled{background:#1a3a6e;cursor:not-allowed;opacity:0.7;}
+
+  .btn-copiar{background:var(--verde);color:#000;border:none;border-radius:10px;padding:12px 24px;font-family:'Bangers',sans-serif;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;width:100%;margin-top:12px;display:none;}
+  .btn-copiar:hover{opacity:0.85;}
+  .btn-copiar.visivel{display:block;}
+
+  .btn-download{background:var(--amarelo);color:#000;border:none;border-radius:10px;padding:12px 24px;font-family:'Bangers',sans-serif;font-size:18px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;width:100%;margin-top:8px;display:none;}
+  .btn-download:hover{opacity:0.85;}
+  .btn-download.visivel{display:block;}
+
+  .xml-output{background:#000;border:1px solid var(--borda);border-radius:10px;padding:16px;font-family:monospace;font-size:12px;line-height:1.6;color:#64ff96;white-space:pre;overflow-x:auto;max-height:400px;overflow-y:auto;margin-top:16px;display:none;}
+  .xml-output.visivel{display:block;}
+
+  .progresso{font-size:13px;color:#4a6fa5;font-weight:700;text-align:center;margin-top:12px;min-height:20px;}
+  .progresso.ok{color:var(--verde);}
+  .progresso.erro{color:#ff5050;}
+
+  .instrucoes{counter-reset:step;}
+  .instrucoes li{counter-increment:step;padding:10px 0 10px 44px;border-bottom:1px solid var(--borda);font-size:14px;line-height:1.6;position:relative;}
+  .instrucoes li:last-child{border-bottom:none;}
+  .instrucoes li::before{content:counter(step);position:absolute;left:0;top:10px;background:var(--azul);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
+  .instrucoes li strong{color:var(--ciano);}
+  .instrucoes li code{background:var(--card2);border:1px solid var(--borda);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--amarelo);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="titulo">🗺️ GERAR SITEMAP</div>
+  <a href="admin.html" class="btn-voltar">← Admin</a>
+</div>
+
+<!-- INSTRUÇÕES -->
+<div class="card">
+  <div class="card-titulo">📋 Como usar</div>
+  <ol class="instrucoes">
+    <li>Clique em <strong>Gerar Sitemap</strong> — ele vai buscar todas as palavras aprovadas do banco.</li>
+    <li>Clique em <strong>Baixar sitemap.xml</strong> e salve o arquivo na raiz do seu projeto (mesma pasta do <code>index.html</code>).</li>
+    <li>Faça o commit e push no GitHub normalmente.</li>
+    <li>No <strong>Google Search Console</strong>, vá em <strong>Sitemaps</strong> e envie: <code>https://cyberuniverso.com/sitemap.xml</code></li>
+    <li>Repita esse processo sempre que adicionar muitas palavras novas (uma vez por semana ou por mês é suficiente).</li>
+  </ol>
+</div>
+
+<!-- GERADOR -->
+<div class="card">
+  <div class="card-titulo">⚡ Gerador</div>
+
+  <div class="info-box">
+    <strong>O que entra no sitemap?</strong>
+    Todas as palavras com status <strong>aprovada</strong>, mais as páginas fixas do site (início, todas, categorias, etc).
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num" id="statPalavras">—</span><span class="stat-label">Palavras</span></div>
+    <div class="stat"><span class="stat-num" id="statTotal">—</span><span class="stat-label">URLs totais</span></div>
+    <div class="stat"><span class="stat-num" id="statData">—</span><span class="stat-label">Gerado em</span></div>
+  </div>
+
+  <button class="btn-gerar" id="btnGerar" onclick="gerarSitemap()">🚀 GERAR SITEMAP</button>
+  <button class="btn-copiar" id="btnCopiar" onclick="copiarXML()">📋 COPIAR XML</button>
+  <button class="btn-download" id="btnDownload" onclick="baixarXML()">⬇️ BAIXAR sitemap.xml</button>
+
+  <div class="progresso" id="progresso"></div>
+  <div class="xml-output" id="xmlOutput"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+const BASE_URL = 'https://cyberuniverso.com'
+let xmlGerado = ''
+
+// Páginas fixas do site
+const PAGINAS_FIXAS = [
+  { url: '/',              changefreq: 'daily',   priority: '1.0' },
+  { url: '/todas.html',   changefreq: 'daily',   priority: '0.9' },
+  { url: '/categorias.html', changefreq: 'weekly', priority: '0.8' },
+  { url: '/enviar.html',  changefreq: 'monthly', priority: '0.6' },
+  { url: '/cadastro.html',changefreq: 'monthly', priority: '0.5' },
+]
+
+async function gerarSitemap() {
+  const btn = document.getElementById('btnGerar')
+  const prog = document.getElementById('progresso')
+  btn.disabled = true
+  btn.textContent = 'Buscando palavras...'
+  prog.textContent = '⏳ Conectando ao banco de dados...'
+  prog.className = 'progresso'
+
+  // Buscar todas as palavras aprovadas
+  let todas = []
+  let from = 0
+  const pageSize = 1000
+
+  while (true) {
+    prog.textContent = `⏳ Buscando palavras... (${todas.length} encontradas)`
+    const { data, error } = await sb
+      .from('palavras')
+      .select('slug, atualizado_em, criado_em')
+      .eq('status', 'aprovada')
+      .order('termo', { ascending: true })
+      .range(from, from + pageSize - 1)
+
+    if (error) {
+      prog.textContent = '❌ Erro ao buscar palavras: ' + error.message
+      prog.className = 'progresso erro'
+      btn.disabled = false
+      btn.textContent = '🚀 GERAR SITEMAP'
+      return
+    }
+
+    todas = todas.concat(data || [])
+    if (!data || data.length < pageSize) break
+    from += pageSize
+  }
+
+  prog.textContent = `✅ ${todas.length} palavras encontradas! Gerando XML...`
+
+  const hoje = new Date().toISOString().split('T')[0]
+
+  // Montar XML
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n`
+
+  // Páginas fixas
+  xml += `  <!-- ═══ PÁGINAS FIXAS ═══ -->\n`
+  PAGINAS_FIXAS.forEach(p => {
+    xml += `  <url>\n`
+    xml += `    <loc>${BASE_URL}${p.url}</loc>\n`
+    xml += `    <lastmod>${hoje}</lastmod>\n`
+    xml += `    <changefreq>${p.changefreq}</changefreq>\n`
+    xml += `    <priority>${p.priority}</priority>\n`
+    xml += `  </url>\n`
+  })
+
+  xml += `\n  <!-- ═══ PALAVRAS (${todas.length}) ═══ -->\n`
+
+  // Palavras
+  todas.forEach(p => {
+    const data = p.atualizado_em || p.criado_em || hoje
+    const dataFmt = data.split('T')[0]
+    xml += `  <url>\n`
+    xml += `    <loc>${BASE_URL}/palavra.html?w=${encodeURIComponent(p.slug)}</loc>\n`
+    xml += `    <lastmod>${dataFmt}</lastmod>\n`
+    xml += `    <changefreq>monthly</changefreq>\n`
+    xml += `    <priority>0.7</priority>\n`
+    xml += `  </url>\n`
+  })
+
+  xml += `\n</urlset>`
+  xmlGerado = xml
+
+  // Atualizar stats
+  const total = PAGINAS_FIXAS.length + todas.length
+  document.getElementById('statPalavras').textContent = todas.length
+  document.getElementById('statTotal').textContent = total
+  document.getElementById('statData').textContent = hoje
+
+  // Mostrar output
+  document.getElementById('xmlOutput').textContent = xml
+  document.getElementById('xmlOutput').classList.add('visivel')
+  document.getElementById('btnCopiar').classList.add('visivel')
+  document.getElementById('btnDownload').classList.add('visivel')
+
+  prog.textContent = `✅ Sitemap gerado com ${total} URLs!`
+  prog.className = 'progresso ok'
+  btn.disabled = false
+  btn.textContent = '🔄 GERAR NOVAMENTE'
+}
+
+function copiarXML() {
+  navigator.clipboard.writeText(xmlGerado).then(() => {
+    const btn = document.getElementById('btnCopiar')
+    btn.textContent = '✅ COPIADO!'
+    setTimeout(() => btn.textContent = '📋 COPIAR XML', 2000)
+  })
+}
+
+function baixarXML() {
+  const blob = new Blob([xmlGerado], { type: 'application/xml' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'sitemap.xml'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+</script>
+</body>
+</html>
