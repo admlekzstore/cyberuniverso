@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Em Construção — CyberUniverso</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--borda:#1a3a6e;--texto:#d0e4ff;}
+
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    text-align:center;
+    padding:20px;
+  }
+
+  /* grade de fundo animada */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(26,110,245,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,110,245,0.07) 1px, transparent 1px);
+    background-size:40px 40px;
+    animation:gridMove 20s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes gridMove{
+    0%{background-position:0 0;}
+    100%{background-position:40px 40px;}
+  }
+
+  /* brilho de fundo */
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse at 30% 50%, rgba(26,110,245,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 50%, rgba(0,234,255,0.08) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .wrap{position:relative;z-index:2;max-width:560px;}
+
+  /* ícone animado */
+  .icone-wrap{
+    position:relative;
+    width:120px;
+    height:120px;
+    margin:0 auto 32px;
+  }
+  .icone-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:var(--ciano);
+    border-right-color:var(--azul);
+    animation:spin 3s linear infinite;
+  }
+  .icone-ring2{
+    position:absolute;
+    inset:12px;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-bottom-color:var(--amarelo);
+    border-left-color:rgba(0,234,255,0.4);
+    animation:spin 2s linear infinite reverse;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .icone-centro{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:48px;
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.1);}
+  }
+
+  /* título da página */
+  .pagina-nome{
+    font-family:'Fredoka One',cursive;
+    font-size:16px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:var(--ciano);
+    margin-bottom:12px;
+    opacity:0;
+    animation:fadeUp 0.6s 0.2s both;
+  }
+
+  /* título principal */
+  .titulo{
+    font-family:'Bangers',cursive;
+    font-size:clamp(52px,14vw,88px);
+    line-height:0.95;
+    letter-spacing:3px;
+    color:var(--amarelo);
+    text-shadow:
+      3px 3px 0 var(--azul),
+      6px 6px 0 #0033aa,
+      0 0 40px rgba(245,232,0,0.3);
+    -webkit-text-stroke:2px var(--azul);
+    margin-bottom:20px;
+    opacity:0;
+    animation:fadeUp 0.7s 0.3s both;
+  }
+
+  /* subtítulo */
+  .subtitulo{
+    font-size:clamp(16px,4vw,20px);
+    font-weight:800;
+    color:#7ab0ff;
+    line-height:1.5;
+    margin-bottom:32px;
+    opacity:0;
+    animation:fadeUp 0.7s 0.5s both;
+  }
+  .subtitulo em{
+    color:var(--ciano);
+    font-style:normal;
+  }
+
+  /* barra de progresso fake animada */
+  .progresso-wrap{
+    margin-bottom:36px;
+    opacity:0;
+    animation:fadeUp 0.7s 0.7s both;
+  }
+  .progresso-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    font-weight:800;
+    color:#4a6fa5;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .progresso-label span:last-child{color:var(--ciano);}
+  .progresso-barra{
+    height:6px;
+    background:var(--card);
+    border:1px solid var(--borda);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .progresso-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--azul), var(--ciano));
+    border-radius:10px;
+    width:0%;
+    animation:carregando 3s 1.2s ease-out forwards;
+    box-shadow:0 0 10px rgba(0,234,255,0.5);
+  }
+  @keyframes carregando{
+    0%{width:0%;}
+    40%{width:65%;}
+    70%{width:78%;}
+    100%{width:82%;}
+  }
+
+  /* botão voltar */
+  .btn-voltar{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--azul);
+    color:#fff;
+    text-decoration:none;
+    border-radius:12px;
+    padding:14px 28px;
+    font-family:'Bangers',cursive;
+    font-size:20px;
+    letter-spacing:1px;
+    transition:all 0.2s;
+    opacity:0;
+    animation:fadeUp 0.7s 0.9s both;
+    box-shadow:0 4px 20px rgba(26,110,245,0.3);
+  }
+  .btn-voltar:hover{
+    background:#0050cc;
+    transform:translateY(-2px);
+    box-shadow:0 8px 28px rgba(26,110,245,0.5);
+  }
+
+  /* partículas flutuantes */
+  .particulas{position:fixed;inset:0;pointer-events:none;z-index:1;}
+  .particula{
+    position:absolute;
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:var(--ciano);
+    opacity:0;
+    animation:flutuar var(--dur) var(--delay) ease-in-out infinite;
+  }
+  @keyframes flutuar{
+    0%{opacity:0;transform:translateY(0) scale(0);}
+    20%{opacity:0.6;}
+    80%{opacity:0.3;}
+    100%{opacity:0;transform:translateY(-120px) scale(1.5);}
+  }
+
+  @keyframes fadeUp{
+    from{transform:translateY(24px);opacity:0;}
+    to{transform:translateY(0);opacity:1;}
+  }
+</style>
+</head>
+<body>
+
+<div class="particulas" id="particulas"></div>
+
+<div class="wrap">
+
+  <div class="icone-wrap">
+    <div class="icone-ring"></div>
+    <div class="icone-ring2"></div>
+    <div class="icone-centro" id="icone">🚧</div>
+  </div>
+
+  <div class="pagina-nome" id="nomePagina">CyberUniverso</div>
+
+  <h1 class="titulo">EM<br>CONSTRUÇÃO</h1>
+
+  <p class="subtitulo">
+    Logo logo vai estar disponível!<br>
+    <em>A gente tá trabalhando nisso 🔧</em>
+  </p>
+
+  <div class="progresso-wrap">
+    <div class="progresso-label">
+      <span>Progresso</span>
+      <span id="pctTexto">0%</span>
+    </div>
+    <div class="progresso-barra">
+      <div class="progresso-fill" id="progressoFill"></div>
+    </div>
+  </div>
+
+  <a href="index.html" class="btn-voltar">← Voltar ao início</a>
+
+</div>
+
+<script>
+  // Detectar qual página veio pela URL e mostrar o nome certo
+  const params = new URLSearchParams(window.location.search)
+  const pagina = params.get('p')
+  const nomes = {
+    'rimas':  { nome: '🎵 Rimas',          icone: '🎵' },
+    'tarot':  { nome: '🃏 Tarot de Gírias', icone: '🃏' },
+  }
+  if (pagina && nomes[pagina]) {
+    document.getElementById('nomePagina').textContent = nomes[pagina].nome
+    document.getElementById('icone').textContent = nomes[pagina].icone
+  }
+
+  // Animar porcentagem junto com a barra
+  const fill = document.getElementById('progressoFill')
+  const pct = document.getElementById('pctTexto')
+  let start = null
+  const duracao = 3000
+  const alvo = 82
+
+  function animarPct(ts) {
+    if (!start) start = ts
+    const progresso = Math.min((ts - start) / duracao, 1)
+    // mesma curva da barra CSS
+    let val
+    if (progresso < 0.4) val = progresso / 0.4 * 65
+    else if (progresso < 0.7) val = 65 + (progresso - 0.4) / 0.3 * 13
+    else val = 78 + (progresso - 0.7) / 0.3 * 4
+    pct.textContent = Math.round(val) + '%'
+    if (progresso < 1) requestAnimationFrame(animarPct)
+    else pct.textContent = alvo + '%'
+  }
+  setTimeout(() => requestAnimationFrame(animarPct), 1200)
+
+  // Partículas
+  const wrap = document.getElementById('particulas')
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div')
+    p.className = 'particula'
+    p.style.cssText = `
+      left:${Math.random() * 100}%;
+      top:${40 + Math.random() * 50}%;
+      --dur:${3 + Math.random() * 5}s;
+      --delay:${Math.random() * 4}s;
+      background:${Math.random() > 0.5 ? '#00eaff' : '#1a6ef5'};
+      width:${2 + Math.random() * 3}px;
+      height:${2 + Math.random() * 3}px;
+    `
+    wrap.appendChild(p)
+  }
+</script>
+</body>
+</html>
