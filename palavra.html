@@ -10,6 +10,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" id="ogUrl" content="">
 <meta property="og:site_name" content="CyberUniverso">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" id="twitterTitle" content="CyberUniverso">
+<meta name="twitter:description" id="twitterDesc" content="Dicionário de gírias e expressões do português brasileiro.">
+<meta name="robots" content="index, follow">
+<meta name="language" content="pt-BR">
 <link rel="canonical" id="canonicalUrl" href="">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -249,31 +254,116 @@ async function carregarPalavra() {
     sigTexto = sigTexto.replace(/\n/g, ' ').substring(0, 155)
   }
   var descSEO = sigTexto
-    ? p.termo + ': ' + sigTexto + '...'
-    : 'Veja o significado de ' + p.termo + ' no CyberUniverso, o dicionário de gírias do português brasileiro.'
+    ? 'O que significa ' + p.termo + '? ' + sigTexto + '. Veja exemplos, sinônimos e muito mais no CyberUniverso.'
+    : 'Veja o significado de ' + p.termo + ', com exemplos de uso, sinônimos e origem, no CyberUniverso — dicionário de gírias do português brasileiro.'
 
+  var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+
+  // Meta description
   var metaDesc = document.getElementById('metaDesc')
   if (metaDesc) metaDesc.setAttribute('content', descSEO)
   var ogDesc = document.getElementById('ogDesc')
   if (ogDesc) ogDesc.setAttribute('content', descSEO)
+  var twitterTitle = document.getElementById('twitterTitle')
+  if (twitterTitle) twitterTitle.setAttribute('content', 'O que é ' + p.termo + '? | CyberUniverso')
+  var twitterDesc = document.getElementById('twitterDesc')
+  if (twitterDesc) twitterDesc.setAttribute('content', descSEO)
 
-  // Schema JSON-LD
-  var schema = {
+  // ── SCHEMA 1: DefinedTerm (enriquecido) ──
+  var schemaDef = {
     "@context": "https://schema.org",
     "@type": "DefinedTerm",
     "name": p.termo,
-    "description": descSEO,
+    "description": sigTexto || descSEO,
+    "url": urlCanonica,
     "inDefinedTermSet": {
       "@type": "DefinedTermSet",
+      "name": "CyberUniverso — Dicionário de Gírias Brasileiras",
+      "url": "https://cyberuniverso.com",
+      "description": "Dicionário colaborativo de gírias e expressões do português brasileiro"
+    }
+  }
+  if (p.pronuncia) schemaDef["alternateName"] = p.pronuncia
+  if (sinonimos && sinonimos.length > 0) {
+    schemaDef["sameAs"] = sinonimos.slice(0, 3).map(function(s) {
+      return 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(s.sinonimo)
+    })
+  }
+
+  // ── SCHEMA 2: FAQPage ──
+  var faqEntries = []
+  faqEntries.push({
+    "@type": "Question",
+    "name": "O que significa " + p.termo + "?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": sigTexto || ('Confira o significado completo de ' + p.termo + ' no CyberUniverso.')
+    }
+  })
+  if (exemplos && exemplos.length > 0) {
+    faqEntries.push({
+      "@type": "Question",
+      "name": "Como usar " + p.termo + " em uma frase?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": exemplos.slice(0, 2).map(function(e) { return '— ' + e.frase }).join(' ')
+      }
+    })
+  }
+  if (sinonimos && sinonimos.length > 0) {
+    faqEntries.push({
+      "@type": "Question",
+      "name": "Quais são os sinônimos de " + p.termo + "?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": sinonimos.map(function(s) { return s.sinonimo }).join(', ')
+      }
+    })
+  }
+  var schemaFAQ = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqEntries
+  }
+
+  // ── SCHEMA 3: BreadcrumbList ──
+  var schemaBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Início", "item": "https://cyberuniverso.com" },
+      { "@type": "ListItem", "position": 2, "name": "Todas as Palavras", "item": "https://cyberuniverso.com/todas.html" },
+      { "@type": "ListItem", "position": 3, "name": p.termo, "item": urlCanonica }
+    ]
+  }
+
+  // ── SCHEMA 4: Article ──
+  var schemaArticle = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "O que significa " + p.termo + "? Significado, origem e exemplos",
+    "description": descSEO,
+    "url": urlCanonica,
+    "datePublished": p.criado_em,
+    "dateModified": p.criado_em,
+    "publisher": {
+      "@type": "Organization",
       "name": "CyberUniverso",
       "url": "https://cyberuniverso.com"
     },
-    "url": 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+    "inLanguage": "pt-BR",
+    "about": { "@type": "DefinedTerm", "name": p.termo }
   }
-  var scriptSchema = document.createElement('script')
-  scriptSchema.type = 'application/ld+json'
-  scriptSchema.textContent = JSON.stringify(schema)
-  document.head.appendChild(scriptSchema)
+
+  // Injetar todos os schemas
+  var schemas = [schemaDef, schemaFAQ, schemaBreadcrumb, schemaArticle]
+  schemas.forEach(function(s) {
+    var tag = document.createElement('script')
+    tag.type = 'application/ld+json'
+    tag.textContent = JSON.stringify(s)
+    document.head.appendChild(tag)
+  })
+
   await carregarComentarios(p.id)
   await carregarVizinhas(p.termo)
 }
