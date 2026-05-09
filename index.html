@@ -34,97 +34,7 @@
     overflow-x: hidden;
   }
 
-  /* ── NAVBAR ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    background: rgba(5,8,15,0.55);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(26,110,245,0.15);
-    transition: background 0.3s, border-color 0.3s;
-  }
-  nav.scrolled {
-    background: rgba(5,8,15,0.97);
-    border-bottom-color: var(--borda);
-  }
-
-  .logo {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1;
-    text-decoration: none;
-  }
-  .logo-top {
-    font-family: 'Fredoka One', cursive;
-    font-size: 10px;
-    color: var(--amarelo);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-  }
-  .logo-main {
-    font-family: 'Bangers', cursive;
-    font-size: 30px;
-    color: var(--ciano);
-    text-shadow: 0 0 12px rgba(0,234,255,0.6), 0 0 30px rgba(0,234,255,0.3);
-    letter-spacing: 2px;
-  }
-
-  .menu-btn {
-    background: rgba(255,255,255,0.08);
-    border: 1.5px solid rgba(255,255,255,0.2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    transition: border-color 0.2s;
-  }
-  .menu-btn:hover { border-color: var(--ciano); }
-  .menu-btn span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
-
-  .nav-menu {
-    display: none;
-    position: fixed;
-    top: 0; right: 0;
-    width: 280px;
-    height: 100vh;
-    background: rgba(5,8,15,0.98);
-    border-left: 1px solid var(--borda);
-    flex-direction: column;
-    padding: 80px 24px 30px;
-    gap: 4px;
-    z-index: 200;
-    backdrop-filter: blur(20px);
-  }
-  .nav-menu.open { display: flex; }
-  .nav-menu a {
-    color: var(--texto);
-    text-decoration: none;
-    font-size: 17px;
-    font-weight: 800;
-    padding: 13px 14px;
-    border-radius: 10px;
-    transition: all 0.2s;
-  }
-  .nav-menu a:hover { background: rgba(26,110,245,0.15); color: var(--amarelo); }
-  .close-menu {
-    position: absolute;
-    top: 20px; right: 20px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid var(--borda);
-    border-radius: 8px;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 6px 10px;
-  }
+  /* navbar injetada por header.js */
 
   /* ── HERO ── */
   .hero {
@@ -551,8 +461,7 @@
   footer a:hover { color: var(--ciano); }
   .footer-logo { font-family: 'Bangers', cursive; font-size: 24px; color: var(--ciano); letter-spacing: 2px; display: block; margin-bottom: 10px; text-shadow: 0 0 12px rgba(0,234,255,0.4); }
 
-  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:150; }
-  .overlay.open { display:block; }
+
 
   @media(max-width:600px) {
     .cards-grid { grid-template-columns: 1fr; }
@@ -563,27 +472,7 @@
 </head>
 <body>
 
-<nav id="navbar">
-  <a href="index.html" class="logo">
-    <span class="logo-top">Cyber</span>
-    <span class="logo-main">Universo</span>
-  </a>
-  <button class="menu-btn" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
 
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-<nav class="nav-menu" id="navMenu">
-  <button class="close-menu" onclick="toggleMenu()">✕</button>
-  <a href="index.html">🏠 Início</a>
-  <a href="todas.html">📖 Todas as Palavras</a>
-  <a href="categorias.html">🗂️ Categorias</a>
-  <a href="em-construcao.html?p=rimas">🎵 Rimas</a>
-  <a href="em-construcao.html?p=tarot">🃏 Tarot de Gírias</a>
-  <a href="enviar.html">➕ Enviar Palavra</a>
-  <a href="cadastro.html">👤 Entrar / Cadastrar</a>
-</nav>
 
 <!-- HERO -->
 <section class="hero">
@@ -706,7 +595,7 @@
 
   // navbar scroll
   window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60)
+
   })
 
   // alfabeto
@@ -721,10 +610,7 @@
   })
 
   // menu
-  window.toggleMenu = function() {
-    document.getElementById('navMenu').classList.toggle('open')
-    document.getElementById('overlay').classList.toggle('open')
-  }
+
 
   // busca
   window.handleSearch = function(e) { if (e.key === 'Enter') window.doSearch() }
@@ -795,5 +681,6 @@
   carregarEmAlta()
   carregarRecentes()
 </script>
+<script src="./header.js"></script>
 </body>
 </html>
