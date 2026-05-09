@@ -13,14 +13,12 @@
       align-items: center;
       justify-content: space-between;
       padding: 6px 24px;
-      background: rgba(5,8,15,0.55);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(26,110,245,0.15);
-      transition: background 0.3s, border-color 0.3s;
+      background: #05080f;
+      border-bottom: 1px solid #1a3a6e;
     }
     #cy-nav.scrolled {
-      background: rgba(5,8,15,0.97);
-      border-bottom-color: #1a3a6e;
+      background: #05080f;
+      border-bottom-color: #1a6ef5;
     }
     #cy-nav .cy-logo {
       display: flex;
@@ -31,7 +29,6 @@
       height: 72px;
       width: auto;
       object-fit: contain;
-      mix-blend-mode: lighten;
       transition: opacity 0.3s;
     }
     #cy-nav .cy-logo img:hover {
