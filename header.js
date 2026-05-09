@@ -31,11 +31,11 @@
       height: 72px;
       width: auto;
       object-fit: contain;
-      mix-blend-mode: screen;
-      transition: filter 0.3s;
+      mix-blend-mode: lighten;
+      transition: opacity 0.3s;
     }
     #cy-nav .cy-logo img:hover {
-      filter: brightness(1.2) drop-shadow(0 0 12px rgba(0,234,255,0.6));
+      opacity: 0.85;
     }
     #cy-menu-btn {
       background: rgba(255,255,255,0.08);
