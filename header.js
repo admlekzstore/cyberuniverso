@@ -3,7 +3,6 @@
 // (antes do </body>)
 
 (function() {
-  // CSS da navbar
   var style = document.createElement('style')
   style.textContent = `
     #cy-nav {
@@ -13,7 +12,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 24px;
+      padding: 6px 24px;
       background: rgba(5,8,15,0.55);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(26,110,245,0.15);
@@ -29,14 +28,14 @@
       text-decoration: none;
     }
     #cy-nav .cy-logo img {
-      height: 52px;
+      height: 72px;
       width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(0,234,255,0.4));
+      mix-blend-mode: screen;
       transition: filter 0.3s;
     }
     #cy-nav .cy-logo img:hover {
-      filter: drop-shadow(0 0 18px rgba(0,234,255,0.7));
+      filter: brightness(1.2) drop-shadow(0 0 12px rgba(0,234,255,0.6));
     }
     #cy-menu-btn {
       background: rgba(255,255,255,0.08);
@@ -51,6 +50,7 @@
       cursor: pointer;
       transition: all 0.2s;
       padding: 0;
+      flex-shrink: 0;
     }
     #cy-menu-btn:hover { border-color: #00eaff; background: rgba(0,234,255,0.1); }
     #cy-menu-btn span {
@@ -58,7 +58,6 @@
       width: 20px; height: 2px;
       background: #d0e4ff;
       border-radius: 2px;
-      transition: all 0.3s;
     }
     #cy-overlay {
       display: none;
@@ -123,12 +122,11 @@
   `
   document.head.appendChild(style)
 
-  // HTML da navbar
   var nav = document.createElement('nav')
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.png" alt="CyberUniverso — Dicionário de Gírias">
+      <img src="/logo.png" alt="CyberUniverso">
     </a>
     <button id="cy-menu-btn" onclick="cyToggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -152,29 +150,20 @@
     <a href="/cadastro.html">👤 Entrar / Cadastrar</a>
   `
 
-  // Inserir no topo do body
   document.body.insertBefore(overlay, document.body.firstChild)
   document.body.insertBefore(sidemenu, document.body.firstChild)
   document.body.insertBefore(nav, document.body.firstChild)
 
-  // Marcar link ativo
   var atual = window.location.pathname.split('/').pop() || 'index.html'
-  var links = sidemenu.querySelectorAll('a')
-  links.forEach(function(link) {
+  sidemenu.querySelectorAll('a').forEach(function(link) {
     var href = link.getAttribute('href').replace('/', '')
     if (href === atual) link.classList.add('ativo')
   })
 
-  // Scroll effect
   window.addEventListener('scroll', function() {
-    if (window.scrollY > 20) {
-      nav.classList.add('scrolled')
-    } else {
-      nav.classList.remove('scrolled')
-    }
+    nav.classList.toggle('scrolled', window.scrollY > 20)
   })
 
-  // Toggle menu
   window.cyToggleMenu = function() {
     sidemenu.classList.toggle('aberto')
     overlay.classList.toggle('ativo')
