@@ -178,7 +178,7 @@ async function init() {
 async function carregarPalavra() {
   const { data: p, error } = await sb
     .from('palavras')
-    .select('id, termo, slug, pronuncia, imagem_url, nivel_uso, regiao, contexto, epoca, criado_em, categoria_id, status')
+    .select('id, termo, slug, pronuncia, imagem_url, nivel_uso, regiao, contexto, epoca, criado_em, categoria_id, status, usuario_id, enviado_por')
     .eq('slug', slug)
     .eq('status', 'aprovada')
     .single()
@@ -212,7 +212,8 @@ async function carregarPalavra() {
     { data: categoria },
     { data: tagsRel },
     { data: catsMultiplas },
-    { data: relacionadas }
+    { data: relacionadas },
+    { data: autorPerfil }
   ] = await Promise.all([
     sb.from('significados').select('descricao, ordem').eq('palavra_id', p.id).order('ordem'),
     sb.from('exemplos').select('frase').eq('palavra_id', p.id),
@@ -220,13 +221,14 @@ async function carregarPalavra() {
     p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
     sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id),
     sb.from('palavras_categorias').select('categoria_id, subcategoria_id, categorias(id, nome, icone), subcategorias(id, nome)').eq('palavra_id', p.id),
-    sb.from('palavras_relacionadas').select('relacionada').eq('palavra_id', p.id)
+    sb.from('palavras_relacionadas').select('relacionada').eq('palavra_id', p.id),
+    p.usuario_id ? sb.from('perfis').select('username, nome, exibir_como, avatar_galeria, avatar_url, emoji').eq('id', p.usuario_id).single() : Promise.resolve({ data: null })
   ])
 
   const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
   const reacoes = await carregarReacoes(p.id)
 
-  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [])
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil)
 
   // SEO: meta description + schema com o primeiro significado
   var sigTexto = ''
@@ -364,14 +366,30 @@ async function carregarReacoes(pid) {
   return counts
 }
 
-function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas) {
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil) {
   const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   const main = document.getElementById('mainCol')
   main.innerHTML =
     '<div class="breadcrumb"><a href="index.html">Início</a><span style="color:#2a4a7a"> › </span><a href="todas.html">Todas</a><span style="color:#2a4a7a"> › </span><span style="color:var(--ciano)">' + p.termo + '</span></div>' +
     '<h1 class="palavra-titulo" id="palavraTitulo">' + p.termo.toUpperCase() + '</h1>' +
     (p.pronuncia ? '<div class="pronuncia">🔊 Como pronunciar: <span>' + p.pronuncia + '</span></div>' : '') +
-    '<div class="meta-info"><div class="avatar">C</div><div class="meta-text">Adicionado em <strong>' + dataFmt + '</strong></div></div>' +
+    (function() {
+      var nomeAutor = 'Visitante'
+      var linkAutor = null
+      if (autorPerfil) {
+        nomeAutor = autorPerfil.exibir_como === 'nome' && autorPerfil.nome ? autorPerfil.nome : '@' + (autorPerfil.username || 'usuário')
+        linkAutor = 'perfil.html?id=' + p.usuario_id
+      } else if (p.enviado_por && p.enviado_por !== 'Visitante') {
+        nomeAutor = p.enviado_por
+      }
+      var avatarHtml = autorPerfil?.emoji
+        ? '<div class="avatar" style="font-size:18px;">' + autorPerfil.emoji + '</div>'
+        : '<div class="avatar">' + nomeAutor[0].toUpperCase() + '</div>'
+      var autorHtml = linkAutor
+        ? '<a href="' + linkAutor + '" style="color:var(--ciano);font-weight:800;text-decoration:none;">' + nomeAutor + '</a>'
+        : '<strong>' + nomeAutor + '</strong>'
+      return '<div class="meta-info">' + avatarHtml + '<div class="meta-text">Adicionado por ' + autorHtml + ' em <strong>' + dataFmt + '</strong></div></div>'
+    })() +
     (function() {
       // múltiplas categorias
       var catsParaExibir = catsMultiplas && catsMultiplas.length > 0 ? catsMultiplas : (categoria ? [{ categorias: categoria, subcategorias: null }] : [])
