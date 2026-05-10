@@ -382,8 +382,11 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
               ${p.emoji ? `<div class="avatar-emoji">${p.emoji}</div>` : ''}
             </div>
             <div class="perfil-info">
-              <div class="perfil-username">// ${p.username || 'anônimo'}</div>
-              <div class="perfil-nome">${nomeExibido}</div>
+              ${p.exibir_como === 'nome' && p.nome
+                ? `<div class="perfil-nome">${p.nome}</div>`
+                : `<div class="perfil-username">// ${p.username || 'anônimo'}</div>
+                   <div class="perfil-nome">@${p.username || 'anônimo'}</div>`
+              }
               ${p.bio ? `<div class="perfil-bio">${p.bio}</div>` : ''}
               <div class="perfil-badges">${badgesHtml}</div>
               <div class="perfil-acoes">
