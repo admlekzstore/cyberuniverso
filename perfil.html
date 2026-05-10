@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Perfil — CyberUniverso</title>
+<meta name="description" id="pageDesc" content="Veja o perfil desse explorador do CyberUniverso.">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;
+  --ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;
+  --borda:#1a3a6e;--texto:#d0e4ff;--verde:#64ff96;--vermelho:#ff5050;
+  --roxo:#a855f7;--rosa:#ff64c8;
+}
+
+body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;min-height:100vh;}
+
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(26,110,245,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(26,110,245,0.05) 1px,transparent 1px);
+  background-size:48px 48px;animation:gridScroll 25s linear infinite;}
+@keyframes gridScroll{0%{background-position:0 0;}100%{background-position:48px 48px;}}
+
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bg-glow-inner{position:absolute;border-radius:50%;filter:blur(80px);animation:glowPulse 4s ease-in-out infinite alternate;}
+.glow1{width:500px;height:500px;top:-100px;left:-100px;background:rgba(26,110,245,0.12);}
+.glow2{width:400px;height:400px;bottom:-100px;right:-100px;background:rgba(0,234,255,0.08);animation-delay:2s;}
+@keyframes glowPulse{0%{opacity:0.5;transform:scale(1);}100%{opacity:1;transform:scale(1.1);}}
+
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;padding:80px 20px 0;}
+.hero-inner{max-width:900px;margin:0 auto;}
+
+.perfil-card{background:linear-gradient(135deg,rgba(10,22,40,0.95),rgba(13,31,60,0.95));
+  border:1px solid var(--borda);border-radius:28px;padding:36px;position:relative;overflow:hidden;
+  animation:cardIn 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;}
+@keyframes cardIn{from{transform:translateY(30px) scale(0.97);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+
+.perfil-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),var(--amarelo),transparent);}
+
+/* PARTÍCULAS */
+.particulas{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.particula{position:absolute;border-radius:50%;opacity:0;animation:flutuar var(--dur) var(--delay) ease-in-out infinite;}
+@keyframes flutuar{0%{opacity:0;transform:translateY(0) scale(0);}30%{opacity:0.6;}70%{opacity:0.2;}100%{opacity:0;transform:translateY(-80px) scale(1.5);}}
+
+.perfil-topo{display:flex;align-items:flex-start;gap:28px;flex-wrap:wrap;}
+
+/* AVATAR */
+.avatar-grande{width:120px;height:120px;border-radius:50%;flex-shrink:0;position:relative;}
+.avatar-ring{position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano),var(--amarelo));
+  animation:ringRotate 4s linear infinite;z-index:0;}
+@keyframes ringRotate{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+.avatar-img{position:absolute;inset:4px;border-radius:50%;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:1;}
+.avatar-img img{width:100%;height:100%;object-fit:cover;}
+.avatar-img svg{width:85%;height:85%;}
+.avatar-img .av-letra{font-family:'Bangers',cursive;font-size:52px;color:var(--ciano);}
+.avatar-emoji{position:absolute;bottom:2px;right:2px;width:32px;height:32px;border-radius:50%;
+  background:var(--card);border:2px solid var(--borda);display:flex;align-items:center;
+  justify-content:center;font-size:16px;z-index:2;}
+
+/* INFO */
+.perfil-info{flex:1;min-width:0;}
+.perfil-username{font-family:'Share Tech Mono',monospace;font-size:13px;color:#4a6fa5;
+  letter-spacing:2px;margin-bottom:4px;}
+.perfil-nome{font-family:'Bangers',cursive;font-size:clamp(28px,6vw,48px);letter-spacing:3px;
+  color:var(--amarelo);text-shadow:2px 2px 0 var(--azul),0 0 30px rgba(245,232,0,0.3);
+  -webkit-text-stroke:1px var(--azul);line-height:1;margin-bottom:10px;}
+.perfil-bio{font-size:14px;color:#7ab0ff;line-height:1.7;margin-bottom:14px;max-width:500px;}
+
+.perfil-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.badge-perfil{display:flex;align-items:center;gap:5px;border-radius:20px;padding:5px 12px;
+  font-size:12px;font-weight:800;border:1px solid;}
+.badge-mood{background:rgba(0,234,255,0.1);border-color:rgba(0,234,255,0.3);color:var(--ciano);}
+.badge-planeta{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.3);color:#c084fc;}
+.badge-estado{background:rgba(245,232,0,0.1);border-color:rgba(245,232,0,0.3);color:var(--amarelo);}
+.badge-missao{background:rgba(100,255,150,0.1);border-color:rgba(100,255,150,0.3);color:var(--verde);}
+.badge-dialeto{background:rgba(255,100,200,0.1);border-color:rgba(255,100,200,0.3);color:var(--rosa);}
+
+.perfil-acoes{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-editar-perfil{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.15);
+  border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:10px;padding:9px 18px;
+  font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-editar-perfil:hover{background:var(--azul);color:#fff;}
+
+/* STATS */
+.stats-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+.stat-box{flex:1;min-width:100px;background:rgba(26,110,245,0.08);border:1px solid rgba(26,110,245,0.2);
+  border-radius:14px;padding:14px;text-align:center;position:relative;overflow:hidden;}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+.stat-num{font-family:'Bangers',cursive;font-size:32px;color:var(--amarelo);line-height:1;}
+.stat-label{font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;margin-top:3px;}
+
+/* NÍVEL */
+.nivel-wrap{margin-top:20px;background:rgba(0,234,255,0.05);border:1px solid rgba(0,234,255,0.15);
+  border-radius:14px;padding:16px;}
+.nivel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.nivel-titulo{font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;color:var(--ciano);}
+.nivel-nome{font-size:13px;font-weight:800;color:var(--amarelo);}
+.nivel-barra-wrap{height:8px;background:var(--card2);border-radius:10px;overflow:hidden;}
+.nivel-barra{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--azul),var(--ciano));
+  transition:width 1.5s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 10px rgba(0,234,255,0.4);}
+.nivel-dica{font-size:11px;color:#4a6fa5;margin-top:6px;font-weight:700;}
+
+/* ── SEÇÕES ── */
+.page-wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:24px 16px 80px;}
+
+.secao{background:var(--card);border:1px solid var(--borda);border-radius:20px;padding:24px;
+  margin-bottom:16px;position:relative;overflow:hidden;animation:fadeUp 0.5s both;}
+.secao::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+@keyframes fadeUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.secao:nth-child(1){animation-delay:0.1s;}
+.secao:nth-child(2){animation-delay:0.15s;}
+.secao:nth-child(3){animation-delay:0.2s;}
+.secao:nth-child(4){animation-delay:0.25s;}
+.secao:nth-child(5){animation-delay:0.3s;}
+
+.secao-titulo{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* VIBES */
+.vibes-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.vibe-tag{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:800;}
+
+/* FAVORITAS */
+.fav-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fav-card{background:var(--card2);border:1px solid var(--borda);border-radius:14px;padding:16px;
+  position:relative;overflow:hidden;}
+.fav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.fav-giria::before{background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
+.fav-expressao::before{background:linear-gradient(90deg,transparent,var(--rosa),transparent);}
+.fav-label{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.fav-giria .fav-label{color:var(--amarelo);}
+.fav-expressao .fav-label{color:var(--rosa);}
+.fav-valor{font-family:'Bangers',cursive;font-size:22px;letter-spacing:1px;color:var(--texto);}
+
+/* CATS */
+.cats-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.cat-tag-perfil{background:rgba(26,110,245,0.1);border:1px solid rgba(26,110,245,0.3);
+  color:#7ab0ff;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;
+  text-decoration:none;transition:all 0.2s;}
+.cat-tag-perfil:hover{background:var(--azul);color:#fff;}
+
+/* PALAVRAS */
+.palavras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.palavra-card-perfil{background:var(--card2);border:1px solid var(--borda);border-radius:12px;
+  padding:14px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;}
+.palavra-card-perfil::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--azul);transform:scaleY(0);transition:transform 0.2s;transform-origin:bottom;}
+.palavra-card-perfil:hover{border-color:var(--azul);transform:translateY(-2px);}
+.palavra-card-perfil:hover::before{transform:scaleY(1);}
+.pc-termo{font-family:'Bangers',cursive;font-size:20px;letter-spacing:1px;color:var(--amarelo);margin-bottom:4px;}
+.pc-def{font-size:12px;color:#4a6fa5;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pc-status{font-size:10px;font-weight:800;letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
+.pc-status.aprovada{color:var(--verde);}
+.pc-status.pendente{color:#ff8c00;}
+
+.vazio{text-align:center;padding:32px;color:#4a6fa5;}
+.vazio-emoji{font-size:36px;margin-bottom:8px;}
+.vazio-texto{font-size:14px;font-weight:700;}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
+  background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:12px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* NOT FOUND */
+.not-found{text-align:center;padding:80px 20px;position:relative;z-index:1;}
+.not-found-emoji{font-size:64px;margin-bottom:16px;}
+.not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:var(--vermelho);letter-spacing:2px;}
+
+@media(max-width:600px){
+  .perfil-topo{flex-direction:column;align-items:center;text-align:center;}
+  .perfil-badges{justify-content:center;}
+  .perfil-acoes{justify-content:center;}
+  .fav-wrap{grid-template-columns:1fr;}
+  .stats-row{justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow">
+  <div class="bg-glow-inner glow1"></div>
+  <div class="bg-glow-inner glow2"></div>
+</div>
+
+<div id="conteudo">
+  <!-- Carregado via JS -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+const params = new URLSearchParams(window.location.search)
+const perfilId = params.get('id')
+
+// ── AVATARES SVG (mesmos da edição) ──
+const AVATARES_SVG = {
+  av1:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0a1628"/><circle cx="50" cy="38" r="18" fill="#00eaff" opacity="0.9"/><ellipse cx="50" cy="80" rx="28" ry="18" fill="#00eaff" opacity="0.7"/><circle cx="42" cy="35" r="4" fill="#05080f"/><circle cx="58" cy="35" r="4" fill="#05080f"/><path d="M42 47 Q50 53 58 47" stroke="#05080f" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="20" y="30" width="8" height="3" rx="1.5" fill="#1a6ef5"/><rect x="72" y="30" width="8" height="3" rx="1.5" fill="#1a6ef5"/></svg>`,
+  av2:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0d1f3c"/><rect x="28" y="22" width="44" height="40" rx="8" fill="#f5e800"/><rect x="34" y="30" width="12" height="10" rx="3" fill="#05080f"/><rect x="54" y="30" width="12" height="10" rx="3" fill="#05080f"/><rect x="36" y="46" width="28" height="4" rx="2" fill="#1a6ef5"/><rect x="42" y="54" width="16" height="3" rx="1.5" fill="#1a3a6e"/><rect x="38" y="62" width="24" height="20" rx="6" fill="#f5e800"/><rect x="22" y="65" width="14" height="8" rx="4" fill="#f5e800"/><rect x="64" y="65" width="14" height="8" rx="4" fill="#f5e800"/></svg>`,
+  av3:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0a1628"/><ellipse cx="50" cy="42" rx="20" ry="24" fill="#a855f7"/><ellipse cx="50" cy="24" rx="22" ry="8" fill="#7c3aed" opacity="0.8"/><circle cx="43" cy="38" r="5" fill="#00eaff"/><circle cx="57" cy="38" r="5" fill="#00eaff"/><circle cx="44" cy="37" r="2" fill="#fff"/><circle cx="58" cy="37" r="2" fill="#fff"/><path d="M43 50 Q50 56 57 50" stroke="#ff64c8" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="75" rx="26" ry="16" fill="#7c3aed"/><line x1="30" y1="42" x2="18" y2="36" stroke="#a855f7" stroke-width="2"/><line x1="70" y1="42" x2="82" y2="36" stroke="#a855f7" stroke-width="2"/></svg>`,
+  av4:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#05080f"/><polygon points="50,10 62,38 92,38 68,56 78,84 50,66 22,84 32,56 8,38 38,38" fill="#f5e800" opacity="0.15"/><circle cx="50" cy="42" r="20" fill="#1a6ef5"/><circle cx="50" cy="42" r="14" fill="#0d3fa6"/><circle cx="50" cy="42" r="8" fill="#00eaff"/><circle cx="50" cy="42" r="3" fill="#fff"/><rect x="36" y="64" width="28" height="20" rx="8" fill="#1a6ef5"/><rect x="22" y="68" width="12" height="10" rx="5" fill="#1a6ef5"/><rect x="66" y="68" width="12" height="10" rx="5" fill="#1a6ef5"/></svg>`,
+  av5:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0d1f3c"/><circle cx="50" cy="40" r="22" fill="#64ff96" opacity="0.9"/><circle cx="50" cy="40" r="14" fill="#05080f"/><circle cx="44" cy="37" r="4" fill="#64ff96"/><circle cx="56" cy="37" r="4" fill="#64ff96"/><circle cx="45" cy="36" r="2" fill="#fff"/><circle cx="57" cy="36" r="2" fill="#fff"/><path d="M44 48 Q50 44 56 48" stroke="#64ff96" stroke-width="2" fill="none"/><ellipse cx="50" cy="74" rx="24" ry="16" fill="#064e2e"/><circle cx="30" cy="36" r="5" fill="#64ff96" opacity="0.5"/><circle cx="70" cy="36" r="5" fill="#64ff96" opacity="0.5"/></svg>`,
+  av6:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#1a0a2e"/><circle cx="50" cy="38" r="20" fill="#ff64c8"/><rect x="30" y="20" width="40" height="6" rx="3" fill="#ff64c8" opacity="0.6"/><circle cx="43" cy="35" r="5" fill="#fff"/><circle cx="57" cy="35" r="5" fill="#fff"/><circle cx="44" cy="35" r="2.5" fill="#1a0a2e"/><circle cx="58" cy="35" r="2.5" fill="#1a0a2e"/><path d="M43 47 Q50 52 57 47" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="74" rx="24" ry="16" fill="#7c1d5f"/></svg>`,
+  av7:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0a1628"/><rect x="28" y="18" width="44" height="50" rx="10" fill="#4a6fa5"/><rect x="28" y="18" width="44" height="12" rx="6" fill="#1a3a6e"/><circle cx="42" cy="40" r="7" fill="#00eaff" opacity="0.9"/><circle cx="58" cy="40" r="7" fill="#00eaff" opacity="0.9"/><circle cx="43" cy="40" r="3" fill="#05080f"/><circle cx="59" cy="40" r="3" fill="#05080f"/><rect x="36" y="52" width="28" height="4" rx="2" fill="#1a3a6e"/><rect x="40" y="59" width="20" height="3" rx="1.5" fill="#1a3a6e"/><rect x="34" y="68" width="32" height="18" rx="6" fill="#4a6fa5"/><rect x="20" y="72" width="12" height="8" rx="4" fill="#4a6fa5"/><rect x="68" y="72" width="12" height="8" rx="4" fill="#4a6fa5"/></svg>`,
+  av8:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#050510"/><circle cx="50" cy="38" r="18" fill="#0d1f3c"/><circle cx="43" cy="36" r="5" fill="#1a6ef5"/><circle cx="57" cy="36" r="5" fill="#1a6ef5"/><circle cx="44" cy="35" r="2" fill="#00eaff"/><circle cx="58" cy="35" r="2" fill="#00eaff"/><path d="M42 46 L50 50 L58 46" stroke="#00eaff" stroke-width="2" fill="none"/><ellipse cx="50" cy="72" rx="22" ry="14" fill="#0d1f3c"/></svg>`,
+  av9:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0a0a1a"/><polygon points="50,15 58,35 80,35 63,48 70,68 50,55 30,68 37,48 20,35 42,35" fill="#f5e800" opacity="0.9"/><circle cx="50" cy="44" r="10" fill="#0a0a1a"/><circle cx="47" cy="42" r="3" fill="#f5e800"/><circle cx="53" cy="42" r="3" fill="#f5e800"/><path d="M45 50 Q50 54 55 50" stroke="#f5e800" stroke-width="2" fill="none"/><ellipse cx="50" cy="76" rx="20" ry="13" fill="#4a3800"/></svg>`,
+  av10:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0d0a1e"/><ellipse cx="50" cy="38" rx="18" ry="22" fill="#c084fc"/><ellipse cx="50" cy="18" rx="18" ry="3" fill="#7c3aed" opacity="0.5"/><circle cx="43" cy="35" r="5" fill="#fbbf24"/><circle cx="57" cy="35" r="5" fill="#fbbf24"/><circle cx="44" cy="34" r="2" fill="#0d0a1e"/><circle cx="58" cy="34" r="2" fill="#0d0a1e"/><path d="M43 46 Q50 51 57 46" stroke="#ff64c8" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="73" rx="23" ry="15" fill="#6b21a8"/></svg>`,
+  av11:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#0a1a0a"/><circle cx="50" cy="40" r="22" fill="#065f46"/><circle cx="46" cy="37" r="4" fill="#64ff96"/><circle cx="54" cy="37" r="4" fill="#64ff96"/><circle cx="47" cy="36" r="1.5" fill="#0a1a0a"/><circle cx="55" cy="36" r="1.5" fill="#0a1a0a"/><path d="M44 46 Q50 50 56 46" stroke="#64ff96" stroke-width="2" fill="none"/><ellipse cx="50" cy="74" rx="22" ry="14" fill="#064e2e"/></svg>`,
+  av12:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#1a0505"/><circle cx="50" cy="40" r="20" fill="#7f1d1d"/><rect x="36" y="20" width="4" height="12" rx="2" fill="#b91c1c"/><rect x="60" y="20" width="4" height="12" rx="2" fill="#b91c1c"/><circle cx="43" cy="38" r="5" fill="#ff5050" opacity="0.9"/><circle cx="57" cy="38" r="5" fill="#ff5050" opacity="0.9"/><circle cx="44" cy="37" r="2" fill="#0a0a0a"/><circle cx="58" cy="37" r="2" fill="#0a0a0a"/><path d="M43 50 Q50 46 57 50" stroke="#ff8080" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="74" rx="22" ry="14" fill="#7f1d1d"/></svg>`,
+}
+
+const VIBES_INFO = {
+  cyberpunk:{label:'💻 Cyberpunk',cor:'#00eaff'},tropical:{label:'🌴 Tropical',cor:'#64ff96'},
+  dark:{label:'🖤 Dark',cor:'#a855f7'},alien:{label:'👽 Alien',cor:'#c084fc'},
+  solar:{label:'☀️ Solar',cor:'#f5e800'},oceanic:{label:'🌊 Oceânico',cor:'#00eaff'},
+  urbano:{label:'🏙️ Urbano',cor:'#4a8aff'},retro:{label:'📼 Retrô',cor:'#ff8c00'},
+  mistico:{label:'🔮 Místico',cor:'#a855f7'},selvagem:{label:'🌿 Selvagem',cor:'#64ff96'},
+  neon:{label:'🌃 Neon',cor:'#ff64c8'},espacial:{label:'🛸 Espacial',cor:'#00eaff'},
+  underground:{label:'🎸 Underground',cor:'#ff5050'},carioca:{label:'🍹 Carioca',cor:'#f5e800'},
+  nordestino:{label:'🌵 Nordestino',cor:'#ff8c00'},
+}
+
+const MOODS = {
+  'em-chamas':'🔥 Em chamas','na-vibe':'🌊 Na vibe','sumido':'👻 Sumido',
+  'eletrico':'⚡ Elétrico','explorando':'🚀 Explorando','pensativo':'🧠 Pensativo'
+}
+const MISSOES = {
+  'explorar':'🔭 Explorar','contribuir':'✍️ Contribuir','aprender':'📚 Aprender',
+  'dominar':'👑 Dominar tudo','diversao':'🎉 Só diversão','criar':'⚡ Criar gírias'
+}
+const PLANETAS = {
+  terra:'🌍 Terra',marte:'🔴 Marte',venus:'💛 Vênus',jupiter:'🟠 Júpiter',
+  saturno:'💫 Saturno',urano:'🔵 Urano',netuno:'🌊 Netuno',plutao:'⚫ Plutão',
+  kepler:'🌌 Kepler-22b',pandora:'💚 Pandora',tatooine:'☀️ Tatooine',krypton:'💎 Krypton'
+}
+const DIALETOS = {
+  paulistano:'🏙️ Paulistano',carioca:'🎭 Carioca',nordestino:'☀️ Nordestino',
+  gaucho:'🐎 Gaúcho',mineiro:'⛏️ Mineiro',baiano:'🌴 Baiano',
+  amazonico:'🌿 Amazônico',internauta:'💻 Internauta',funkeiro:'🎵 Funkeiro',surfista:'🏄 Surfista'
+}
+
+function getNivel(qtd) {
+  if (qtd === 0) return {nome:'Recém-chegado',emoji:'🌱',pct:0,prox:1}
+  if (qtd < 5)  return {nome:'Iniciante',emoji:'⚡',pct:qtd/5*100,prox:5}
+  if (qtd < 15) return {nome:'Conectado',emoji:'🔥',pct:(qtd-5)/10*100,prox:15}
+  if (qtd < 30) return {nome:'Veterano',emoji:'💎',pct:(qtd-15)/15*100,prox:30}
+  if (qtd < 60) return {nome:'Mestre',emoji:'👑',pct:(qtd-30)/30*100,prox:60}
+  return {nome:'Lendário',emoji:'🌌',pct:100,prox:null}
+}
+
+async function init() {
+  if (!perfilId) { mostrarNotFound(); return }
+
+  const { data: p } = await sb.from('perfis')
+    .select('*').eq('id', perfilId).single()
+
+  if (!p) { mostrarNotFound(); return }
+
+  // Buscar palavras do usuário
+  const { data: palavras } = await sb.from('palavras')
+    .select('id, termo, slug, status, criado_em, significados(descricao, ordem)')
+    .eq('usuario_id', perfilId)
+    .in('status', ['aprovada', 'pendente'])
+    .order('criado_em', { ascending: false })
+
+  // Buscar categorias favoritas
+  let catsFav = []
+  try {
+    const ids = JSON.parse(p.cats_fav || '[]')
+    if (ids.length) {
+      const catIds = ids.filter(id => !id.startsWith('sub_'))
+      const subIds = ids.filter(id => id.startsWith('sub_')).map(id => id.replace('sub_',''))
+      const [{ data: cats }, { data: subs }] = await Promise.all([
+        catIds.length ? sb.from('categorias').select('id, nome, icone').in('id', catIds) : Promise.resolve({data:[]}),
+        subIds.length ? sb.from('subcategorias').select('id, nome').in('id', subIds) : Promise.resolve({data:[]})
+      ])
+      catsFav = [
+        ...(cats||[]).map(c => ({id:c.id, label:`${c.icone||'📁'} ${c.nome}`, tipo:'cat'})),
+        ...(subs||[]).map(s => ({id:s.id, label:`↳ ${s.nome}`, tipo:'sub'}))
+      ]
+    }
+  } catch(e){}
+
+  // Verificar sessão para botão editar
+  const { data: { session } } = await sb.auth.getSession()
+  const isMeu = session?.user?.id === perfilId
+
+  renderPerfil(p, palavras || [], catsFav, isMeu)
+  gerarParticulas()
+}
+
+function renderPerfil(p, palavras, catsFav, isMeu) {
+  const nomeExibido = p.exibir_como === 'nome' && p.nome ? p.nome : `@${p.username || 'anônimo'}`
+  const palavrasAprovadas = palavras.filter(w => w.status === 'aprovada')
+  const nivel = getNivel(palavrasAprovadas.length)
+
+  // Avatar
+  let avatarHtml = ''
+  if (p.avatar_url) {
+    avatarHtml = `<img src="${p.avatar_url}" alt="avatar">`
+  } else if (p.avatar_galeria && AVATARES_SVG[p.avatar_galeria]) {
+    avatarHtml = AVATARES_SVG[p.avatar_galeria]
+  } else {
+    avatarHtml = `<span class="av-letra">${(p.username||'?')[0].toUpperCase()}</span>`
+  }
+
+  // Badges
+  let badgesHtml = ''
+  if (p.mood && MOODS[p.mood]) badgesHtml += `<div class="badge-perfil badge-mood">${MOODS[p.mood]}</div>`
+  if (p.planeta && PLANETAS[p.planeta]) badgesHtml += `<div class="badge-perfil badge-planeta">${PLANETAS[p.planeta]}</div>`
+  if (p.estado) badgesHtml += `<div class="badge-perfil badge-estado">📍 ${p.estado}</div>`
+  if (p.missao && MISSOES[p.missao]) badgesHtml += `<div class="badge-perfil badge-missao">${MISSOES[p.missao]}</div>`
+  if (p.dialeto && DIALETOS[p.dialeto]) badgesHtml += `<div class="badge-perfil badge-dialeto">${DIALETOS[p.dialeto]}</div>`
+
+  // Vibes
+  let vibesHtml = ''
+  try {
+    const vibes = JSON.parse(p.vibes || '[]')
+    vibesHtml = vibes.map(v => {
+      const info = VIBES_INFO[v]
+      if (!info) return ''
+      return `<div class="vibe-tag" style="background:${info.cor}20;border:1px solid ${info.cor}60;color:${info.cor}">${info.label}</div>`
+    }).join('')
+  } catch(e){}
+
+  // Palavras
+  let palavrasHtml = ''
+  if (palavras.length === 0) {
+    palavrasHtml = `<div class="vazio"><div class="vazio-emoji">📝</div><div class="vazio-texto">Ainda não enviou nenhuma palavra</div></div>`
+  } else {
+    palavrasHtml = `<div class="palavras-grid">${palavras.map(w => {
+      const sigs = (w.significados||[]).sort((a,b)=>(a.ordem||0)-(b.ordem||0))
+      let def = sigs.length ? sigs[0].descricao||'' : ''
+      if (def.includes('[extras]')) def = def.split('[extras]')[0].trim()
+      return `<a href="palavra.html?w=${w.slug}" class="palavra-card-perfil">
+        <div class="pc-termo">${w.termo}</div>
+        ${def ? `<div class="pc-def">${def}</div>` : ''}
+        <div class="pc-status ${w.status}">${w.status === 'aprovada' ? '✅ Aprovada' : '⏳ Pendente'}</div>
+      </a>`
+    }).join('')}</div>`
+  }
+
+  // Categorias
+  let catsHtml = catsFav.length
+    ? catsFav.map(c => `<a href="${c.tipo==='cat'?'categoria.html?c='+c.id:'categoria.html?c='+c.id+'&sub=1'}" class="cat-tag-perfil">${c.label}</a>`).join('')
+    : '<span style="color:#2a4a7a;font-size:13px;">Nenhuma categoria favorita</span>'
+
+  // Favoritas
+  let favHtml = ''
+  if (p.giria_fav || p.expressao_fav) {
+    favHtml = `<div class="secao">
+      <div class="secao-titulo">💬 Favoritas</div>
+      <div class="fav-wrap">
+        ${p.giria_fav ? `<div class="fav-card fav-giria"><div class="fav-label">⭐ Gíria favorita</div><div class="fav-valor">${p.giria_fav}</div></div>` : ''}
+        ${p.expressao_fav ? `<div class="fav-card fav-expressao"><div class="fav-label">💎 Expressão favorita</div><div class="fav-valor">${p.expressao_fav}</div></div>` : ''}
+      </div>
+    </div>`
+  }
+
+  document.getElementById('pageTitle').textContent = `${nomeExibido} — CyberUniverso`
+  document.getElementById('pageDesc').setAttribute('content', p.bio || `Perfil de ${nomeExibido} no CyberUniverso`)
+
+  document.getElementById('conteudo').innerHTML = `
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="perfil-card">
+          <div class="particulas" id="particulas"></div>
+          <div class="perfil-topo">
+            <div class="avatar-grande">
+              <div class="avatar-ring"></div>
+              <div class="avatar-img">${avatarHtml}</div>
+              ${p.emoji ? `<div class="avatar-emoji">${p.emoji}</div>` : ''}
+            </div>
+            <div class="perfil-info">
+              <div class="perfil-username">// ${p.username || 'anônimo'}</div>
+              <div class="perfil-nome">${nomeExibido}</div>
+              ${p.bio ? `<div class="perfil-bio">${p.bio}</div>` : ''}
+              <div class="perfil-badges">${badgesHtml}</div>
+              <div class="perfil-acoes">
+                ${isMeu ? `<a href="perfil-editar.html" class="btn-editar-perfil">✏️ Editar perfil</a>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-num">${palavrasAprovadas.length}</div>
+              <div class="stat-label">Palavras enviadas</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">${palavras.filter(w=>w.status==='pendente').length}</div>
+              <div class="stat-label">Aguardando aprovação</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">${catsFav.length}</div>
+              <div class="stat-label">Categorias favoritas</div>
+            </div>
+          </div>
+
+          <div class="nivel-wrap">
+            <div class="nivel-header">
+              <div class="nivel-titulo">${nivel.emoji} Nível no universo</div>
+              <div class="nivel-nome">${nivel.nome}</div>
+            </div>
+            <div class="nivel-barra-wrap">
+              <div class="nivel-barra" id="nivelBarra" style="width:0%"></div>
+            </div>
+            <div class="nivel-dica">${nivel.prox ? `${palavrasAprovadas.length} / ${nivel.prox} palavras para o próximo nível` : '🌌 Nível máximo atingido!'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-wrap">
+      ${vibesHtml ? `<div class="secao"><div class="secao-titulo">✨ Vibe</div><div class="vibes-tags">${vibesHtml}</div></div>` : ''}
+      ${favHtml}
+      ${catsFav.length ? `<div class="secao"><div class="secao-titulo">🗂️ Categorias Favoritas</div><div class="cats-tags">${catsHtml}</div></div>` : ''}
+      <div class="secao">
+        <div class="secao-titulo">📖 Palavras Contribuídas</div>
+        ${palavrasHtml}
+      </div>
+    </div>
+  `
+
+  // Animar barra de nível
+  setTimeout(() => {
+    const barra = document.getElementById('nivelBarra')
+    if (barra) barra.style.width = nivel.pct + '%'
+  }, 500)
+}
+
+function gerarParticulas() {
+  const wrap = document.getElementById('particulas')
+  if (!wrap) return
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div')
+    p.className = 'particula'
+    const cor = ['#00eaff','#1a6ef5','#f5e800','#a855f7'][Math.floor(Math.random()*4)]
+    const tam = 2 + Math.random() * 3
+    p.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${tam}px;height:${tam}px;background:${cor};
+      --dur:${3+Math.random()*5}s;--delay:${Math.random()*4}s;border-radius:50%;`
+    wrap.appendChild(p)
+  }
+}
+
+function mostrarNotFound() {
+  document.getElementById('conteudo').innerHTML = `
+    <div class="not-found">
+      <div class="not-found-emoji">🔍</div>
+      <div class="not-found-titulo">EXPLORADOR NÃO ENCONTRADO</div>
+      <p style="color:#4a6fa5;margin-top:12px;">Este perfil não existe ou foi removido.</p>
+      <a href="index.html" style="color:var(--ciano);font-weight:800;font-size:16px;display:block;margin-top:20px;">← Voltar ao início</a>
+    </div>`
+}
+
+init()
+</script>
+<script src="./header.js"></script>
+</body>
+</html>
