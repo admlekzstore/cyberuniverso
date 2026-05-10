@@ -497,7 +497,7 @@ async function carregarCategorias() {
         <span class="cat-admin-nome">${c.nome}</span>
         <span class="cat-admin-count">${c.subcategorias?.length || 0} sub</span>
         <div class="cat-admin-btns">
-          <button class="btn-mini btn-editar" onclick="abrirEditarCategoria(this)" data-id="${c.id}" data-icone="${c.icone||''}" data-nome="${c.nome}" data-desc="${c.descricao||''}">✏️</button>
+          <button class="btn-mini btn-editar" onclick="editarCategoria(\'${c.id}\')">✏️</button>
           <button class="btn-mini btn-excluir" onclick="excluirCategoria('${c.id}')">🗑️</button>
         </div>
       </div>
@@ -505,7 +505,7 @@ async function carregarCategorias() {
         ${(c.subcategorias || []).map(s => `
           <div class="subcat-admin-item">
             <span class="subcat-admin-nome">${s.nome}</span>
-            <button class="btn-mini btn-editar" onclick="abrirEditarSubcat(this)" data-id="${s.id}" data-nome="${s.nome}" data-desc="${s.descricao||''}">✏️</button>
+            <button class="btn-mini btn-editar" onclick="editarSubcat(\'${s.id}\')">✏️</button>
             <button class="btn-mini btn-excluir" onclick="excluirSubcategoria('${s.id}')">🗑️</button>
           </div>`).join('')}
         <div class="subcat-admin-item" style="border:none;">
@@ -726,11 +726,13 @@ document.getElementById('mp-termo')?.addEventListener('input', function() {
 })
 
 
-function abrirEditarCategoria(btn) {
-  document.getElementById('ec-id').value = btn.dataset.id
-  document.getElementById('ec-icone').value = btn.dataset.icone
-  document.getElementById('ec-nome').value = btn.dataset.nome
-  document.getElementById('ec-desc').value = btn.dataset.desc
+async function editarCategoria(id) {
+  const { data: c } = await sb.from('categorias').select('id, nome, icone, descricao').eq('id', id).single()
+  if (!c) return
+  document.getElementById('ec-id').value = c.id
+  document.getElementById('ec-icone').value = c.icone || ''
+  document.getElementById('ec-nome').value = c.nome || ''
+  document.getElementById('ec-desc').value = c.descricao || ''
   document.getElementById('modal-editar-categoria').classList.add('aberto')
 }
 
@@ -747,10 +749,12 @@ async function salvarEdicaoCategoria() {
   carregarCategorias()
 }
 
-function abrirEditarSubcat(btn) {
-  document.getElementById('es-id').value = btn.dataset.id
-  document.getElementById('es-nome').value = btn.dataset.nome
-  document.getElementById('es-desc').value = btn.dataset.desc
+async function editarSubcat(id) {
+  const { data: s } = await sb.from('subcategorias').select('id, nome, descricao').eq('id', id).single()
+  if (!s) return
+  document.getElementById('es-id').value = s.id
+  document.getElementById('es-nome').value = s.nome || ''
+  document.getElementById('es-desc').value = s.descricao || ''
   document.getElementById('modal-editar-subcat').classList.add('aberto')
 }
 
