@@ -170,7 +170,7 @@ let reacaoAtiva = null
 async function init() {
   const { data: { session } } = await sb.auth.getSession()
   userSession = session
-  if (session) document.getElementById('navEntrar').textContent = 'Minha Conta'
+  if (session) { const el = document.getElementById('navEntrar'); if (el) el.textContent = 'Minha Conta' }
   if (!slug) { mostrarNotFound('Nenhuma palavra especificada.'); return }
   await Promise.all([carregarPalavra(), carregarSidebar()])
 }
