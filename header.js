@@ -26,9 +26,10 @@
       text-decoration: none;
     }
     #cy-nav .cy-logo img {
-      height: 72px;
+      height: 110px;
       width: auto;
       object-fit: contain;
+      margin: -18px 0;
       transition: opacity 0.3s;
     }
     #cy-nav .cy-logo img:hover {
