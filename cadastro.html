@@ -122,6 +122,8 @@
         <div class="logado-nome" id="logadoNome">Olá!</div>
         <div class="logado-email" id="logadoEmail"></div>
         <div class="logado-acoes">
+          <button class="btn-secundario" onclick="window.location.href='perfil-editar.html'">✏️ Editar meu perfil</button>
+          <button class="btn-secundario" id="btnVerPerfil" onclick="">👤 Ver meu perfil</button>
           <button class="btn-secundario" onclick="window.location.href='index.html'">🏠 Ir para o início</button>
           <button class="btn-secundario" onclick="window.location.href='todas.html'">📖 Ver todas as palavras</button>
           <button class="btn-secundario btn-sair" onclick="sair()">🚪 Sair da conta</button>
@@ -305,6 +307,7 @@
     document.getElementById('areaAuth').style.display = 'none'
     document.getElementById('areaLogado').style.display = 'block'
     document.getElementById('logadoEmail').textContent = user.email
+    document.getElementById('btnVerPerfil').onclick = function() { window.location.href = 'perfil.html?id=' + user.id }
     sb.from('perfis').select('username').eq('id', user.id).single()
       .then(({ data }) => {
         document.getElementById('logadoNome').textContent =
