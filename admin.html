@@ -497,6 +497,7 @@ async function carregarCategorias() {
         <span class="cat-admin-nome">${c.nome}</span>
         <span class="cat-admin-count">${c.subcategorias?.length || 0} sub</span>
         <div class="cat-admin-btns">
+          <button class="btn-mini btn-editar" onclick="abrirEditarCategoria('${c.id}', '${c.icone||''}', '${c.nome}', '${(c.descricao||'').replace(/'/g, '\\'')}')">✏️</button>
           <button class="btn-mini btn-excluir" onclick="excluirCategoria('${c.id}')">🗑️</button>
         </div>
       </div>
@@ -504,6 +505,7 @@ async function carregarCategorias() {
         ${(c.subcategorias || []).map(s => `
           <div class="subcat-admin-item">
             <span class="subcat-admin-nome">${s.nome}</span>
+            <button class="btn-mini btn-editar" onclick="abrirEditarSubcat('${s.id}', '${s.nome}', '${(s.descricao||'').replace(/'/g, '\\'')}')">✏️</button>
             <button class="btn-mini btn-excluir" onclick="excluirSubcategoria('${s.id}')">🗑️</button>
           </div>`).join('')}
         <div class="subcat-admin-item" style="border:none;">
@@ -723,7 +725,85 @@ document.getElementById('mp-termo')?.addEventListener('input', function() {
   }
 })
 
+
+function abrirEditarCategoria(id, icone, nome, desc) {
+  document.getElementById('ec-id').value = id
+  document.getElementById('ec-icone').value = icone
+  document.getElementById('ec-nome').value = nome
+  document.getElementById('ec-desc').value = desc
+  document.getElementById('modal-editar-categoria').classList.add('aberto')
+}
+
+async function salvarEdicaoCategoria() {
+  const id = document.getElementById('ec-id').value
+  const nome = document.getElementById('ec-nome').value.trim()
+  const icone = document.getElementById('ec-icone').value.trim()
+  const descricao = document.getElementById('ec-desc').value.trim()
+  if (!nome) { mostrarToast('⚠️ Digite o nome', 'erro'); return }
+  const { error } = await sb.from('categorias').update({ nome, icone, descricao }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Categoria atualizada!', 'sucesso')
+  document.getElementById('modal-editar-categoria').classList.remove('aberto')
+  carregarCategorias()
+}
+
+function abrirEditarSubcat(id, nome, desc) {
+  document.getElementById('es-id').value = id
+  document.getElementById('es-nome').value = nome
+  document.getElementById('es-desc').value = desc
+  document.getElementById('modal-editar-subcat').classList.add('aberto')
+}
+
+async function salvarEdicaoSubcat() {
+  const id = document.getElementById('es-id').value
+  const nome = document.getElementById('es-nome').value.trim()
+  const descricao = document.getElementById('es-desc').value.trim()
+  if (!nome) { mostrarToast('⚠️ Digite o nome', 'erro'); return }
+  const { error } = await sb.from('subcategorias').update({ nome, descricao }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Subcategoria atualizada!', 'sucesso')
+  document.getElementById('modal-editar-subcat').classList.remove('aberto')
+  carregarCategorias()
+}
+
 init()
 </script>
+
+<div class="modal-overlay" id="modal-editar-categoria">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">✏️ EDITAR CATEGORIA</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-editar-categoria').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ec-id">
+      <div class="modal-campo"><label>Emoji</label><input type="text" id="ec-icone" placeholder="ex: 🎵" maxlength="2"></div>
+      <div class="modal-campo"><label>Nome da Categoria</label><input type="text" id="ec-nome" placeholder="ex: Gírias do Funk"></div>
+      <div class="modal-campo"><label>Descrição</label><input type="text" id="ec-desc" placeholder="Breve descrição"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-editar-categoria').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarEdicaoCategoria()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-editar-subcat">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">✏️ EDITAR SUBCATEGORIA</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-editar-subcat').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="es-id">
+      <div class="modal-campo"><label>Nome da Subcategoria</label><input type="text" id="es-nome" placeholder="ex: TikTok"></div>
+      <div class="modal-campo"><label>Descrição</label><input type="text" id="es-desc" placeholder="Breve descrição"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-editar-subcat').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarEdicaoSubcat()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
