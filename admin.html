@@ -497,7 +497,7 @@ async function carregarCategorias() {
         <span class="cat-admin-nome">${c.nome}</span>
         <span class="cat-admin-count">${c.subcategorias?.length || 0} sub</span>
         <div class="cat-admin-btns">
-          <button class="btn-mini btn-editar" onclick="abrirEditarCategoria('${c.id}', '${c.icone||''}', '${c.nome}', '${(c.descricao||'').replace(/'/g, '\\'')}')">✏️</button>
+          <button class="btn-mini btn-editar" onclick="abrirEditarCategoria(this)" data-id="${c.id}" data-icone="${c.icone||''}" data-nome="${c.nome}" data-desc="${c.descricao||''}">✏️</button>
           <button class="btn-mini btn-excluir" onclick="excluirCategoria('${c.id}')">🗑️</button>
         </div>
       </div>
@@ -505,7 +505,7 @@ async function carregarCategorias() {
         ${(c.subcategorias || []).map(s => `
           <div class="subcat-admin-item">
             <span class="subcat-admin-nome">${s.nome}</span>
-            <button class="btn-mini btn-editar" onclick="abrirEditarSubcat('${s.id}', '${s.nome}', '${(s.descricao||'').replace(/'/g, '\\'')}')">✏️</button>
+            <button class="btn-mini btn-editar" onclick="abrirEditarSubcat(this)" data-id="${s.id}" data-nome="${s.nome}" data-desc="${s.descricao||''}">✏️</button>
             <button class="btn-mini btn-excluir" onclick="excluirSubcategoria('${s.id}')">🗑️</button>
           </div>`).join('')}
         <div class="subcat-admin-item" style="border:none;">
@@ -726,11 +726,11 @@ document.getElementById('mp-termo')?.addEventListener('input', function() {
 })
 
 
-function abrirEditarCategoria(id, icone, nome, desc) {
-  document.getElementById('ec-id').value = id
-  document.getElementById('ec-icone').value = icone
-  document.getElementById('ec-nome').value = nome
-  document.getElementById('ec-desc').value = desc
+function abrirEditarCategoria(btn) {
+  document.getElementById('ec-id').value = btn.dataset.id
+  document.getElementById('ec-icone').value = btn.dataset.icone
+  document.getElementById('ec-nome').value = btn.dataset.nome
+  document.getElementById('ec-desc').value = btn.dataset.desc
   document.getElementById('modal-editar-categoria').classList.add('aberto')
 }
 
@@ -747,10 +747,10 @@ async function salvarEdicaoCategoria() {
   carregarCategorias()
 }
 
-function abrirEditarSubcat(id, nome, desc) {
-  document.getElementById('es-id').value = id
-  document.getElementById('es-nome').value = nome
-  document.getElementById('es-desc').value = desc
+function abrirEditarSubcat(btn) {
+  document.getElementById('es-id').value = btn.dataset.id
+  document.getElementById('es-nome').value = btn.dataset.nome
+  document.getElementById('es-desc').value = btn.dataset.desc
   document.getElementById('modal-editar-subcat').classList.add('aberto')
 }
 
