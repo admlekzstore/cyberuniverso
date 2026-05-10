@@ -15,20 +15,20 @@
   .bg-glow::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(26,110,245,0.12) 0%,transparent 70%);border-radius:50%;}
   .bg-glow::after{content:'';position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(0,234,255,0.06) 0%,transparent 70%);border-radius:50%;}
 
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(5,8,15,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);}
-  .logo-main{font-family:'Bangers',cursive;font-size:28px;color:var(--ciano);text-shadow:0 0 10px var(--ciano),0 0 30px rgba(0,234,255,0.4);letter-spacing:2px;text-decoration:none;}
-  .nav-links{display:flex;gap:20px;}
-  .nav-links a{color:var(--texto);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;}
-  .nav-links a:hover{color:var(--amarelo);}
-  .menu-btn{display:none;background:none;border:1.5px solid var(--borda);border-radius:6px;padding:8px 10px;cursor:pointer;flex-direction:column;gap:4px;}
-  .menu-btn span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-  .nav-mobile{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:rgba(5,8,15,0.98);border-left:1px solid var(--borda);flex-direction:column;padding:70px 25px 25px;gap:8px;z-index:200;}
-  .nav-mobile.open{display:flex;}
-  .nav-mobile a{color:var(--texto);text-decoration:none;font-size:16px;font-weight:700;padding:12px 0;border-bottom:1px solid var(--borda);}
-  .nav-mobile a:hover{color:var(--amarelo);}
-  .close-nav{position:absolute;top:18px;right:18px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;}
-  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
-  .overlay.open{display:block;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   .page-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:90px 16px 40px;}
 
@@ -95,34 +95,13 @@
   .btn-sair:hover{background:rgba(255,80,80,0.2);border-color:#ff4444;color:#ff4444;}
 
   @media(max-width:480px){
-    .nav-links{display:none;}
-    .menu-btn{display:flex;}
+  
+  
   }
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-
-<nav>
-  <a href="index.html" class="logo-main">CyberUniverso</a>
-  <div class="nav-links">
-    <a href="index.html">Início</a>
-    <a href="todas.html">Todas</a>
-    <a href="categorias.html">Categorias</a>
-    <a href="tarot.html">Tarot</a>
-  </div>
-  <button class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
-</nav>
-
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-<nav class="nav-mobile" id="navMobile">
-  <button class="close-nav" onclick="toggleMenu()">✕</button>
-  <a href="index.html">🏠 Início</a>
-  <a href="todas.html">📖 Todas as Palavras</a>
-  <a href="categorias.html">🗂️ Categorias</a>
-  <a href="rimas.html">🎵 Rimas</a>
-  <a href="tarot.html">🃏 Tarot de Gírias</a>
-</nav>
 
 <div class="page-wrap">
   <div class="auth-container">
@@ -369,14 +348,10 @@
   function validarUsuario(inp) {
     inp.value = inp.value.replace(/[^a-z0-9_]/gi, '').toLowerCase()
   }
-
-  function toggleMenu() {
-    document.getElementById('navMobile').classList.toggle('open')
-    document.getElementById('overlay').classList.toggle('open')
-  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase.js"></script>
+<script src="./header.js"></script>
 </body>
 </html>
