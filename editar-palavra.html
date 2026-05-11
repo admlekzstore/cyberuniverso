@@ -157,7 +157,7 @@ async function init() {
 
 async function carregarPalavra() {
   const { data: p } = await sb.from('palavras')
-    .select('*, significados(*), exemplos(*), sinonimos(*), palavras_relacionadas(*), tags:palavras_tags(tag_id, tags(nome)), cats:palavras_categorias(categoria_id, subcategoria_id)')
+    .select('*, significados(*), exemplos(*), sinonimos(*), palavras_relacionadas(*), opostos(*), masculinos:variacoes_genero(id,valor,tipo).filter(tipo,eq,masculino), femininos:variacoes_genero(id,valor,tipo).filter(tipo,eq,feminino), plurais:variacoes_plural(*), tags:palavras_tags(tag_id, tags(nome)), cats:palavras_categorias(categoria_id, subcategoria_id)')
     .eq('id', palavraId)
     .single()
 
@@ -323,6 +323,64 @@ function renderFormulario(p, sigs) {
       <button class="btn-adicionar-item" onclick="adicionarSinonimo()">➕ Adicionar sinônimo</button>
     </div>
 
+    <!-- OPOSTOS -->
+    <div class="secao-card">
+      <div class="secao-titulo">⚡ Opostos</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:12px;">Palavras com sentido contrário ou oposto. <span style="color:#2a4a7a">(opcional)</span></p>
+      <div class="lista-dinamica" id="lista-opostos">
+        ${(p?.opostos?.length ? p.opostos : [{oposto:''}]).map(o=>`
+          <div class="lista-item">
+            <input type="text" placeholder="ex: Parado, Ficar" value="${(o.oposto||'').replace(/"/g,'&quot;')}">
+            <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarOposto()">➕ Adicionar oposto</button>
+    </div>
+
+    <!-- MASCULINO / FEMININO -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔄 Variações de Gênero</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:16px;">Se a palavra tiver versão masculina ou feminina. <span style="color:#2a4a7a">(opcional)</span></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:12px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">♂️ Masculino</div>
+          <div class="lista-dinamica" id="lista-masculino">
+            ${(p?.masculinos?.length ? p.masculinos : [{masculino:''}]).map(m=>`
+              <div class="lista-item">
+                <input type="text" placeholder="ex: mano" value="${(m.masculino||'').replace(/"/g,'&quot;')}">
+                <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+              </div>`).join('')}
+          </div>
+          <button class="btn-adicionar-item" onclick="adicionarMasculino()">➕ Masculino</button>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:#ff64c8;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">♀️ Feminino</div>
+          <div class="lista-dinamica" id="lista-feminino">
+            ${(p?.femininos?.length ? p.femininos : [{feminino:''}]).map(f=>`
+              <div class="lista-item">
+                <input type="text" placeholder="ex: mana" value="${(f.feminino||'').replace(/"/g,'&quot;')}">
+                <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+              </div>`).join('')}
+          </div>
+          <button class="btn-adicionar-item" onclick="adicionarFeminino()">➕ Feminino</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLURAL -->
+    <div class="secao-card">
+      <div class="secao-titulo">📦 Plural</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:12px;">Forma plural da palavra. <span style="color:#2a4a7a">(opcional)</span></p>
+      <div class="lista-dinamica" id="lista-plural">
+        ${(p?.plurais?.length ? p.plurais : [{plural:''}]).map(pl=>`
+          <div class="lista-item">
+            <input type="text" placeholder="ex: manos" value="${(pl.plural||'').replace(/"/g,'&quot;')}">
+            <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn-adicionar-item" onclick="adicionarPlural()">➕ Adicionar plural</button>
+    </div>
+
     <!-- PALAVRAS RELACIONADAS -->
     <div class="secao-card">
       <div class="secao-titulo">🔀 Palavras Relacionadas</div>
@@ -465,6 +523,34 @@ function adicionarSinonimo() {
   document.getElementById('lista-sinonimos').appendChild(div)
 }
 
+function adicionarOposto() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Oposto..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-opostos').appendChild(div)
+}
+
+function adicionarMasculino() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Masculino..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-masculino').appendChild(div)
+}
+
+function adicionarFeminino() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Feminino..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-feminino').appendChild(div)
+}
+
+function adicionarPlural() {
+  const div = document.createElement('div')
+  div.className = 'lista-item'
+  div.innerHTML = `<input type="text" placeholder="Plural..."><button class="btn-remover" onclick="removerItem(this)">🗑️</button>`
+  document.getElementById('lista-plural').appendChild(div)
+}
+
 function adicionarRelacionada() {
   const div = document.createElement('div')
   div.className = 'lista-item'
@@ -566,6 +652,27 @@ async function salvarTudo() {
   const sinonimos = [...document.getElementById('lista-sinonimos').querySelectorAll('input')]
     .map(i => ({ palavra_id: id, sinonimo: i.value.trim() })).filter(s => s.sinonimo)
   if (sinonimos.length) await sb.from('sinonimos').insert(sinonimos)
+
+  // opostos
+  await sb.from('opostos').delete().eq('palavra_id', id)
+  const opostos = [...document.getElementById('lista-opostos').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, oposto: i.value.trim() })).filter(o => o.oposto)
+  if (opostos.length) await sb.from('opostos').insert(opostos)
+
+  // variações de gênero (masculino + feminino)
+  await sb.from('variacoes_genero').delete().eq('palavra_id', id)
+  const masculinos = [...document.getElementById('lista-masculino').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, valor: i.value.trim(), tipo: 'masculino' })).filter(m => m.valor)
+  const femininos = [...document.getElementById('lista-feminino').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, valor: i.value.trim(), tipo: 'feminino' })).filter(f => f.valor)
+  const generos = [...masculinos, ...femininos]
+  if (generos.length) await sb.from('variacoes_genero').insert(generos)
+
+  // plural
+  await sb.from('variacoes_plural').delete().eq('palavra_id', id)
+  const plurais = [...document.getElementById('lista-plural').querySelectorAll('input')]
+    .map(i => ({ palavra_id: id, plural: i.value.trim() })).filter(pl => pl.plural)
+  if (plurais.length) await sb.from('variacoes_plural').insert(plurais)
 
   // palavras relacionadas
   await sb.from('palavras_relacionadas').delete().eq('palavra_id', id)
