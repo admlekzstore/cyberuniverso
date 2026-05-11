@@ -167,6 +167,16 @@ let palavraId = null
 let userSession = null
 let reacaoAtiva = null
 
+// ID anônimo persistente para reações sem login
+function getAnonId() {
+  var id = localStorage.getItem('cyberuniverso_anon_id')
+  if (!id) {
+    id = 'anon_' + Math.random().toString(36).slice(2) + Date.now().toString(36)
+    localStorage.setItem('cyberuniverso_anon_id', id)
+  }
+  return id
+}
+
 async function init() {
   const { data: { session } } = await sb.auth.getSession()
   userSession = session
@@ -369,10 +379,10 @@ async function carregarReacoes(pid) {
     const { count } = await sb.from('reacoes').select('*', { count: 'exact', head: true }).eq('palavra_id', pid).eq('tipo', tipo)
     counts[tipo] = count || 0
   }
-  if (userSession) {
-    const { data } = await sb.from('reacoes').select('tipo').eq('palavra_id', pid).eq('usuario_id', userSession.user.id).maybeSingle()
-    reacaoAtiva = data?.tipo || null
-  }
+  // Verificar reação do visitante atual (logado ou anônimo)
+  const uid = userSession ? userSession.user.id : getAnonId()
+  const { data } = await sb.from('reacoes').select('tipo').eq('palavra_id', pid).eq('usuario_id', uid).maybeSingle()
+  reacaoAtiva = data?.tipo || null
   return counts
 }
 
@@ -581,15 +591,15 @@ async function enviarComentario() {
 }
 
 async function reagir(tipo, btn) {
-  if (!userSession) { alert('Você precisa estar logado para reagir!'); window.location.href = 'cadastro.html'; return }
+  var uid = userSession ? userSession.user.id : getAnonId()
   var countEl = btn.querySelector('.reacao-count')
   var jaAtivo = btn.classList.contains('ativo')
   if (reacaoAtiva) {
-    await sb.from('reacoes').delete().eq('palavra_id', palavraId).eq('usuario_id', userSession.user.id)
+    await sb.from('reacoes').delete().eq('palavra_id', palavraId).eq('usuario_id', uid)
     document.querySelectorAll('.reacao-btn').forEach(function(b) { b.classList.remove('ativo') })
   }
   if (!jaAtivo || reacaoAtiva !== tipo) {
-    var res = await sb.from('reacoes').insert({ palavra_id: palavraId, usuario_id: userSession.user.id, tipo: tipo })
+    var res = await sb.from('reacoes').insert({ palavra_id: palavraId, usuario_id: uid, tipo: tipo })
     if (!res.error) { btn.classList.add('ativo'); countEl.textContent = parseInt(countEl.textContent) + 1; reacaoAtiva = tipo }
   } else {
     reacaoAtiva = null
