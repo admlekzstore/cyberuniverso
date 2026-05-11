@@ -657,11 +657,17 @@
 
   // em alta
   async function carregarEmAlta() {
-    const { data, error } = await sb.from('palavras').select('termo, slug')
-      .eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(7)
     const list = document.getElementById('listEmAlta')
-    if (error || !data || data.length === 0) {
-      list.innerHTML = '<li style="text-align:center;color:#4a6fa5;padding:10px;font-size:13px">Nenhuma palavra ainda</li>'; return
+    const { data } = await sb.rpc('top_palavras_visualizacoes', { limite: 7 })
+    if (!data || data.length === 0) {
+      // fallback: mais recentes
+      const { data: fallback } = await sb.from('palavras').select('termo, slug')
+        .eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(7)
+      if (!fallback || fallback.length === 0) {
+        list.innerHTML = '<li style="text-align:center;color:#4a6fa5;padding:10px;font-size:13px">Nenhuma palavra ainda</li>'; return
+      }
+      list.innerHTML = fallback.map(p => `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`).join('')
+      return
     }
     list.innerHTML = data.map(p => `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`).join('')
   }

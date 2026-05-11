@@ -350,6 +350,8 @@ async function carregarPalavra() {
 
   await carregarComentarios(p.id)
   await carregarVizinhas(p.termo)
+  // Registrar visualização
+  sb.from('visualizacoes').insert({ palavra_id: p.id }).then(function() {})
 }
 
 async function carregarReacoes(pid) {
@@ -555,10 +557,16 @@ async function carregarVizinhas(termo) {
 }
 
 async function carregarSidebar() {
-  var top = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
+  // Buscar top palavras por visualizações
+  var { data: topViz } = await sb.rpc('top_palavras_visualizacoes', { limite: 10 })
   var st = document.getElementById('sidebarTop')
-  if (top.data && st) {
-    st.innerHTML = '<div class="sidebar-title">🏆 Top Palavras</div>' + top.data.map(function(p, i) {
+  if (!topViz || topViz.length === 0) {
+    // fallback: mais recentes
+    var { data: fallback } = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
+    topViz = (fallback || []).map(function(p) { return { termo: p.termo, slug: p.slug, total: 0 } })
+  }
+  if (topViz && st) {
+    st.innerHTML = '<div class="sidebar-title">🏆 Top Palavras</div>' + topViz.map(function(p, i) {
       var cls = i===0?'ouro':i===1?'prata':i===2?'bronze':''
       return '<a href="palavra.html?w=' + p.slug + '" class="top-item"><span class="top-rank ' + cls + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span></a>'
     }).join('')
