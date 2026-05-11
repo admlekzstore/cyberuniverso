@@ -156,18 +156,38 @@ async function init() {
 }
 
 async function carregarPalavra() {
+  // Busca principal da palavra
   const { data: p } = await sb.from('palavras')
-    .select('*, significados(*), exemplos(*), sinonimos(*), palavras_relacionadas(*), opostos(*), masculinos:variacoes_genero(id,valor,tipo).filter(tipo,eq,masculino), femininos:variacoes_genero(id,valor,tipo).filter(tipo,eq,feminino), plurais:variacoes_plural(*), tags:palavras_tags(tag_id, tags(nome)), cats:palavras_categorias(categoria_id, subcategoria_id)')
+    .select('*, significados(*), exemplos(*), sinonimos(*), palavras_relacionadas(*), tags:palavras_tags(tag_id, tags(nome))')
     .eq('id', palavraId)
     .single()
 
   if (!p) { document.getElementById('pageWrap').innerHTML = '<div class="loading">Palavra não encontrada.</div>'; return }
 
+  // Buscar tabelas novas separadamente (queries nested com .filter não funcionam no SDK)
+  const [
+    { data: cats },
+    { data: opostos },
+    { data: variacoesGenero },
+    { data: plurais }
+  ] = await Promise.all([
+    sb.from('palavras_categorias').select('categoria_id, subcategoria_id').eq('palavra_id', palavraId),
+    sb.from('opostos').select('oposto').eq('palavra_id', palavraId),
+    sb.from('variacoes_genero').select('valor, tipo').eq('palavra_id', palavraId),
+    sb.from('variacoes_plural').select('plural').eq('palavra_id', palavraId)
+  ])
+
+  // Montar dados extras no objeto p para o renderFormulario usar
+  p.opostos = opostos || []
+  p.masculinos = (variacoesGenero || []).filter(v => v.tipo === 'masculino').map(v => ({ masculino: v.valor }))
+  p.femininos = (variacoesGenero || []).filter(v => v.tipo === 'feminino').map(v => ({ feminino: v.valor }))
+  p.plurais = (plurais || [])
+
   statusAtual = p.status
   tagsAtuais = (p.tags || []).map(t => t.tags?.nome).filter(Boolean)
 
   // carregar categorias salvas
-  categoriasSelecionadas = (p.cats || []).map(c => ({
+  categoriasSelecionadas = (cats || []).map(c => ({
     categoria_id: String(c.categoria_id),
     subcategoria_id: c.subcategoria_id ? String(c.subcategoria_id) : null
   }))
