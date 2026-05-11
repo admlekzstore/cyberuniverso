@@ -424,7 +424,7 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
       html += '</div>'
       return html
     })() +
-    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="todas.html?busca=' + t + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
+    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="tag.html?t=' + encodeURIComponent(t) + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
     '<div class="badges">' +
     (p.nivel_uso ? '<div class="badge badge-nivel">⚡ ' + p.nivel_uso + '</div>' : '') +
     (p.regiao ? '<div class="badge badge-regiao">📍 ' + p.regiao + '</div>' : '') +
@@ -479,8 +479,8 @@ function renderExemplos(exemplos) {
 function renderSinonimos(sinonimos) {
   var html = '<div class="card"><div class="card-title">🔄 Sinônimos</div><div class="tags-list">'
   sinonimos.forEach(function(s) {
-    var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + s.sinonimo + '</a>'
+    var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="tag.html?t=' + encodeURIComponent(s.sinonimo) + '" class="tag">' + s.sinonimo + '</a>'
   })
   html += '</div></div>'
   return html
