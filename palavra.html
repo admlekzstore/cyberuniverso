@@ -213,7 +213,10 @@ async function carregarPalavra() {
     { data: tagsRel },
     { data: catsMultiplas },
     { data: relacionadas },
-    { data: autorPerfil }
+    { data: autorPerfil },
+    { data: opostos },
+    { data: variacoesGenero },
+    { data: plurais }
   ] = await Promise.all([
     sb.from('significados').select('descricao, ordem').eq('palavra_id', p.id).order('ordem'),
     sb.from('exemplos').select('frase').eq('palavra_id', p.id),
@@ -222,13 +225,18 @@ async function carregarPalavra() {
     sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id),
     sb.from('palavras_categorias').select('categoria_id, subcategoria_id, categorias(id, nome, icone), subcategorias(id, nome)').eq('palavra_id', p.id),
     sb.from('palavras_relacionadas').select('relacionada').eq('palavra_id', p.id),
-    p.usuario_id ? sb.from('perfis').select('username, nome, exibir_como, avatar_galeria, avatar_url, emoji').eq('id', p.usuario_id).single() : Promise.resolve({ data: null })
+    p.usuario_id ? sb.from('perfis').select('username, nome, exibir_como, avatar_galeria, avatar_url, emoji').eq('id', p.usuario_id).single() : Promise.resolve({ data: null }),
+    sb.from('opostos').select('oposto').eq('palavra_id', p.id),
+    sb.from('variacoes_genero').select('valor, tipo').eq('palavra_id', p.id),
+    sb.from('variacoes_plural').select('plural').eq('palavra_id', p.id)
   ])
 
   const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
   const reacoes = await carregarReacoes(p.id)
+  const masculinos = (variacoesGenero || []).filter(v => v.tipo === 'masculino')
+  const femininos = (variacoesGenero || []).filter(v => v.tipo === 'feminino')
 
-  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil)
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil, opostos || [], masculinos, femininos, plurais || [])
 
   // SEO: meta description + schema com o primeiro significado
   var sigTexto = ''
@@ -368,7 +376,7 @@ async function carregarReacoes(pid) {
   return counts
 }
 
-function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil) {
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil, opostos, masculinos, femininos, plurais) {
   const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   const main = document.getElementById('mainCol')
   main.innerHTML =
@@ -417,6 +425,9 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     (significados.length ? renderSignificados(significados, p.termo) : '') +
     (exemplos.length ? renderExemplos(exemplos) : '') +
     (sinonimos.length ? renderSinonimos(sinonimos) : '') +
+    (opostos && opostos.length ? renderOpostos(opostos) : '') +
+    (masculinos && masculinos.length || femininos && femininos.length ? renderVariacoesGenero(masculinos, femininos) : '') +
+    (plurais && plurais.length ? renderPlurais(plurais) : '') +
     (relacionadas && relacionadas.length ? renderRelacionadas(relacionadas) : '') +
     renderReacoes(reacoes) +
     '<div class="card" id="navAlfaCard"><div class="card-title">🔤 Navegação alfabética</div><div class="alfa-nav" id="navAlfa"><span style="color:#4a6fa5">Carregando...</span></div></div>' +
@@ -470,6 +481,48 @@ function renderRelacionadas(relacionadas) {
   relacionadas.forEach(function(r) {
     var sl = r.relacionada.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
     html += '<a href="palavra.html?w=' + sl + '" class="tag">' + r.relacionada + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderOpostos(opostos) {
+  var html = '<div class="card"><div class="card-title">⚡ Opostos</div><div class="tags-list">'
+  opostos.forEach(function(o) {
+    var sl = o.oposto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + o.oposto + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderVariacoesGenero(masculinos, femininos) {
+  var html = '<div class="card"><div class="card-title">🔄 Variações de Gênero</div><div style="display:flex;gap:24px;flex-wrap:wrap;">'
+  if (masculinos && masculinos.length) {
+    html += '<div><div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">♂️ Masculino</div><div class="tags-list">'
+    masculinos.forEach(function(m) {
+      var sl = m.valor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      html += '<a href="palavra.html?w=' + sl + '" class="tag">' + m.valor + '</a>'
+    })
+    html += '</div></div>'
+  }
+  if (femininos && femininos.length) {
+    html += '<div><div style="font-size:11px;font-weight:800;color:#ff64c8;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">♀️ Feminino</div><div class="tags-list">'
+    femininos.forEach(function(f) {
+      var sl = f.valor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      html += '<a href="palavra.html?w=' + sl + '" class="tag">' + f.valor + '</a>'
+    })
+    html += '</div></div>'
+  }
+  html += '</div></div>'
+  return html
+}
+
+function renderPlurais(plurais) {
+  var html = '<div class="card"><div class="card-title">📦 Plural</div><div class="tags-list">'
+  plurais.forEach(function(pl) {
+    var sl = pl.plural.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + pl.plural + '</a>'
   })
   html += '</div></div>'
   return html
