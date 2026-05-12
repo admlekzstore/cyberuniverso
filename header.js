@@ -2,11 +2,15 @@
 // Adicione em cada página: <script src="./header.js"></script>
 // (antes do </body>)
 
-// Páginas em construção — redirecionar automaticamente
-var _emConstrucao = ['/rimas.html', '/tarot.html']
-if (_emConstrucao.indexOf(window.location.pathname) !== -1) {
-  window.location.replace('/em-construcao.html')
-}
+// Google Analytics
+var _gaScript = document.createElement('script')
+_gaScript.async = true
+_gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-4TCG0DDRCZ'
+document.head.appendChild(_gaScript)
+window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-4TCG0DDRCZ')
 
 (function() {
   var style = document.createElement('style')
@@ -148,8 +152,8 @@ if (_emConstrucao.indexOf(window.location.pathname) !== -1) {
     <a href="/index.html">🏠 Início</a>
     <a href="/todas.html">📖 Todas as Palavras</a>
     <a href="/categorias.html">🗂️ Categorias</a>
-    <a href="/em-construcao.html">🎵 Rimas</a>
-    <a href="/em-construcao.html">🃏 Tarot de Gírias</a>
+    <a href="/rimas.html">🎵 Rimas</a>
+    <a href="/tarot.html">🃏 Tarot de Gírias</a>
     <a href="/enviar.html">➕ Enviar Palavra</a>
     <a href="/cadastro.html">👤 Entrar / Cadastrar</a>
   `
