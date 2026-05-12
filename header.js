@@ -105,26 +105,29 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      color: #d0e4ff;
+      color: #00eaff;
       text-decoration: none;
-      font-family: 'Nunito', sans-serif;
-      font-size: 16px;
-      font-weight: 800;
+      font-family: 'Bangers', cursive;
+      font-size: 20px;
+      letter-spacing: 1.5px;
       padding: 12px 16px;
       border-radius: 12px;
       transition: all 0.2s;
       border: 1px solid transparent;
+      text-shadow: 0 0 8px #00eaff, 0 0 16px rgba(0,234,255,0.4);
     }
     #cy-sidemenu a:hover {
-      background: rgba(26,110,245,0.15);
-      border-color: rgba(26,110,245,0.3);
-      color: #00eaff;
+      background: rgba(0,234,255,0.08);
+      border-color: rgba(0,234,255,0.3);
+      color: #fff;
+      text-shadow: 0 0 10px #00eaff, 0 0 24px #00eaff, 0 0 40px rgba(0,234,255,0.6);
       padding-left: 20px;
     }
     #cy-sidemenu a.ativo {
-      background: rgba(26,110,245,0.2);
-      border-color: rgba(26,110,245,0.4);
-      color: #00eaff;
+      background: rgba(245,232,0,0.07);
+      border-color: rgba(245,232,0,0.25);
+      color: #f5e800;
+      text-shadow: 0 0 10px #f5e800, 0 0 24px rgba(245,232,0,0.5);
     }
   `
   document.head.appendChild(style)
