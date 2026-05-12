@@ -3,12 +3,10 @@
 // (antes do </body>)
 
 // Páginas em construção — redirecionar automaticamente
-;(function() {
-  var emConstrucao = ['/rimas.html', '/tarot.html']
-  if (emConstrucao.indexOf(window.location.pathname) !== -1) {
-    window.location.replace('/em-construcao.html')
-  }
-})()
+var _emConstrucao = ['/rimas.html', '/tarot.html']
+if (_emConstrucao.indexOf(window.location.pathname) !== -1) {
+  window.location.replace('/em-construcao.html')
+}
 
 (function() {
   var style = document.createElement('style')
