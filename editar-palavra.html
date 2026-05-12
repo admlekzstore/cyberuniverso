@@ -622,6 +622,9 @@ async function salvarTudo() {
 
   const catPrincipal = categoriasSelecionadas.length > 0 ? categoriasSelecionadas[0].categoria_id : null
 
+  // pegar sessão para salvar usuario_id
+  const { data: { session: sessaoAtual } } = await sb.auth.getSession()
+
   const dadosPalavra = {
     termo, slug,
     pronuncia: document.getElementById('f-pronuncia').value.trim() || null,
@@ -634,7 +637,12 @@ async function salvarTudo() {
     epoca: document.getElementById('f-epoca').value || null,
   }
 
+  // só inclui usuario_id em palavras novas (não sobrescreve o autor original)
   let id = palavraId
+  if (!id && sessaoAtual) {
+    dadosPalavra.usuario_id = sessaoAtual.user.id
+  }
+
   if (id) {
     const { error } = await sb.from('palavras').update(dadosPalavra).eq('id', id)
     if (error) { mostrarToast('Erro: ' + error.message, 'erro'); btn.disabled=false; btn.textContent='💾 SALVAR TUDO'; return }
