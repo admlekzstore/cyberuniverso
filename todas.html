@@ -65,10 +65,10 @@
   .letra-linha{flex:1;height:1px;background:linear-gradient(90deg,var(--borda),transparent);}
   .letra-count{font-size:12px;color:#4a6fa5;font-weight:700;}
 
-  .palavras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
-  .palavra-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--borda);border-radius:10px;padding:10px 14px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;}
+  .palavras-grid{display:flex;flex-direction:column;gap:6px;}
+  .palavra-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--borda);border-radius:10px;padding:12px 18px;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;}
   .palavra-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--azul);transform:scaleY(0);transition:transform 0.2s;transform-origin:bottom;}
-  .palavra-item:hover{border-color:var(--azul);transform:translateY(-2px);}
+  .palavra-item:hover{border-color:var(--azul);transform:translateX(4px);}
   .palavra-item:hover::before{transform:scaleY(1);}
   .palavra-item:hover .palavra-nome{color:var(--amarelo);}
   .palavra-nome{font-size:15px;font-weight:800;color:var(--texto);transition:color 0.2s;}
@@ -76,8 +76,8 @@
   .palavra-item:hover .palavra-seta{color:var(--ciano);}
 
   /* skeleton */
-  .skeleton-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:32px;}
-  .skeleton-item{height:44px;background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px;}
+  .skeleton-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:32px;}
+  .skeleton-item{height:46px;background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:10px;}
   @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 
   .sem-resultado{text-align:center;padding:60px 20px;display:none;}
@@ -88,11 +88,7 @@
   /* loading inicial */
   .loading-msg{text-align:center;padding:40px;color:#4a6fa5;font-size:15px;font-weight:700;}
 
-  @media(max-width:600px){
-    .palavras-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
-  
-  
-  }
+
 </style>
 </head>
 <body>
