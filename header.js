@@ -129,6 +129,41 @@
       color: #f5e800;
       text-shadow: 0 0 10px #f5e800, 0 0 24px rgba(245,232,0,0.5);
     }
+    #cy-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: flex-end;
+    }
+    #cy-nav-links a {
+      font-family: 'Bangers', cursive;
+      font-size: 17px;
+      letter-spacing: 1.5px;
+      color: #00eaff;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      text-shadow: 0 0 8px #00eaff, 0 0 16px rgba(0,234,255,0.4);
+      white-space: nowrap;
+    }
+    #cy-nav-links a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px #00eaff, 0 0 24px #00eaff, 0 0 40px rgba(0,234,255,0.6);
+      background: rgba(0,234,255,0.08);
+    }
+    #cy-nav-links a.ativo {
+      color: #f5e800;
+      text-shadow: 0 0 10px #f5e800, 0 0 24px rgba(245,232,0,0.5);
+    }
+    @media(max-width:768px) {
+      #cy-nav-links { display: none; }
+      #cy-menu-btn { display: flex; }
+    }
+    @media(min-width:769px) {
+      #cy-menu-btn { display: none; }
+    }
   `
   document.head.appendChild(style)
 
@@ -138,6 +173,15 @@
     <a href="/index.html" class="cy-logo">
       <img src="/logo.png" alt="CyberUniverso">
     </a>
+    <div id="cy-nav-links">
+      <a href="/index.html">Início</a>
+      <a href="/todas.html">Todas</a>
+      <a href="/categorias.html">Categorias</a>
+      <a href="/enviar.html">Enviar</a>
+      <a href="/rimas.html">Rimas</a>
+      <a href="/tarot.html">Tarot</a>
+      <a href="/cadastro.html">Entrar</a>
+    </div>
     <button id="cy-menu-btn" onclick="cyToggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -166,6 +210,10 @@
 
   var atual = window.location.pathname.split('/').pop() || 'index.html'
   sidemenu.querySelectorAll('a').forEach(function(link) {
+    var href = link.getAttribute('href').replace('/', '')
+    if (href === atual) link.classList.add('ativo')
+  })
+  document.querySelectorAll('#cy-nav-links a').forEach(function(link) {
     var href = link.getAttribute('href').replace('/', '')
     if (href === atual) link.classList.add('ativo')
   })
