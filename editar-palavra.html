@@ -149,9 +149,9 @@ async function init() {
 
   if (palavraId) {
     await carregarPalavra()
-    // se a palavra não tem autor, atribui o admin atual
-    const { data: pw } = await sb.from('palavras').select('usuario_id').eq('id', palavraId).single()
-    if (pw && !pw.usuario_id) {
+    // só atribui o admin como autor se não tiver nem usuario_id nem enviado_por (visitante)
+    const { data: pw } = await sb.from('palavras').select('usuario_id, enviado_por').eq('id', palavraId).single()
+    if (pw && !pw.usuario_id && !pw.enviado_por) {
       await sb.from('palavras').update({ usuario_id: session.user.id }).eq('id', palavraId)
     }
   } else {
