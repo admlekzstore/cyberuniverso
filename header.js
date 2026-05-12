@@ -45,8 +45,8 @@
       opacity: 0.85;
     }
     #cy-menu-btn {
-      background: rgba(255,255,255,0.08);
-      border: 1.5px solid rgba(255,255,255,0.2);
+      background: rgba(0,234,255,0.05);
+      border: 1.5px solid rgba(0,234,255,0.4);
       border-radius: 10px;
       width: 44px; height: 44px;
       display: flex;
@@ -58,13 +58,19 @@
       transition: all 0.2s;
       padding: 0;
       flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(0,234,255,0.2), inset 0 0 8px rgba(0,234,255,0.05);
     }
-    #cy-menu-btn:hover { border-color: #00eaff; background: rgba(0,234,255,0.1); }
+    #cy-menu-btn:hover {
+      border-color: #00eaff;
+      background: rgba(0,234,255,0.1);
+      box-shadow: 0 0 14px rgba(0,234,255,0.4), inset 0 0 10px rgba(0,234,255,0.08);
+    }
     #cy-menu-btn span {
       display: block;
       width: 20px; height: 2px;
-      background: #d0e4ff;
+      background: #00eaff;
       border-radius: 2px;
+      box-shadow: 0 0 6px rgba(0,234,255,0.8);
     }
     #cy-overlay {
       display: none;
@@ -114,20 +120,20 @@
       border-radius: 12px;
       transition: all 0.2s;
       border: 1px solid transparent;
-      text-shadow: 0 0 8px #00eaff, 0 0 16px rgba(0,234,255,0.4);
+      text-shadow: 0 0 6px rgba(0,234,255,0.5);
     }
     #cy-sidemenu a:hover {
       background: rgba(0,234,255,0.08);
-      border-color: rgba(0,234,255,0.3);
+      border-color: rgba(0,234,255,0.25);
       color: #fff;
-      text-shadow: 0 0 10px #00eaff, 0 0 24px #00eaff, 0 0 40px rgba(0,234,255,0.6);
+      text-shadow: 0 0 8px rgba(0,234,255,0.7);
       padding-left: 20px;
     }
     #cy-sidemenu a.ativo {
-      background: rgba(245,232,0,0.07);
-      border-color: rgba(245,232,0,0.25);
+      background: rgba(245,232,0,0.06);
+      border-color: rgba(245,232,0,0.2);
       color: #f5e800;
-      text-shadow: 0 0 10px #f5e800, 0 0 24px rgba(245,232,0,0.5);
+      text-shadow: 0 0 6px rgba(245,232,0,0.5);
     }
     #cy-nav-links {
       display: flex;
@@ -178,8 +184,8 @@
       <a href="/todas.html">Todas</a>
       <a href="/categorias.html">Categorias</a>
       <a href="/enviar.html">Enviar</a>
-      <a href="/rimas.html">Rimas</a>
-      <a href="/tarot.html">Tarot</a>
+      <a href="/em-construcao.html">Rimas</a>
+      <a href="/em-construcao.html">Tarot</a>
       <a href="/cadastro.html">Entrar</a>
     </div>
     <button id="cy-menu-btn" onclick="cyToggleMenu()" aria-label="Menu">
@@ -198,8 +204,8 @@
     <a href="/index.html">🏠 Início</a>
     <a href="/todas.html">📖 Todas as Palavras</a>
     <a href="/categorias.html">🗂️ Categorias</a>
-    <a href="/rimas.html">🎵 Rimas</a>
-    <a href="/tarot.html">🃏 Tarot de Gírias</a>
+    <a href="/em-construcao.html">🎵 Rimas</a>
+    <a href="/em-construcao.html">🃏 Tarot de Gírias</a>
     <a href="/enviar.html">➕ Enviar Palavra</a>
     <a href="/cadastro.html">👤 Entrar / Cadastrar</a>
   `
