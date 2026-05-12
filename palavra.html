@@ -634,7 +634,7 @@ async function carregarSidebar() {
       return '<a href="palavra.html?w=' + p.slug + '" class="top-item"><span class="top-rank ' + cls + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span></a>'
     }).join('')
   }
-  var rec = await sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(5)
+  var rec = await sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
   var sr = document.getElementById('sidebarRecentes')
   if (rec.data && sr) {
     sr.innerHTML = '<div class="sidebar-title">🆕 Últimas Adicionadas</div>' + rec.data.map(function(p) {
