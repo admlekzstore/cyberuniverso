@@ -168,7 +168,7 @@
     }
 
     renderizar(filtrado)
-    renderAlfa()
+    renderAlfa(letraURL ? letraURL.toUpperCase() : null)
 
     // scroll para a letra se veio da URL
     if (letraURL) {
@@ -233,23 +233,35 @@
       : [...todasPalavras]
     renderizar(filtrado)
     renderAlfa()
-  }
+  }  
 
   // ── ALFABETO ──
-  function renderAlfa() {
+  function renderAlfa(letraAtiva) {
     const grid = document.getElementById('alfaGrid')
-    const letrasComPalavras = new Set(filtrado.map(p => p.palavra[0].toUpperCase()))
+    // sempre usa todasPalavras pra saber quais letras existem no banco
+    const letrasComPalavras = new Set(todasPalavras.map(p => p.palavra[0].toUpperCase()))
     const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-    grid.innerHTML = todasLetras.map(l => `
-      <a href="#grupo-${l}" class="alfa-btn ${letrasComPalavras.has(l) ? '' : 'vazio'}"
-         onclick="irPara('${l}', event)">${l}</a>
-    `).join('')
+    grid.innerHTML = todasLetras.map(l => {
+      const temPalavra = letrasComPalavras.has(l)
+      const ativo = letraAtiva && letraAtiva === l ? ' ativo' : ''
+      return `<a href="#grupo-${l}" class="alfa-btn${ativo}${temPalavra ? '' : ' vazio'}"
+        onclick="irPara('${l}', event)">${l}</a>`
+    }).join('')
   }
 
   function irPara(letra, e) {
     e.preventDefault()
-    const el = document.getElementById('grupo-' + letra)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // se estiver filtrado por letra, mostra todas e vai pra letra
+    const q = document.getElementById('buscaInput').value.trim()
+    if (!q) {
+      filtrado = [...todasPalavras]
+      renderizar(filtrado)
+      renderAlfa()
+    }
+    setTimeout(() => {
+      const el = document.getElementById('grupo-' + letra)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
   }
 
   // ── INIT ──
