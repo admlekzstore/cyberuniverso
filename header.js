@@ -2,17 +2,16 @@
 // Adicione em cada página: <script src="./header.js"></script>
 // (antes do </body>)
 
-// Google Analytics
-var _gaScript = document.createElement('script')
-_gaScript.async = true
-_gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-4TCG0DDRCZ'
-document.head.appendChild(_gaScript)
-window.dataLayer = window.dataLayer || []
-window.gtag = function(){window.dataLayer.push(arguments)}
-window.gtag('js', new Date())
-window.gtag('config', 'G-4TCG0DDRCZ')
-
 (function() {
+  // Google Analytics
+  var gaScript = document.createElement('script')
+  gaScript.async = true
+  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-4TCG0DDRCZ'
+  document.head.appendChild(gaScript)
+  window.dataLayer = window.dataLayer || []
+  window.gtag = function(){window.dataLayer.push(arguments)}
+  window.gtag('js', new Date())
+  window.gtag('config', 'G-4TCG0DDRCZ')
   var style = document.createElement('style')
   style.textContent = `
     #cy-nav {
