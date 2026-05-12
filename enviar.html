@@ -492,15 +492,19 @@ async function enviarPalavra() {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
     + '-' + Date.now() // sufixo para evitar conflito de slug
 
-  const apelido = document.getElementById('f-apelido').value.trim() || 'Visitante'
+  const apelidoDigitado = document.getElementById('f-apelido').value.trim()
   const catPrincipal = categoriasSelecionadas.length > 0 ? categoriasSelecionadas[0].categoria_id : null
+
+  // se estiver logado, usa usuario_id e ignora o apelido "Visitante"
+  const { data: { session: sessaoEnvio } } = await sb.auth.getSession()
+  const apelido = apelidoDigitado || (sessaoEnvio ? null : 'Visitante')
 
   const dadosPalavra = {
     termo,
     slug,
     status: 'pendente',
-    usuario_id: null,
-    enviado_por: apelido,
+    usuario_id: sessaoEnvio ? sessaoEnvio.user.id : null,
+    enviado_por: sessaoEnvio ? null : apelido,
     categoria_id: catPrincipal || null,
     nivel_uso: document.getElementById('f-nivel').value || null,
     contexto: document.getElementById('f-contexto').value || null,
@@ -594,6 +598,5 @@ async function initComParams() {
 
 initComParams()
 </script>
-<script src="./header.js"></script>
 </body>
 </html>
