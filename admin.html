@@ -584,7 +584,12 @@ async function salvarPalavra() {
   if (id) {
     ({ error } = await sb.from('palavras').update({ termo, slug, status }).eq('id', id))
   } else {
-    ({ error } = await sb.from('palavras').insert({ termo, slug, status }))
+    const { data: { session: s } } = await sb.auth.getSession()
+    ({ error } = await sb.from('palavras').insert({
+      termo, slug, status,
+      usuario_id: s ? s.user.id : null,
+      enviado_por: s ? null : 'Visitante'
+    }))
   }
   btn.disabled = false; btn.textContent = 'SALVAR ✓'
   if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
