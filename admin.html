@@ -418,12 +418,20 @@ async function carregarStats() {
 // ── PENDENTES ──
 async function carregarPendentes() {
   const { data } = await sb.from('palavras')
-    .select('id, termo, slug, criado_em, usuario_id, enviado_por, perfis(username, nome, exibir_como)')
+    .select('id, termo, slug, criado_em, usuario_id, enviado_por')
     .eq('status', 'pendente')
     .order('criado_em', { ascending: false })
 
+  // buscar perfis separadamente
+  const uids = [...new Set((data || []).map(p => p.usuario_id).filter(Boolean))]
+  const pm = {}
+  if (uids.length) {
+    const { data: perfis } = await sb.from('perfis').select('id, username, nome, exibir_como').in('id', uids)
+    ;(perfis || []).forEach(p => { pm[p.id] = p })
+  }
   const nomeAutor = (p) => {
-    if (p.perfis) return p.perfis.exibir_como === 'nome' && p.perfis.nome ? p.perfis.nome : '@' + (p.perfis.username || 'usuário')
+    const perf = pm[p.usuario_id]
+    if (perf) return perf.exibir_como === 'nome' && perf.nome ? perf.nome : '@' + (perf.username || 'usuário')
     return p.enviado_por || 'Visitante'
   }
 
@@ -465,11 +473,18 @@ async function carregarPendentes() {
 // ── TODAS AS PALAVRAS ──
 async function carregarPalavras() {
   const { data } = await sb.from('palavras')
-    .select('id, termo, slug, status, criado_em, usuario_id, enviado_por, perfis(username, nome, exibir_como)')
+    .select('id, termo, slug, status, criado_em, usuario_id, enviado_por')
     .order('criado_em', { ascending: false })
 
+  const uidsP = [...new Set((data || []).map(p => p.usuario_id).filter(Boolean))]
+  const pmP = {}
+  if (uidsP.length) {
+    const { data: perfisP } = await sb.from('perfis').select('id, username, nome, exibir_como').in('id', uidsP)
+    ;(perfisP || []).forEach(p => { pmP[p.id] = p })
+  }
   const nomeAutorP = (p) => {
-    if (p.perfis) return p.perfis.exibir_como === 'nome' && p.perfis.nome ? p.perfis.nome : '@' + (p.perfis.username || 'usuário')
+    const perf = pmP[p.usuario_id]
+    if (perf) return perf.exibir_como === 'nome' && perf.nome ? perf.nome : '@' + (perf.username || 'usuário')
     return p.enviado_por || 'Visitante'
   }
 
