@@ -160,7 +160,13 @@
       document.getElementById('buscaInput').value = buscaURL
       filtrado = todasPalavras.filter(p => p.palavra.toLowerCase().includes(buscaURL.toLowerCase()))
     } else if (letraURL) {
-      filtrado = todasPalavras.filter(p => p.palavra[0].toUpperCase() === letraURL.toUpperCase())
+      if (letraURL === '0-9') {
+        filtrado = todasPalavras.filter(p => /[0-9]/.test(p.palavra[0]))
+      } else if (letraURL === '#') {
+        filtrado = todasPalavras.filter(p => /[^a-zA-ZÀ-ÿ0-9]/.test(p.palavra[0]))
+      } else {
+        filtrado = todasPalavras.filter(p => p.palavra[0].toUpperCase() === letraURL.toUpperCase())
+      }
     }
 
     renderizar(filtrado)
@@ -189,7 +195,7 @@
     sem.classList.remove('visivel')
 
     const grupos = agruparPorLetra(lista)
-    const letras = Object.keys(grupos).sort()
+    const letras = Object.keys(grupos).sort((a, b) => chaveOrdem(a).localeCompare(chaveOrdem(b)))
 
     listagem.innerHTML = letras.map((l, i) => `
       <div class="letra-grupo" style="animation-delay:${i * 0.04}s" id="grupo-${l}">
@@ -214,11 +220,21 @@
   function agruparPorLetra(lista) {
     const grupos = {}
     lista.forEach(p => {
-      const l = p.palavra[0].toUpperCase()
+      const c = p.palavra[0]
+      let l
+      if (/[0-9]/.test(c)) l = '0-9'
+      else if (/[^a-zA-ZÀ-ÿ]/.test(c)) l = '#'
+      else l = c.toUpperCase()
       if (!grupos[l]) grupos[l] = []
       grupos[l].push(p)
     })
     return grupos
+  }
+
+  function chaveOrdem(l) {
+    if (l === '0-9') return '0'
+    if (l === '#') return '1'
+    return '2' + l
   }
 
   // ── FILTRAR ──
@@ -232,22 +248,28 @@
   }  
 
   // ── ALFABETO ──
+  function getGrupo(p) {
+    const c = p.palavra[0]
+    if (/[0-9]/.test(c)) return '0-9'
+    if (/[^a-zA-ZÀ-ÿ]/.test(c)) return '#'
+    return c.toUpperCase()
+  }
+
   function renderAlfa(letraAtiva) {
     const grid = document.getElementById('alfaGrid')
-    // sempre usa todasPalavras pra saber quais letras existem no banco
-    const letrasComPalavras = new Set(todasPalavras.map(p => p.palavra[0].toUpperCase()))
-    const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+    const letrasComPalavras = new Set(todasPalavras.map(p => getGrupo(p)))
+    const todasLetras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat(['0-9', '#'])
     grid.innerHTML = todasLetras.map(l => {
       const temPalavra = letrasComPalavras.has(l)
       const ativo = letraAtiva && letraAtiva === l ? ' ativo' : ''
+      const label = l === '0-9' ? '0-9' : l === '#' ? '#' : l
       return `<a href="#grupo-${l}" class="alfa-btn${ativo}${temPalavra ? '' : ' vazio'}"
-        onclick="irPara('${l}', event)">${l}</a>`
+        onclick="irPara('${l}', event)">${label}</a>`
     }).join('')
   }
 
-  function irPara(letra, e) {
+  function irPara(grupo, e) {
     e.preventDefault()
-    // se estiver filtrado por letra, mostra todas e vai pra letra
     const q = document.getElementById('buscaInput').value.trim()
     if (!q) {
       filtrado = [...todasPalavras]
@@ -255,7 +277,7 @@
       renderAlfa()
     }
     setTimeout(() => {
-      const el = document.getElementById('grupo-' + letra)
+      const el = document.getElementById('grupo-' + grupo)
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 50)
   }

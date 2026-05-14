@@ -588,7 +588,7 @@
   })
 
   // alfabeto
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat(['0-9', '#'])
   const grid = document.getElementById('alphabetGrid')
   letters.forEach(l => {
     const a = document.createElement('a')
