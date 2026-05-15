@@ -8,6 +8,13 @@
   gaScript.async = true
   gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-4TCG0DDRCZ'
   document.head.appendChild(gaScript)
+  // Favicon
+  var favicon = document.createElement('link')
+  favicon.rel = 'icon'
+  favicon.type = 'image/png'
+  favicon.href = '/favicon.png'
+  document.head.appendChild(favicon)
+
   window.dataLayer = window.dataLayer || []
   window.gtag = function(){window.dataLayer.push(arguments)}
   window.gtag('js', new Date())
