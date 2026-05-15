@@ -28,7 +28,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 24px;
+      padding: 4px 24px;
+      height: 56px;
       background: #05080f;
       border-bottom: 1px solid #1a3a6e;
     }
@@ -40,12 +41,12 @@
       display: flex;
       align-items: center;
       text-decoration: none;
+      height: 100%;
     }
     #cy-nav .cy-logo img {
-      height: 120px;
+      height: 44px;
       width: auto;
       object-fit: contain;
-      margin: -20px 0;
       transition: opacity 0.3s;
     }
     #cy-nav .cy-logo img:hover {
