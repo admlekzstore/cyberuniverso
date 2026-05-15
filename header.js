@@ -28,7 +28,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 16px 6px 8px;
+      padding: 0px 16px 0px 0px;
       height: 80px;
       background: #05080f;
       border-bottom: 1px solid #1a3a6e;
@@ -39,7 +39,7 @@
     }
     #cy-nav .cy-logo {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       text-decoration: none;
     }
     #cy-nav .cy-logo img {
@@ -47,6 +47,7 @@
       width: auto;
       object-fit: contain;
       transition: opacity 0.3s;
+      margin-bottom: -16px;
     }
     #cy-nav .cy-logo img:hover {
       opacity: 0.85;
