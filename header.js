@@ -29,7 +29,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 6px 24px;
-      height: 72px;
+      height: 90px;
       background: #05080f;
       border-bottom: 1px solid #1a3a6e;
     }
@@ -43,7 +43,7 @@
       text-decoration: none;
     }
     #cy-nav .cy-logo img {
-      height: 60px;
+      height: 78px;
       width: auto;
       object-fit: contain;
       transition: opacity 0.3s;
