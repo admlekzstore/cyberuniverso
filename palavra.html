@@ -196,8 +196,11 @@ async function carregarPalavra() {
   if (error || !p) { mostrarNotFound('A palavra "' + slug + '" não foi encontrada.'); return }
 
   palavraId = p.id
-  // Título do Google (diferente do visual da página)
-  document.getElementById('pageTitle').textContent = 'O que é ' + p.termo + '? - Significado e origem da gíria | CyberUniverso'
+  // Título do Google — usa personalizado se existir
+  var tituloSEO = p.seo_titulo
+    ? p.seo_titulo + ' | CyberUniverso'
+    : 'O que é ' + p.termo + '? - Significado e origem da gíria | CyberUniverso'
+  document.getElementById('pageTitle').textContent = tituloSEO
 
   // Meta description
   var primeiroSig = ''
@@ -212,7 +215,7 @@ async function carregarPalavra() {
 
   // OG title
   var ogTitle = document.getElementById('ogTitle')
-  if (ogTitle) ogTitle.setAttribute('content', 'O que é ' + p.termo + '? Significado e origem da gíria')
+  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || ('O que é ' + p.termo + '? Significado e origem da gíria'))
 
   // buscar dados relacionados separadamente
   const [
@@ -255,9 +258,11 @@ async function carregarPalavra() {
     sigTexto = raw.includes('[extras]') ? raw.split('[extras]')[0].trim() : raw.trim()
     sigTexto = sigTexto.replace(/\n/g, ' ').substring(0, 155)
   }
-  var descSEO = sigTexto
-    ? 'O que significa ' + p.termo + '? ' + sigTexto + '. Veja exemplos, sinônimos e muito mais no CyberUniverso.'
-    : 'Veja o significado de ' + p.termo + ', com exemplos de uso, sinônimos e origem, no CyberUniverso — dicionário de gírias do português brasileiro.'
+  var descSEO = p.seo_descricao
+    ? p.seo_descricao
+    : sigTexto
+      ? 'O que significa ' + p.termo + '? ' + sigTexto + '. Veja exemplos, sinônimos e muito mais no CyberUniverso.'
+      : 'Veja o significado de ' + p.termo + ', com exemplos de uso, sinônimos e origem, no CyberUniverso — dicionário de gírias do português brasileiro.'
 
   var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
 

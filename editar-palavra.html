@@ -420,6 +420,22 @@ function renderFormulario(p, sigs) {
       <button class="btn-adicionar-item" onclick="adicionarRelacionada()">➕ Adicionar relacionada</button>
     </div>
 
+    <!-- SEO PERSONALIZADO -->
+    <div class="secao-card">
+      <div class="secao-titulo">🔍 SEO Personalizado</div>
+      <p style="font-size:13px;color:#4a6fa5;margin-bottom:16px;">Personalize como essa palavra aparece no Google. Se deixar vazio, usa o padrão automático.</p>
+      <div class="campo" style="margin-bottom:14px;">
+        <label>Título no Google <span style="color:#2a4a7a;font-size:11px;">(máx. 60 caracteres)</span></label>
+        <input type="text" id="f-seo-titulo" placeholder='ex: Rolê: A origem maluca dessa gíria brasileira' maxlength="60" value="${p?.seo_titulo || ''}">
+        <div style="font-size:11px;color:#2a4a7a;margin-top:4px;">Padrão: "O que é ${p?.termo || 'Palavra'}? - Significado e origem da gíria | CyberUniverso"</div>
+      </div>
+      <div class="campo">
+        <label>Descrição no Google <span style="color:#2a4a7a;font-size:11px;">(máx. 155 caracteres)</span></label>
+        <textarea id="f-seo-descricao" placeholder="ex: Descubra a origem surpreendente de Rolê e como essa gíria conquistou o Brasil..." maxlength="155" rows="3" style="width:100%;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;">${p?.seo_descricao || ''}</textarea>
+        <div style="font-size:11px;color:#2a4a7a;margin-top:4px;">Padrão: gerado automaticamente com o primeiro significado da palavra.</div>
+      </div>
+    </div>
+
     <button class="btn-salvar-top" style="width:100%;padding:16px;font-size:22px;border-radius:12px;" onclick="salvarTudo()">💾 SALVAR TUDO</button>
   `
 
@@ -634,6 +650,8 @@ async function salvarTudo() {
     termo, slug,
     pronuncia: document.getElementById('f-pronuncia').value.trim() || null,
     imagem_url: document.getElementById('f-imagem').value.trim() || null,
+    seo_titulo: document.getElementById('f-seo-titulo').value.trim() || null,
+    seo_descricao: document.getElementById('f-seo-descricao').value.trim() || null,
     status: statusAtual,
     categoria_id: catPrincipal,
     nivel_uso: document.getElementById('f-nivel').value || null,
