@@ -79,7 +79,7 @@
 
   <div class="info-box">
     <strong>O que entra no sitemap?</strong>
-    Todas as palavras com status <strong>aprovada</strong>, mais as páginas fixas do site (início, todas, categorias, etc).
+    Todas as palavras com status <strong>aprovada</strong>, mais as páginas fixas do site. O <strong>Top 10</strong> mais visualizados recebe prioridade <strong>0.9</strong>, as demais <strong>0.8</strong>.
   </div>
 
   <div class="stats">
@@ -147,6 +147,18 @@ async function gerarSitemap() {
     from += pageSize
   }
 
+  prog.textContent = `✅ ${todas.length} palavras encontradas! Buscando top 10...`
+
+  // Buscar top 10 por visualizações
+  const topSlugs = new Set()
+  const { data: topData } = await sb
+    .from('palavras')
+    .select('slug')
+    .eq('status', 'aprovada')
+    .order('visualizacoes', { ascending: false })
+    .limit(10)
+  if (topData) topData.forEach(p => topSlugs.add(p.slug))
+
   prog.textContent = `✅ ${todas.length} palavras encontradas! Gerando XML...`
 
   const hoje = new Date().toISOString().split('T')[0]
@@ -168,15 +180,16 @@ async function gerarSitemap() {
 
   xml += `\n  <!-- ═══ PALAVRAS (${todas.length}) ═══ -->\n`
 
-  // Palavras
+  // Palavras — top 10 recebe 0.9, demais 0.8
   todas.forEach(p => {
     const data = p.criado_em || hoje
     const dataFmt = data.split('T')[0]
+    const priority = topSlugs.has(p.slug) ? '0.9' : '0.8'
     xml += `  <url>\n`
     xml += `    <loc>${BASE_URL}/palavra.html?w=${encodeURIComponent(p.slug)}</loc>\n`
     xml += `    <lastmod>${dataFmt}</lastmod>\n`
-    xml += `    <changefreq>monthly</changefreq>\n`
-    xml += `    <priority>0.7</priority>\n`
+    xml += `    <changefreq>weekly</changefreq>\n`
+    xml += `    <priority>${priority}</priority>\n`
     xml += `  </url>\n`
   })
 
