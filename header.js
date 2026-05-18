@@ -8,11 +8,22 @@
   gaScript.async = true
   gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-4TCG0DDRCZ'
   document.head.appendChild(gaScript)
+  // Preconnect para fontes — reduz bloqueio de renderização
+  var precon1 = document.createElement('link')
+  precon1.rel = 'preconnect'
+  precon1.href = 'https://fonts.googleapis.com'
+  document.head.insertBefore(precon1, document.head.firstChild)
+  var precon2 = document.createElement('link')
+  precon2.rel = 'preconnect'
+  precon2.href = 'https://fonts.gstatic.com'
+  precon2.crossOrigin = 'anonymous'
+  document.head.insertBefore(precon2, document.head.firstChild)
+
   // Favicon
   var favicon = document.createElement('link')
   favicon.rel = 'icon'
-  favicon.type = 'image/webp'
-  favicon.href = '/favicon.webp'
+  favicon.type = 'image/png'
+  favicon.href = '/favicon.png'
   document.head.appendChild(favicon)
 
   window.dataLayer = window.dataLayer || []
@@ -185,7 +196,7 @@
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.webp" alt="CyberUniverso" width="165" height="110">
+      <img src="/logo.png" alt="CyberUniverso">
     </a>
     <div id="cy-nav-links">
       <a href="/index.html">Início</a>
