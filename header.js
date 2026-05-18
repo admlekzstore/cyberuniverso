@@ -11,8 +11,8 @@
   // Favicon
   var favicon = document.createElement('link')
   favicon.rel = 'icon'
-  favicon.type = 'image/png'
-  favicon.href = '/favicon.png'
+  favicon.type = 'image/webp'
+  favicon.href = '/favicon.webp'
   document.head.appendChild(favicon)
 
   window.dataLayer = window.dataLayer || []
@@ -185,7 +185,7 @@
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.png" alt="CyberUniverso">
+      <img src="/logo.webp" alt="CyberUniverso" width="165" height="110">
     </a>
     <div id="cy-nav-links">
       <a href="/index.html">Início</a>
