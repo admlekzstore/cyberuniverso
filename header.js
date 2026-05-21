@@ -49,9 +49,7 @@
       transition: opacity 0.3s;
       margin-bottom: -16px;
       background: transparent;
-      mix-blend-mode: screen;
       transform: translateZ(0);
-      will-change: transform;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
@@ -191,7 +189,7 @@
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.webp" alt="CyberUniverso" width="165" height="110">
+      <img src="/logo.png" alt="CyberUniverso" width="165" height="110">
     </a>
     <div id="cy-nav-links">
       <a href="/index.html">Início</a>
