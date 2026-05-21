@@ -43,11 +43,10 @@
       text-decoration: none;
     }
     #cy-nav .cy-logo img {
-      height: 110px;
+      height: 70px;
       width: auto;
       object-fit: contain;
       transition: opacity 0.3s;
-      margin-bottom: -16px;
       background: transparent;
       transform: translateZ(0);
       -webkit-backface-visibility: hidden;
@@ -189,7 +188,7 @@
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.png" alt="CyberUniverso" width="165" height="110">
+      <img src="/logo.png" alt="CyberUniverso" width="200" height="70">
     </a>
     <div id="cy-nav-links">
       <a href="/index.html">Início</a>
