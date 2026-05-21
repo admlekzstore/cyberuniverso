@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05080f">
 <title id="pageTitle">CyberUniverso</title>
 <meta name="description" id="metaDesc" content="Dicionário de gírias e expressões do português brasileiro.">
 <meta property="og:title" id="ogTitle" content="CyberUniverso">
@@ -16,7 +17,13 @@
 <meta name="robots" content="index, follow">
 <meta name="language" content="pt-BR">
 <link rel="canonical" id="canonicalUrl" href="">
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fdqjnqlbjjpeyzzckjux.supabase.co">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   :root{--azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;}
@@ -140,11 +147,12 @@
   .not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:#ff5050;letter-spacing:2px;margin-bottom:8px;}
   .not-found-sub{color:#4a6fa5;font-size:15px;}
   @media(max-width:768px){.page-wrap{grid-template-columns:1fr;}.sidebar{position:static;}.nav-links{display:none;}.menu-btn{display:flex;}}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
 <div class="page-wrap">
-  <main id="mainCol"><p style="color:#4a6fa5;padding:40px;text-align:center;">Carregando...</p></main>
+  <main id="mainCol"><div style="padding:40px 0;animation:fadeUp 0.5s ease"><div style="height:80px;background:linear-gradient(90deg,#0a1628 25%,#0d1f3c 50%,#0a1628 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px;margin-bottom:16px"></div><div style="height:40px;background:linear-gradient(90deg,#0a1628 25%,#0d1f3c 50%,#0a1628 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;margin-bottom:12px;width:60%"></div><div style="height:20px;background:linear-gradient(90deg,#0a1628 25%,#0d1f3c 50%,#0a1628 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;width:80%"></div></div></main>
   <aside class="sidebar">
     <div class="sidebar-card">
       <div class="sidebar-title">🔍 Buscar</div>
@@ -157,8 +165,8 @@
     <div class="sidebar-card" id="sidebarRecentes"><div class="sidebar-title">🆕 Últimas Adicionadas</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
   </aside>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="./supabase.js" defer></script>
 <script>
 const sb = window._supabase
 const params = new URLSearchParams(window.location.search)
@@ -436,7 +444,7 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     (p.contexto ? '<div class="badge badge-contexto">🌐 ' + p.contexto + '</div>' : '') +
     (p.epoca ? '<div class="badge badge-epoca">📅 ' + p.epoca + '</div>' : '') +
     '</div>' +
-    (p.imagem_url ? '<div class="palavra-imagem"><img src="' + p.imagem_url + '" alt="' + p.termo + '"></div>' : '') +
+    (p.imagem_url ? '<div class="palavra-imagem"><img src="' + p.imagem_url + '" alt="' + p.termo + '" loading="lazy" decoding="async" width="800" height="320"></div>' : '') +
     (significados.length ? renderSignificados(significados, p.termo) : '') +
     (exemplos.length ? renderExemplos(exemplos) : '') +
     (sinonimos.length ? renderSinonimos(sinonimos) : '') +
@@ -676,7 +684,7 @@ function formatarData(str) {
 function copiarLink() { navigator.clipboard.writeText(window.location.href).then(function() { alert('Link copiado! 🔗') }) }
 function buscarSidebar() { var val = document.getElementById('sidebarBusca').value.trim(); if (val) window.location.href = 'todas.html?busca=' + encodeURIComponent(val) }
 
-init()
+document.addEventListener("DOMContentLoaded", function() { init() })
 </script>
 <script src="./header.js"></script>
 </body>
