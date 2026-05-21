@@ -48,6 +48,12 @@
       object-fit: contain;
       transition: opacity 0.3s;
       margin-bottom: -16px;
+      background: transparent;
+      mix-blend-mode: screen;
+      transform: translateZ(0);
+      will-change: transform;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
     #cy-nav .cy-logo img:hover {
       opacity: 0.85;
