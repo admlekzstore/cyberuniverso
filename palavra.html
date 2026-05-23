@@ -49,7 +49,7 @@
   @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
   .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;}
   .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
-  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:nowrap;}
   .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;}
   .meta-text{font-size:13px;color:#4a6fa5;}
   .meta-text strong{color:var(--ciano);font-weight:800;}
@@ -424,12 +424,9 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
       } else if (p.enviado_por && p.enviado_por !== 'Visitante') {
         nomeAutor = p.enviado_por
       }
-      var avatarEmoji = autorPerfil?.emoji || autorPerfil?.avatar_galeria || null
-      var avatarHtml = autorPerfil?.avatar_url
-        ? '<img src="' + autorPerfil.avatar_url + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="' + nomeAutor + '">'
-        : avatarEmoji
-          ? '<div class="avatar" style="font-size:18px;flex-shrink:0;">' + avatarEmoji + '</div>'
-          : '<div class="avatar" style="flex-shrink:0;">' + nomeAutor[0].toUpperCase() + '</div>'
+      var avatarHtml = autorPerfil?.emoji
+        ? '<div class="avatar" style="font-size:18px;">' + autorPerfil.emoji + '</div>'
+        : '<div class="avatar">' + nomeAutor[0].toUpperCase() + '</div>'
       var autorHtml = linkAutor
         ? '<a href="' + linkAutor + '" style="color:var(--ciano);font-weight:800;text-decoration:none;">' + nomeAutor + '</a>'
         : '<strong>' + nomeAutor + '</strong>'
