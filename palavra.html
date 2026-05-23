@@ -398,7 +398,7 @@ async function navegarPalavra(termo) {
   if (data) {
     window.location.href = 'palavra.html?w=' + data.slug
   } else {
-    window.location.href = 'index.html?q=' + encodeURIComponent(termo)
+    window.location.href = 'todas.html?busca=' + encodeURIComponent(termo)
   }
 }
 
