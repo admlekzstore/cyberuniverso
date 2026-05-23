@@ -401,6 +401,13 @@ async function navegarPalavra(termo) {
     window.location.href = 'index.html?q=' + encodeURIComponent(termo)
   }
 }
+
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-navegar]')
+  if (!el) return
+  e.preventDefault()
+  navegarPalavra(el.getAttribute('data-navegar'))
+})
 function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil, opostos, masculinos, femininos, plurais) {
   const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   const main = document.getElementById('mainCol')
@@ -495,7 +502,7 @@ function renderSinonimos(sinonimos) {
   var html = '<div class="card"><div class="card-title">🔄 Sinônimos</div><div class="tags-list">'
   sinonimos.forEach(function(s) {
     var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-    html += '<a href="#" onclick="event.preventDefault();navegarPalavra(' + JSON.stringify(s.sinonimo) + ')" class="tag">' + s.sinonimo + '</a>'
+    html += '<a href="javascript:void(0)" data-navegar="' + s.sinonimo.replace(/"/g, '&quot;') + '" class="tag">' + s.sinonimo + '</a>'
   })
   html += '</div></div>'
   return html
@@ -505,7 +512,7 @@ function renderRelacionadas(relacionadas) {
   var html = '<div class="card"><div class="card-title">🔀 Palavras Relacionadas</div><div class="tags-list">'
   relacionadas.forEach(function(r) {
     var sl = r.relacionada.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-    html += '<a href="#" onclick="event.preventDefault();navegarPalavra(' + JSON.stringify(r.relacionada) + ')" class="tag">' + r.relacionada + '</a>'
+    html += '<a href="javascript:void(0)" data-navegar="' + r.relacionada.replace(/"/g, '&quot;') + '" class="tag">' + r.relacionada + '</a>'
   })
   html += '</div></div>'
   return html
