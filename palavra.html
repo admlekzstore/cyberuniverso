@@ -424,9 +424,12 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
       } else if (p.enviado_por && p.enviado_por !== 'Visitante') {
         nomeAutor = p.enviado_por
       }
-      var avatarHtml = autorPerfil?.emoji
-        ? '<div class="avatar" style="font-size:18px;">' + autorPerfil.emoji + '</div>'
-        : '<div class="avatar">' + nomeAutor[0].toUpperCase() + '</div>'
+      var avatarSrc = autorPerfil?.avatar_url || autorPerfil?.avatar_galeria || null
+      var avatarHtml = avatarSrc
+        ? '<img src="' + avatarSrc + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="' + nomeAutor + '">'
+        : autorPerfil?.emoji
+          ? '<div class="avatar" style="font-size:18px;flex-shrink:0;">' + autorPerfil.emoji + '</div>'
+          : '<div class="avatar" style="flex-shrink:0;">' + nomeAutor[0].toUpperCase() + '</div>'
       var autorHtml = linkAutor
         ? '<a href="' + linkAutor + '" style="color:var(--ciano);font-weight:800;text-decoration:none;">' + nomeAutor + '</a>'
         : '<strong>' + nomeAutor + '</strong>'
