@@ -188,7 +188,7 @@
   nav.id = 'cy-nav'
   nav.innerHTML = `
     <a href="/index.html" class="cy-logo">
-      <img src="/logo.png" alt="CyberUniverso" width="200" height="70">
+      <img src="/logo.webp" alt="CyberUniverso" width="200" height="70">
     </a>
     <div id="cy-nav-links">
       <a href="/index.html">Início</a>
