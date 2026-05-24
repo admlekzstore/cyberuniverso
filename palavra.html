@@ -451,7 +451,6 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
       html += '</div>'
       return html
     })() +
-    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="tag.html?t=' + encodeURIComponent(t) + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
     '<div class="badges">' +
     (p.nivel_uso ? '<div class="badge badge-nivel">⚡ ' + p.nivel_uso + '</div>' : '') +
     (p.regiao ? '<div class="badge badge-regiao">📍 ' + p.regiao + '</div>' : '') +
@@ -467,6 +466,7 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     (plurais && plurais.length ? renderPlurais(plurais) : '') +
     (relacionadas && relacionadas.length ? renderRelacionadas(relacionadas) : '') +
     renderReacoes(reacoes) +
+    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="tag.html?t=' + encodeURIComponent(t) + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
     '<div class="card" id="navAlfaCard"><div class="card-title">🔤 Navegação alfabética</div><div class="alfa-nav" id="navAlfa"><span style="color:#4a6fa5">Carregando...</span></div></div>' +
     renderCompartilhar(p.termo) +
     '<div class="card"><div class="card-title">💬 Comentários <span id="comentariosCount" style="font-size:14px;color:#4a6fa5;font-family:Nunito,sans-serif;font-weight:700;"></span></div><div id="comentariosLista"></div><div class="comment-form"><textarea id="comentarioTexto" placeholder="Deixe seu comentário..."></textarea><button class="btn-comentar" onclick="enviarComentario()">COMENTAR</button></div></div>'
