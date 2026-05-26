@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre Nós — CyberUniverso</title>
+<meta name="description" content="Conheça o CyberUniverso, o dicionário colaborativo de gírias e expressões do português brasileiro que evolui junto com a comunicação.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+  .page-wrap{max-width:780px;margin:0 auto;padding:100px 20px 60px;}
+
+  .page-hero{text-align:center;padding:40px 0 48px;position:relative;}
+  .page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--azul),transparent);}
+  .page-titulo{font-family:'Bangers',cursive;font-size:clamp(42px,10vw,72px);letter-spacing:4px;color:var(--amarelo);text-shadow:3px 3px 0 var(--azul),6px 6px 0 var(--azul-escuro);-webkit-text-stroke:1.5px var(--azul);animation:titlePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;}
+  @keyframes titlePop{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .page-sub{font-size:16px;color:#4a6fa5;margin-top:12px;font-weight:700;}
+
+  .secoes{display:flex;flex-direction:column;gap:28px;margin-top:48px;}
+
+  .secao{background:var(--card);border:1px solid var(--borda);border-radius:18px;padding:28px 28px;position:relative;overflow:hidden;animation:fadeUp 0.5s both;}
+  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .secao::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+
+  .secao-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+  .secao-emoji{font-size:36px;line-height:1;}
+  .secao-titulo{font-family:'Bangers',cursive;font-size:26px;letter-spacing:2px;color:var(--ciano);text-shadow:0 0 10px rgba(0,234,255,0.3);}
+
+  .secao p{font-size:15px;line-height:1.85;color:#a0b8d8;margin-bottom:12px;}
+  .secao p:last-child{margin-bottom:0;}
+
+  .cta-box{background:linear-gradient(135deg,rgba(26,110,245,0.15),rgba(0,234,255,0.08));border:1.5px solid rgba(0,234,255,0.3);border-radius:14px;padding:20px 24px;text-align:center;margin-top:8px;}
+  .cta-box p{color:var(--ciano) !important;font-weight:800;font-size:15px !important;margin-bottom:12px !important;}
+  .cta-btn{display:inline-block;background:var(--azul);color:#fff;text-decoration:none;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;padding:10px 28px;border-radius:10px;transition:all 0.2s;text-shadow:none;}
+  .cta-btn:hover{background:#1560d4;transform:translateY(-2px);box-shadow:0 4px 16px rgba(26,110,245,0.4);}
+
+  .frase-final{text-align:center;padding:40px 20px 0;font-family:'Fredoka One',cursive;font-size:20px;color:#4a6fa5;line-height:1.6;}
+  .frase-final span{color:var(--ciano);}
+
+  @media(max-width:600px){
+    .secao{padding:20px 18px;}
+    .secao-titulo{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="page-hero">
+    <h1 class="page-titulo">🌐 SOBRE NÓS</h1>
+    <p class="page-sub">Conheça o CyberUniverso</p>
+  </div>
+
+  <div class="secoes">
+
+    <div class="secao" style="animation-delay:0.05s">
+      <div class="secao-header">
+        <span class="secao-emoji">🚀</span>
+        <div class="secao-titulo">Um mundo novo pra explorar</div>
+      </div>
+      <p>O CyberUniverso é um mundo novo pra você explorar. Temos um dicionário que evolui junto com a comunicação e não para no tempo. A maioria dos dicionários formais só catalogam palavras antigas e as novas demoram anos pra serem aceitas — algumas nem sequer chegam a ser.</p>
+      <p>Por isso, aqui nesse site você vai ver as palavras e definições esquecidas pelos outros dicionários, abrangendo desde gírias, expressões, contrações, abreviações, variações alternativas de palavras, memes e muitos outros tipos de termos, já que todo dia vão surgindo novos, principalmente na internet.</p>
+    </div>
+
+    <div class="secao" style="animation-delay:0.1s">
+      <div class="secao-header">
+        <span class="secao-emoji">➕</span>
+        <div class="secao-titulo">Adicione as gírias que você mais usa</div>
+      </div>
+      <p>Estamos frequentemente buscando e adicionando novas gírias e termos, mas esse é um trabalho infinito — são MUITAS palavras e novas nascem diariamente. Por isso, abrimos o nosso dicionário pra que você nos ajude a acrescentar gírias e termos que você percebeu que estão faltando no site.</p>
+      <p>Da mesma forma, você pode colocar palavras e variações alternativas que você mais fala com seus amigos, gírias que você usa em determinadas tribos e termos regionais que você ouve na sua comunidade. Adicione quantas palavras quiser!</p>
+      <div class="cta-box">
+        <p>Quer contribuir com o dicionário? 🌟</p>
+        <a href="/enviar.html" class="cta-btn">➕ Enviar uma palavra</a>
+      </div>
+    </div>
+
+    <div class="secao" style="animation-delay:0.15s">
+      <div class="secao-header">
+        <span class="secao-emoji">🎮</span>
+        <div class="secao-titulo">Encontre a sua tribo</div>
+      </div>
+      <p>Todas as palavras desse site estão inclusas numa ou mais categorias, e elas são inúmeras! Você pode querer aprender mais gírias (ou informar as que você sabe) sobre seus esportes favoritos, como futebol, skate, surf, etc. Ou então aprender gírias do seu jogo favorito ou um que você é iniciante, procurando termos do Free Fire ou LoL.</p>
+      <p>Também pode pesquisar gírias do seu estado ou região e explorar novas culturas, descobrindo gírias e expressões de outros lugares. Na categoria apelidos, você tem a possibilidade de achar novas formas de chamar seus amigos e seu crush.</p>
+      <p>Você também pode querer buscar gírias que tenham a ver com comidas, roupas, partes do corpo, etc. Gírias de animais também são muito encontradas aqui, permitindo que você se aventure até mesmo na categoria de gírias de dinossauros!</p>
+    </div>
+
+    <div class="secao" style="animation-delay:0.2s">
+      <div class="secao-header">
+        <span class="secao-emoji">📖</span>
+        <div class="secao-titulo">Te ajudamos a escrever suas histórias</div>
+      </div>
+      <p>Nosso dicionário é uma ótima ferramenta pra quem está escrevendo uma história ou um texto. Os usuários podem navegar pelas tags, encontrando sinônimos e palavras relacionadas, ou usando o sistema de busca do site.</p>
+      <p>Se você escreve textos criativos, vai adorar descobrir termos relacionados com o universo que você está explorando, conhecendo significados alternativos e expressões que envolvam suas palavras-chave.</p>
+      <p>Os significados de um simples termo podem ser tão variados e criativos que permitem que você brinque com as palavras, criando frases complexas e misteriosas de múltiplas interpretações ou com duplo sentido.</p>
+    </div>
+
+    <div class="secao" style="animation-delay:0.25s">
+      <div class="secao-header">
+        <span class="secao-emoji">🧙</span>
+        <div class="secao-titulo">Pesquise as origens e filosofe sobre a vida</div>
+      </div>
+      <p>Muitas das gírias que você encontra nesse site têm informações sobre a origem delas e explicações sobre as ligações que fizeram com que essa palavra virasse uma gíria ou parte de uma expressão. Algumas dessas associações e interpretações têm um toque de humor, outras têm um toque de filosofia, fazendo conexões pra tentar descobrir o que levou essa palavra a ganhar esses significados.</p>
+      <p>E você pode nos ajudar nisso, mandando observações que ainda não foram feitas pela gente.</p>
+    </div>
+
+    <div class="secao" style="animation-delay:0.3s">
+      <div class="secao-header">
+        <span class="secao-emoji">🎶</span>
+        <div class="secao-titulo">Faça rimas</div>
+      </div>
+      <p>Em breve, nosso site vai ganhar uma página exclusiva pra compositores que desejam escrever uma música ou poema. Lá você vai poder achar palavras que têm a mesma terminação sonora pra fazer a rima de uma maneira mais precisa.</p>
+      <p>Por exemplo, algumas terminações são escritas do mesmo jeito mas sua pronúncia é completamente diferente. Pra contornar esse problema, adicionamos acentos nas terminações, assim é possível mostrar apenas palavras que rimam sonoramente umas com as outras.</p>
+    </div>
+
+  </div>
+
+  <div class="frase-final">
+    Aqui as palavras não são só palavras...<br>
+    <span>são mundos a serem explorados.</span><br>
+    Boa diversão! 🌌✨
+  </div>
+</div>
+
+<script src="./header.js"></script>
+</body>
+</html>
