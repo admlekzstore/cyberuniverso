@@ -209,6 +209,7 @@
       justify-content: center;
       gap: 14px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
     #cy-footer .cy-footer-social a {
       display: flex;
@@ -316,8 +317,9 @@
       <a href="/todas.html">Todas as palavras</a>
       <a href="/categorias.html">Categorias</a>
       <a href="/enviar.html">Enviar palavra</a>
+      <a href="/privacidade.html">Termos de Uso e Privacidade</a>
     </div>
-    <div class="cy-footer-copy">© ${new Date().getFullYear()} CyberUniverso · Todos os direitos reservados</div>
+    <div class="cy-footer-copy">© \${new Date().getFullYear()} CyberUniverso · Todos os direitos reservados</div>
   `
   document.body.appendChild(footer)
 
