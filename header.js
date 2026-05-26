@@ -181,6 +181,77 @@
     @media(min-width:769px) {
       #cy-menu-btn { display: none; }
     }
+    #cy-footer {
+      background: #05080f;
+      border-top: 1px solid #1a3a6e;
+      padding: 32px 20px;
+      text-align: center;
+      font-family: 'Nunito', sans-serif;
+    }
+    #cy-footer .cy-footer-logo {
+      font-family: 'Bangers', cursive;
+      font-size: 26px;
+      letter-spacing: 2px;
+      color: #00eaff;
+      text-shadow: 0 0 10px #00eaff, 0 0 24px rgba(0,234,255,0.4);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    #cy-footer .cy-footer-desc {
+      font-size: 13px;
+      color: #4a6fa5;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    #cy-footer .cy-footer-social {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    #cy-footer .cy-footer-social a {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #1a3a6e;
+      border-radius: 10px;
+      padding: 8px 16px;
+      color: #d0e4ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    #cy-footer .cy-footer-social a:hover {
+      border-color: #00eaff;
+      color: #00eaff;
+      background: rgba(0,234,255,0.06);
+      box-shadow: 0 0 10px rgba(0,234,255,0.2);
+    }
+    #cy-footer .cy-footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    #cy-footer .cy-footer-links a {
+      color: #4a6fa5;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    #cy-footer .cy-footer-links a:hover {
+      color: #00eaff;
+    }
+    #cy-footer .cy-footer-copy {
+      font-size: 11px;
+      color: #2a4a7a;
+      font-weight: 600;
+    }
   `
   document.head.appendChild(style)
 
@@ -224,6 +295,31 @@
   document.body.insertBefore(overlay, document.body.firstChild)
   document.body.insertBefore(sidemenu, document.body.firstChild)
   document.body.insertBefore(nav, document.body.firstChild)
+
+  var footer = document.createElement('footer')
+  footer.id = 'cy-footer'
+  footer.innerHTML = `
+    <a href="/index.html" class="cy-footer-logo">🌐 CyberUniverso</a>
+    <div class="cy-footer-desc">O dicionário colaborativo de gírias do português brasileiro</div>
+    <div class="cy-footer-social">
+      <a href="https://www.instagram.com/cyberuniversobr" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram
+      </a>
+      <a href="https://x.com/cyberuniversobr" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter / X
+      </a>
+    </div>
+    <div class="cy-footer-links">
+      <a href="/index.html">Início</a>
+      <a href="/todas.html">Todas as palavras</a>
+      <a href="/categorias.html">Categorias</a>
+      <a href="/enviar.html">Enviar palavra</a>
+    </div>
+    <div class="cy-footer-copy">© ${new Date().getFullYear()} CyberUniverso · Todos os direitos reservados</div>
+  `
+  document.body.appendChild(footer)
 
   var atual = window.location.pathname.split('/').pop() || 'index.html'
   sidemenu.querySelectorAll('a').forEach(function(link) {
