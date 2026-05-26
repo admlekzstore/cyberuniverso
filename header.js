@@ -269,6 +269,7 @@
       <a href="/enviar.html">Enviar</a>
       <a href="/em-construcao.html">Rimas</a>
       <a href="/em-construcao.html">Tarot</a>
+      <a href="/sobre.html">Sobre</a>
       <a href="/cadastro.html">Entrar</a>
     </div>
     <button id="cy-menu-btn" onclick="cyToggleMenu()" aria-label="Menu">
@@ -290,6 +291,7 @@
     <a href="/em-construcao.html">🎵 Rimas</a>
     <a href="/em-construcao.html">🃏 Tarot de Gírias</a>
     <a href="/enviar.html">➕ Enviar Palavra</a>
+    <a href="/sobre.html">🌐 Sobre Nós</a>
     <a href="/cadastro.html">👤 Entrar / Cadastrar</a>
   `
 
@@ -317,6 +319,7 @@
       <a href="/todas.html">Todas as palavras</a>
       <a href="/categorias.html">Categorias</a>
       <a href="/enviar.html">Enviar palavra</a>
+      <a href="/sobre.html">Sobre Nós</a>
       <a href="/privacidade.html">Termos de Uso e Privacidade</a>
     </div>
     <div class="cy-footer-copy">© \${new Date().getFullYear()} CyberUniverso · Todos os direitos reservados</div>
