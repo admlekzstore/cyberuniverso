@@ -587,19 +587,9 @@
 
   // busca
   window.handleSearch = function(e) { if (e.key === 'Enter') window.doSearch() }
-  window.doSearch = async function() {
+  window.doSearch = function() {
     const val = document.getElementById('searchInput').value.trim()
-    if (!val) return
-    // Verifica se existe alguma palavra com esse título
-    const { data } = await sb.from('palavras').select('slug')
-      .ilike('termo', `%${val}%`).eq('status', 'aprovada').limit(1)
-    if (data && data.length > 0) {
-      // Achou pelo título → vai pra todas.html
-      window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
-    } else {
-      // Não achou → busca profunda por tags e sinônimos
-      window.location.href = `tag.html?t=${encodeURIComponent(val)}`
-    }
+    if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
   }
 
   // autocomplete
