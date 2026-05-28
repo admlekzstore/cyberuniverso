@@ -589,63 +589,78 @@
   window.handleSearch = function(e) { if (e.key === 'Enter') window.doSearch() }
   window.doSearch = function() {
     const val = document.getElementById('searchInput').value.trim()
-    if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
+    if (val) window.location.href = 'todas.html?busca=' + encodeURIComponent(val)
   }
 
   // autocomplete
   let debounceTimer
-  window.handleInput = async function(val) {
+  window.handleInput = function(val) {
     clearTimeout(debounceTimer)
     const box = document.getElementById('autocompleteBox')
     if (val.length < 2) { box.classList.remove('open'); box.innerHTML = ''; return }
     debounceTimer = setTimeout(async () => {
-      // Busca primeiro por início da palavra, depois no meio
       const [{ data: inicioCom }, { data: contemVal }] = await Promise.all([
         sb.from('palavras').select('termo, slug')
-          .ilike('termo', `${val}%`).eq('status', 'aprovada').limit(4),
+          .ilike('termo', val + '%').eq('status', 'aprovada').limit(4),
         sb.from('palavras').select('termo, slug')
-          .ilike('termo', `%${val}%`).eq('status', 'aprovada').limit(8)
+          .ilike('termo', '%' + val + '%').eq('status', 'aprovada').limit(8)
       ])
-      // Mescla: início da palavra primeiro, depois os que contêm (sem repetir)
       const inicioCom_ = inicioCom || []
       const slugsInicio = new Set(inicioCom_.map(p => p.slug))
       const extras = (contemVal || []).filter(p => !slugsInicio.has(p.slug))
       const merged = [...inicioCom_, ...extras].slice(0, 6)
 
       box.innerHTML = ''
+
       if (merged.length === 0) {
-        // Nenhuma palavra encontrada → sugere busca por tag
-        box.innerHTML = `
-          <div class="autocomplete-empty">Nenhuma palavra encontrada</div>
-          <div class="autocomplete-item" style="color:var(--ciano);border-top:1px solid var(--borda)"
-               onclick="window.location.href='tag.html?t=${encodeURIComponent(val)}'">
-            🔖 Buscar "<strong>${val}</strong>" em tags e sinônimos
-          </div>`
-        box.classList.add('open'); return
+        // Não achou → mostra opção de busca por tag, mas NÃO redireciona sozinho
+        const vazio = document.createElement('div')
+        vazio.className = 'autocomplete-empty'
+        vazio.textContent = 'Nenhuma palavra encontrada'
+        box.appendChild(vazio)
+        const tagItem = document.createElement('div')
+        tagItem.className = 'autocomplete-item'
+        tagItem.style.cssText = 'color:var(--ciano);border-top:1px solid var(--borda)'
+        tagItem.innerHTML = '&#128278; Buscar "' + val + '" em tags e sin&#244;nimos'
+        tagItem.onclick = function() { window.location.href = 'tag.html?t=' + encodeURIComponent(val) }
+        box.appendChild(tagItem)
+        box.classList.add('open')
+        return
       }
+
+      // Achou palavras pelo título
+      const safeVal = val.replace(/[.*+?^${}()|[\]\]/g, '\$&')
+      const regex = new RegExp('(' + safeVal + ')', 'gi')
       merged.forEach(p => {
         const div = document.createElement('div')
         div.className = 'autocomplete-item'
-        // Destaca o trecho digitado dentro do nome
-        const regex = new RegExp(`(${val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi')
         div.innerHTML = p.termo.replace(regex, '<strong style="color:var(--amarelo)">$1</strong>')
-        div.onclick = () => window.location.href = `palavra.html?w=${p.slug}`
+        div.onclick = function() { window.location.href = 'palavra.html?w=' + p.slug }
         box.appendChild(div)
       })
-      // Rodapé: ver todos os resultados
+
+      // Rodapé: ver todos
       const footer = document.createElement('div')
       footer.className = 'autocomplete-item'
       footer.style.cssText = 'color:#4a6fa5;font-size:13px;border-top:1px solid var(--borda)'
-      footer.innerHTML = `🔍 Ver todos os resultados para "<strong>${val}</strong>"`
-      footer.onclick = () => window.doSearch()
+      footer.innerHTML = '&#128269; Ver todos os resultados para "' + val + '"'
+      footer.onclick = function() { window.doSearch() }
       box.appendChild(footer)
+
+      // Rodapé: ver também em tags e sinônimos
+      const tagFooter = document.createElement('div')
+      tagFooter.className = 'autocomplete-item'
+      tagFooter.style.cssText = 'color:var(--ciano);font-size:13px;border-top:1px solid var(--borda)'
+      tagFooter.innerHTML = '&#128278; Ver tamb&#233;m "' + val + '" em tags e sin&#244;nimos'
+      tagFooter.onclick = function() { window.location.href = 'tag.html?t=' + encodeURIComponent(val) }
+      box.appendChild(tagFooter)
+
       box.classList.add('open')
-    }, 250)
+    }, 300)
   }
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-box')) document.getElementById('autocompleteBox').classList.remove('open')
   })
-
   // stats
   async function carregarStats() {
     const { count } = await sb.from('palavras')
