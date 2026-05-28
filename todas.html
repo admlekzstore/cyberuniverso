@@ -102,8 +102,8 @@
 
   <div class="busca-wrap">
     <div class="busca-row">
-      <input type="text" id="buscaInput" placeholder="Filtrar palavras..." oninput="filtrar()">
-      <button onclick="filtrar()">🔍</button>
+      <input type="text" id="buscaInput" placeholder="Filtrar palavras..." oninput="filtrar()" onkeydown="if(event.key==='Enter')buscarProfundo()">
+      <button onclick="filtrar();buscarProfundo()">🔍</button>
     </div>
   </div>
 
@@ -245,7 +245,6 @@
   }
 
   // ── FILTRAR ──
-  let filtrarTimer
   function filtrar() {
     const q = document.getElementById('buscaInput').value.toLowerCase().trim()
 
@@ -257,19 +256,27 @@
       return
     }
 
-    // Filtra por título na hora (sem delay)
+    // Filtra por título — sem nenhum redirecionamento automático
     filtrado = todasPalavras.filter(p => p.palavra.toLowerCase().includes(q))
     renderizar(filtrado)
     renderAlfa()
 
-    // Redirecionamento só após 600ms parado
-    clearTimeout(filtrarTimer)
-    if (filtrado.length === 0) {
-      filtrarTimer = setTimeout(() => {
-        window.location.href = 'tag.html?t=' + encodeURIComponent(q)
-      }, 600)
-    } else {
+    if (filtrado.length > 0) {
+      // Achou: mostra banner opcional de tags
       mostrarBannerTag(q)
+    } else {
+      // Não achou: mostra mensagem com link, mas NÃO redireciona sozinho
+      mostrarBannerSemResultado(q)
+    }
+  }
+
+  // Chamado pelo botão 🔍 ou Enter — aí sim redireciona
+  function buscarProfundo() {
+    const q = document.getElementById('buscaInput').value.trim()
+    if (!q) return
+    const achouTitulo = todasPalavras.some(p => p.palavra.toLowerCase().includes(q.toLowerCase()))
+    if (!achouTitulo) {
+      window.location.href = 'tag.html?t=' + encodeURIComponent(q)
     }
   }
 
@@ -282,6 +289,18 @@
       document.getElementById('listagem').before(banner)
     }
     banner.innerHTML = '🔖 Ver também "<strong style="color:var(--ciano)">' + q + '</strong>" em <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">tags e sinônimos →</a>'
+    banner.style.display = 'block'
+  }
+
+  function mostrarBannerSemResultado(q) {
+    let banner = document.getElementById('bannerTag')
+    if (!banner) {
+      banner = document.createElement('div')
+      banner.id = 'bannerTag'
+      banner.style.cssText = 'text-align:center;margin-bottom:20px;padding:12px 18px;background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;font-size:13px;font-weight:700;color:#4a6fa5;'
+      document.getElementById('listagem').before(banner)
+    }
+    banner.innerHTML = '🔍 Nenhum título encontrado. <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">Buscar "' + q + '" em tags e sinônimos →</a>'
     banner.style.display = 'block'
   }
 
