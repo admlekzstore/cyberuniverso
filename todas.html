@@ -159,6 +159,13 @@
     if (buscaURL) {
       document.getElementById('buscaInput').value = buscaURL
       filtrado = todasPalavras.filter(p => p.palavra.toLowerCase().includes(buscaURL.toLowerCase()))
+      // Mostrar banner de tags mesmo quando vem busca pela URL
+      if (filtrado.length > 0) mostrarBannerTag(buscaURL.toLowerCase())
+      else {
+        // Não achou pelo título → vai direto pra tag.html
+        window.location.href = 'tag.html?t=' + encodeURIComponent(buscaURL)
+        return
+      }
     } else if (letraURL) {
       if (letraURL === '0-9') {
         filtrado = todasPalavras.filter(p => /[0-9]/.test(p.palavra[0]))
