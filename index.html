@@ -460,6 +460,88 @@
     .stat-item { padding: 0 16px; }
     .stat-num { font-size: 22px; }
   }
+
+  /* ── CARROSSEL CATEGORIAS ── */
+  .carrossel-wrap {
+    overflow: hidden;
+    padding: 40px 0 36px;
+    background: linear-gradient(180deg, transparent 0%, rgba(10,22,40,0.6) 50%, transparent 100%);
+    position: relative;
+  }
+  .carrossel-wrap::before,
+  .carrossel-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .carrossel-wrap::before { left: 0; background: linear-gradient(90deg, var(--fundo), transparent); }
+  .carrossel-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--fundo), transparent); }
+
+  .carrossel-titulo {
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--ciano);
+    margin-bottom: 20px;
+    text-shadow: 0 0 12px rgba(0,234,255,0.4);
+  }
+
+  .carrossel-track-wrap {
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+  }
+  .carrossel-track-wrap:active { cursor: grabbing; }
+
+  .carrossel-track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: carrosselSlide 30s linear infinite;
+  }
+  .carrossel-track:hover { animation-play-state: paused; }
+
+  @keyframes carrosselSlide {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .cat-card {
+    width: 220px;
+    height: 220px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(0,234,255,0.15);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .cat-card:hover {
+    transform: scale(1.06) translateY(-4px);
+    border-color: var(--ciano);
+    box-shadow: 0 0 24px rgba(0,234,255,0.35), 0 0 48px rgba(0,234,255,0.15);
+    animation-play-state: paused;
+  }
+  .cat-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+  }
+  .cat-card:hover img { transform: scale(1.08); }
+  .cat-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(5,8,15,0.75) 100%);
+    transition: opacity 0.3s;
+  }
+  .cat-card:hover .cat-card-overlay { opacity: 0.5; }
 </style>
 </head>
 <body>
@@ -501,6 +583,34 @@
     <div class="scroll-arrow"></div>
   </div>
 </section>
+
+<!-- CARROSSEL CATEGORIAS -->
+<div class="carrossel-wrap">
+  <div class="carrossel-titulo">⚡ EXPLORAR POR CATEGORIA ⚡</div>
+  <div class="carrossel-track-wrap" id="carrosselTrackWrap">
+    <div class="carrossel-track" id="carrosselTrack">
+      <a href="categoria.html?slug=jogos" class="cat-card"><img src="./jogos.png" alt="Jogos" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=musica" class="cat-card"><img src="./musica.png" alt="Música" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=skate" class="cat-card"><img src="./skate.png" alt="Skate" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=surf" class="cat-card"><img src="./surf.png" alt="Surf" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=natureza" class="cat-card"><img src="./natureza.png" alt="Natureza" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=comida" class="cat-card"><img src="./comida.png" alt="Comida" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=locais" class="cat-card"><img src="./locais.png" alt="Locais" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=redes-sociais" class="cat-card"><img src="./redes-sociais.png" alt="Redes Sociais" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=animais" class="cat-card"><img src="./animais.png" alt="Animais" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <!-- duplicadas para loop infinito -->
+      <a href="categoria.html?slug=jogos" class="cat-card"><img src="./jogos.png" alt="Jogos" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=musica" class="cat-card"><img src="./musica.png" alt="Música" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=skate" class="cat-card"><img src="./skate.png" alt="Skate" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=surf" class="cat-card"><img src="./surf.png" alt="Surf" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=natureza" class="cat-card"><img src="./natureza.png" alt="Natureza" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=comida" class="cat-card"><img src="./comida.png" alt="Comida" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=locais" class="cat-card"><img src="./locais.png" alt="Locais" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=redes-sociais" class="cat-card"><img src="./redes-sociais.png" alt="Redes Sociais" loading="lazy"><div class="cat-card-overlay"></div></a>
+      <a href="categoria.html?slug=animais" class="cat-card"><img src="./animais.png" alt="Animais" loading="lazy"><div class="cat-card-overlay"></div></a>
+    </div>
+  </div>
+</div>
 
 <!-- STATS BAR -->
 <div class="stats-bar">
