@@ -504,6 +504,7 @@
     animation: carrosselSlide 30s linear infinite;
   }
   .carrossel-track:hover { animation-play-state: paused; }
+  .cat-card { pointer-events: auto; }
 
   @keyframes carrosselSlide {
     0%   { transform: translateX(0); }
@@ -768,6 +769,21 @@
       box.classList.add('open')
     }, 300)
   }
+  // Carrossel: pausar animação ao clicar no card e navegar corretamente
+  document.querySelectorAll && document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('carrosselTrack')
+    if (track) {
+      track.addEventListener('click', function(e) {
+        const card = e.target.closest('.cat-card')
+        if (card) {
+          e.preventDefault()
+          track.style.animationPlayState = 'paused'
+          window.location.href = card.getAttribute('href')
+        }
+      })
+    }
+  })
+
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-box')) document.getElementById('autocompleteBox').classList.remove('open')
   })
