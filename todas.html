@@ -243,6 +243,13 @@
     filtrado = q
       ? todasPalavras.filter(p => p.palavra.toLowerCase().includes(q))
       : [...todasPalavras]
+
+    // Se não achou nada pelo título, redireciona pra busca profunda (tags + sinônimos)
+    if (q && filtrado.length === 0) {
+      window.location.href = 'tag.html?t=' + encodeURIComponent(q)
+      return
+    }
+
     renderizar(filtrado)
     renderAlfa()
   }  

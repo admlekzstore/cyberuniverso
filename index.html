@@ -587,9 +587,19 @@
 
   // busca
   window.handleSearch = function(e) { if (e.key === 'Enter') window.doSearch() }
-  window.doSearch = function() {
+  window.doSearch = async function() {
     const val = document.getElementById('searchInput').value.trim()
-    if (val) window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
+    if (!val) return
+    // Verifica se existe alguma palavra com esse título
+    const { data } = await sb.from('palavras').select('slug')
+      .ilike('termo', `%${val}%`).eq('status', 'aprovada').limit(1)
+    if (data && data.length > 0) {
+      // Achou pelo título → vai pra todas.html
+      window.location.href = `todas.html?busca=${encodeURIComponent(val)}`
+    } else {
+      // Não achou → busca profunda por tags e sinônimos
+      window.location.href = `tag.html?t=${encodeURIComponent(val)}`
+    }
   }
 
   // autocomplete
@@ -599,23 +609,48 @@
     const box = document.getElementById('autocompleteBox')
     if (val.length < 2) { box.classList.remove('open'); box.innerHTML = ''; return }
     debounceTimer = setTimeout(async () => {
-      const { data, error } = await sb
-        .from('palavras').select('termo, slug')
-        .ilike('termo', `${val}%`).eq('status', 'aprovada').limit(6)
+      // Busca primeiro por início da palavra, depois no meio
+      const [{ data: inicioCom }, { data: contemVal }] = await Promise.all([
+        sb.from('palavras').select('termo, slug')
+          .ilike('termo', `${val}%`).eq('status', 'aprovada').limit(4),
+        sb.from('palavras').select('termo, slug')
+          .ilike('termo', `%${val}%`).eq('status', 'aprovada').limit(8)
+      ])
+      // Mescla: início da palavra primeiro, depois os que contêm (sem repetir)
+      const inicioCom_ = inicioCom || []
+      const slugsInicio = new Set(inicioCom_.map(p => p.slug))
+      const extras = (contemVal || []).filter(p => !slugsInicio.has(p.slug))
+      const merged = [...inicioCom_, ...extras].slice(0, 6)
+
       box.innerHTML = ''
-      if (error || !data || data.length === 0) {
-        box.innerHTML = `<div class="autocomplete-empty">Nenhuma palavra encontrada</div>`
+      if (merged.length === 0) {
+        // Nenhuma palavra encontrada → sugere busca por tag
+        box.innerHTML = `
+          <div class="autocomplete-empty">Nenhuma palavra encontrada</div>
+          <div class="autocomplete-item" style="color:var(--ciano);border-top:1px solid var(--borda)"
+               onclick="window.location.href='tag.html?t=${encodeURIComponent(val)}'">
+            🔖 Buscar "<strong>${val}</strong>" em tags e sinônimos
+          </div>`
         box.classList.add('open'); return
       }
-      data.forEach(p => {
+      merged.forEach(p => {
         const div = document.createElement('div')
         div.className = 'autocomplete-item'
-        div.textContent = p.termo
+        // Destaca o trecho digitado dentro do nome
+        const regex = new RegExp(`(${val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi')
+        div.innerHTML = p.termo.replace(regex, '<strong style="color:var(--amarelo)">$1</strong>')
         div.onclick = () => window.location.href = `palavra.html?w=${p.slug}`
         box.appendChild(div)
       })
+      // Rodapé: ver todos os resultados
+      const footer = document.createElement('div')
+      footer.className = 'autocomplete-item'
+      footer.style.cssText = 'color:#4a6fa5;font-size:13px;border-top:1px solid var(--borda)'
+      footer.innerHTML = `🔍 Ver todos os resultados para "<strong>${val}</strong>"`
+      footer.onclick = () => window.doSearch()
+      box.appendChild(footer)
       box.classList.add('open')
-    }, 300)
+    }, 250)
   }
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-box')) document.getElementById('autocompleteBox').classList.remove('open')
