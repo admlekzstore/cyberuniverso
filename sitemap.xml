@@ -4,38 +4,38 @@
   <!-- ═══ PÁGINAS FIXAS ═══ -->
   <url>
     <loc>https://cyberuniverso.com/</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://cyberuniverso.com/todas.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://cyberuniverso.com/categorias.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://cyberuniverso.com/enviar.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://cyberuniverso.com/cadastro.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- ═══ PALAVRAS (165) ═══ -->
+  <!-- ═══ PALAVRAS (246) ═══ -->
   <url>
-    <loc>https://cyberuniverso.com/palavra.html?w=six-seven</loc>
+    <loc>https://cyberuniverso.com/palavra.html?w=67</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -47,8 +47,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=adm</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=agr</loc>
     <lastmod>2026-05-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=ainda</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -65,6 +77,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=alt</loc>
+    <lastmod>2026-06-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=amigar</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=aoba</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -73,6 +97,24 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=apagar</loc>
     <lastmod>2026-05-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=aquile</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=arredar</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=aulas-cria</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -89,6 +131,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=barril</loc>
+    <lastmod>2026-06-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=bb</loc>
     <lastmod>2026-05-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -101,6 +149,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=belo</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=bglh</loc>
+    <lastmod>2026-05-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=biscoito</loc>
     <lastmod>2026-05-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -109,6 +169,24 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=boa-noite-bruno</loc>
     <lastmod>2026-05-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=boh</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=bora</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=botar-na-parede</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -131,8 +209,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=brigado</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=brocado</loc>
     <lastmod>2026-05-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=brotar</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -161,8 +251,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=cabar</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=call</loc>
     <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=caminhada</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -191,6 +293,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=clr</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=cmg</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=coidar</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -199,6 +313,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=complexo</loc>
     <lastmod>2026-05-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=confia</loc>
+    <lastmod>2026-06-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -257,6 +377,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=dar-bom</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=dar-pra-tras</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=dar-um-chocolate</loc>
     <lastmod>2026-05-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -287,6 +419,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=de-rocha</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=delulu</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=deu</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=diamante</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -301,6 +451,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=din</loc>
     <lastmod>2026-05-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=diver</loc>
+    <lastmod>2026-06-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -323,8 +479,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=doguineo</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=dps</loc>
     <lastmod>2026-05-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=droga-e-o-brian</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=drx</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -377,6 +551,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=feat</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=figurinha</loc>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=fml</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
@@ -401,6 +587,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=fzr</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=gado</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -413,8 +605,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=ggez</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=ggwp</loc>
     <lastmod>2026-05-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=gn</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -427,6 +631,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=grostoli</loc>
     <lastmod>2026-05-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=guaipeca</loc>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -449,8 +659,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=irado</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=ixi</loc>
     <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=janela</loc>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -461,14 +683,32 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=jogador</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=juvena</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=kawaii</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=koe</loc>
     <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=largar</loc>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -485,6 +725,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=loli</loc>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=magina</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
@@ -493,6 +739,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=mandar-brasa</loc>
     <lastmod>2026-05-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=mandrake</loc>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -533,6 +785,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=mimir</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=mkt</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -547,6 +805,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=mn</loc>
     <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=mo</loc>
+    <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -581,8 +845,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=namo</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=nani</loc>
     <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=nask</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -593,14 +869,32 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=nerfar</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=ngc</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=ngm</loc>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=niver</loc>
     <lastmod>2026-05-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=nmr</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -623,8 +917,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=nt</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=num</loc>
     <lastmod>2026-05-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=numa</loc>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -649,6 +955,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=oe</loc>
     <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=oie</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -695,6 +1007,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=patrao</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=patroa</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -707,8 +1025,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pd</loc>
+    <lastmod>2026-06-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=pdp</loc>
     <lastmod>2026-05-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pe-atras</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -721,6 +1051,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=pera</loc>
     <lastmod>2026-05-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pf</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -755,6 +1091,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pobi</loc>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=pov</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -767,8 +1109,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pq</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=pra</loc>
     <lastmod>2026-05-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=pros</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -791,6 +1145,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=q</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=qual-foi</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
@@ -809,6 +1169,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=rajada</loc>
+    <lastmod>2026-05-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=rawr</loc>
+    <lastmod>2026-06-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=resenha</loc>
     <lastmod>2026-05-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -821,8 +1193,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=rlx</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=rocheda</loc>
     <lastmod>2026-05-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=rolar</loc>
+    <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -833,8 +1217,20 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=role-aleatorio</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=s</loc>
     <lastmod>2026-05-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=salada</loc>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -851,8 +1247,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=sera-se</loc>
+    <lastmod>2026-05-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=situacao-de-barril</loc>
     <lastmod>2026-05-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=six-seven</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=skin</loc>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -869,6 +1283,18 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=socio</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=solar</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=spoiler</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>weekly</changefreq>
@@ -877,6 +1303,18 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=ssgd</loc>
     <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=suave</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=sumemo</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -899,8 +1337,44 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=tbt</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=td</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=tentar-a-sorte</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=ter-um-ponto</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=tlgd</loc>
+    <lastmod>2026-05-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=tnm</loc>
     <lastmod>2026-05-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=tocar-flauta</loc>
+    <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -977,6 +1451,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=vip</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cyberuniverso.com/palavra.html?w=visao</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>weekly</changefreq>
@@ -1009,6 +1489,12 @@
   <url>
     <loc>https://cyberuniverso.com/palavra.html?w=yamero</loc>
     <lastmod>2026-05-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cyberuniverso.com/palavra.html?w=yt</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
