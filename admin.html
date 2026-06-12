@@ -834,13 +834,109 @@ function verContribuicao(contrib, palavra) {
   if (contrib.status === 'pendente') {
     btns.innerHTML = `
       <button class="btn-cancelar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>
-      <button class="btn-mini btn-rejeitar" style="padding:10px 20px;font-size:15px;" onclick="rejeitarContribuicao(${contrib.id}, this)">✗ REJEITAR</button>
+      <button class="btn-mini btn-editar" style="padding:10px 16px;font-size:14px;" onclick="ativarEdicaoContrib()">✏️ EDITAR</button>
+      <button class="btn-mini btn-rejeitar" style="padding:10px 16px;font-size:14px;" onclick="rejeitarContribuicao(${contrib.id}, this)">✗ REJEITAR</button>
       <button class="btn-salvar" onclick="aprovarContribuicao(${contrib.id}, this)">✓ APROVAR</button>`
   } else {
     btns.innerHTML = `<button class="btn-salvar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>`
   }
 
   document.getElementById('modal-contribuicao').classList.add('aberto')
+}
+
+function ativarEdicaoContrib() {
+  if (!_contribAtual) return
+  document.getElementById('mc-modo-ver').style.display = 'none'
+  document.getElementById('mc-modo-editar').style.display = 'block'
+
+  // Preencher textareas de significados
+  const editSigs = document.getElementById('mc-edit-sigs')
+  try {
+    const sigs = JSON.parse(_contribAtual.significados || '[]')
+    editSigs.innerHTML = sigs.map((s, i) => {
+      let texto = s.descricao
+      if (texto.indexOf('[extras]') !== -1) texto = texto.split('[extras]')[0].trim()
+      return `<div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:5px;">SIGNIFICADO ${i+1}</div>
+        <textarea class="mc-sig-edit" data-index="${i}" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;">${texto}</textarea>
+      </div>`
+    }).join('')
+  } catch(e) {}
+
+  // Preencher exemplos
+  try {
+    const exs = JSON.parse(_contribAtual.exemplos || '[]')
+    document.getElementById('mc-edit-exemplos').value = exs.join('\n')
+  } catch(e) {}
+
+  // Preencher sinônimos
+  try {
+    const sins = JSON.parse(_contribAtual.sinonimos || '[]')
+    document.getElementById('mc-edit-sinonimos').value = sins.join(', ')
+  } catch(e) {}
+
+  // Trocar botões
+  const btns = document.getElementById('mc-btns')
+  btns.innerHTML = `
+    <button class="btn-cancelar" onclick="cancelarEdicaoContrib()">← VOLTAR</button>
+    <button class="btn-salvar" onclick="salvarEdicaoContrib()">💾 SALVAR EDIÇÃO</button>`
+}
+
+function cancelarEdicaoContrib() {
+  document.getElementById('mc-modo-ver').style.display = 'block'
+  document.getElementById('mc-modo-editar').style.display = 'none'
+  // Restaurar botões originais
+  const c = _contribAtual
+  const btns = document.getElementById('mc-btns')
+  btns.innerHTML = `
+    <button class="btn-cancelar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>
+    <button class="btn-mini btn-editar" style="padding:10px 16px;font-size:14px;" onclick="ativarEdicaoContrib()">✏️ EDITAR</button>
+    <button class="btn-mini btn-rejeitar" style="padding:10px 16px;font-size:14px;" onclick="rejeitarContribuicao(${c.id}, this)">✗ REJEITAR</button>
+    <button class="btn-salvar" onclick="aprovarContribuicao(${c.id}, this)">✓ APROVAR</button>`
+}
+
+async function salvarEdicaoContrib() {
+  if (!_contribAtual) return
+
+  // Coletar significados editados
+  const sigEls = document.getElementById('mc-edit-sigs').querySelectorAll('.mc-sig-edit')
+  const sigsOriginais = JSON.parse(_contribAtual.significados || '[]')
+  const novosSigs = [...sigEls].map((el, i) => {
+    const texto = el.value.trim()
+    // Preservar extras originais se existirem
+    const original = sigsOriginais[i]?.descricao || ''
+    const temExtras = original.indexOf('[extras]') !== -1
+    if (temExtras) {
+      const extras = original.split('[extras]')[1]
+      return { descricao: texto + '\n\n[extras]' + extras, ordem: i + 1 }
+    }
+    return { descricao: texto, ordem: i + 1 }
+  }).filter(s => s.descricao.trim())
+
+  const novosExemplos = document.getElementById('mc-edit-exemplos').value
+    .split('\n').map(e => e.trim()).filter(Boolean)
+
+  const novosSinonimos = document.getElementById('mc-edit-sinonimos').value
+    .split(',').map(s => s.trim()).filter(Boolean)
+
+  const { error } = await sb.from('contribuicoes_significado').update({
+    significados: JSON.stringify(novosSigs),
+    exemplos: JSON.stringify(novosExemplos),
+    sinonimos: JSON.stringify(novosSinonimos)
+  }).eq('id', _contribAtual.id)
+
+  if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); return }
+
+  // Atualizar objeto local
+  _contribAtual.significados = JSON.stringify(novosSigs)
+  _contribAtual.exemplos = JSON.stringify(novosExemplos)
+  _contribAtual.sinonimos = JSON.stringify(novosSinonimos)
+
+  mostrarToast('✅ Edição salva!', 'sucesso')
+  cancelarEdicaoContrib()
+  // Re-renderizar visualização
+  verContribuicao(_contribAtual, { termo: document.getElementById('mc-palavra').textContent })
+  carregarContribuicoes()
 }
 
 async function aprovarContribuicao(id, btn) {
@@ -1049,14 +1145,26 @@ init()
       <button class="modal-fechar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">✕</button>
     </div>
     <div class="modal-body" style="max-height:60vh;overflow-y:auto;">
-      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📖 Significados</div>
-      <div id="mc-significados" style="margin-bottom:18px;"></div>
-      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">💬 Exemplos</div>
-      <div id="mc-exemplos" style="margin-bottom:18px;"></div>
-      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">🔄 Sinônimos</div>
-      <div id="mc-sinonimos" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <!-- MODO VISUALIZAÇÃO -->
+      <div id="mc-modo-ver">
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📖 Significados</div>
+        <div id="mc-significados" style="margin-bottom:18px;"></div>
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">💬 Exemplos</div>
+        <div id="mc-exemplos" style="margin-bottom:18px;"></div>
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">🔄 Sinônimos</div>
+        <div id="mc-sinonimos" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;"></div>
+      </div>
+      <!-- MODO EDIÇÃO -->
+      <div id="mc-modo-editar" style="display:none;">
+        <div style="font-size:11px;font-weight:800;color:#f5e800;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">✏️ MODO EDIÇÃO</div>
+        <div id="mc-edit-sigs"></div>
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">💬 Exemplos <span style="font-weight:600;color:#2a4a7a;">(um por linha)</span></div>
+        <textarea id="mc-edit-exemplos" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:70px;" placeholder="Exemplo 1&#10;Exemplo 2..."></textarea>
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">🔄 Sinônimos <span style="font-weight:600;color:#2a4a7a;">(separados por vírgula)</span></div>
+        <input id="mc-edit-sinonimos" type="text" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;" placeholder="ex: bora, vamos, simbora">
+      </div>
     </div>
-    <div class="modal-footer" id="mc-btns" style="gap:8px;"></div>
+    <div class="modal-footer" id="mc-btns" style="gap:8px;flex-wrap:wrap;"></div>
   </div>
 </div>
 </body>
