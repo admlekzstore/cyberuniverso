@@ -89,27 +89,37 @@
   .reacao-emoji{font-size:26px;}
   .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
   .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;}
-  .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;text-decoration:none;}
-  .btn-novo-sig:hover{background:rgba(163,255,74,0.15);}
+
 
   /* ── CONTRIBUIÇÕES ── */
-  .contrib-card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;}
+  .contrib-wrap{display:flex;flex-direction:column;gap:0;margin-bottom:20px;}
+  .contrib-card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px 24px 18px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+  .contrib-card:hover{border-color:rgba(26,110,245,0.4);}
   .contrib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
-  .contrib-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-  .contrib-num{font-family:'Bangers',cursive;font-size:17px;color:rgba(0,234,255,0.5);letter-spacing:2px;}
-  .contrib-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;}
-  .contrib-meta{font-size:12px;color:#4a6fa5;font-weight:700;}
-  .contrib-meta strong{color:var(--ciano);}
-  .contrib-meta a{color:var(--ciano);text-decoration:none;}
+  .contrib-card + .contrib-card{margin-top:12px;}
+  .contrib-card + .contrib-card::before{background:linear-gradient(90deg,transparent,rgba(26,110,245,0.4),rgba(0,234,255,0.4),transparent);}
+  .contrib-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .contrib-num{font-family:'Bangers',cursive;font-size:15px;color:rgba(0,234,255,0.4);letter-spacing:2px;min-width:36px;}
+  .contrib-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff;flex-shrink:0;}
+  .contrib-meta{font-size:12px;color:#4a6fa5;font-weight:700;line-height:1.4;}
+  .contrib-meta strong,.contrib-meta a{color:var(--ciano);text-decoration:none;font-weight:800;}
   .contrib-meta a:hover{color:var(--amarelo);}
-  .contrib-sig{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;margin-bottom:12px;}
-  .contrib-secao-label{font-size:11px;font-weight:800;color:#2a4a7a;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;}
-  .contrib-votos{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--borda);}
-  .voto-btn{display:flex;align-items:center;gap:6px;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:7px 14px;cursor:pointer;transition:all 0.2s;font-size:13px;font-weight:800;color:var(--texto);}
-  .voto-btn:hover{transform:translateY(-2px);}
-  .voto-btn.like-ativo{background:rgba(100,255,150,0.15);border-color:rgba(100,255,150,0.5);color:#64ff96;}
-  .voto-btn.dislike-ativo{background:rgba(255,80,80,0.12);border-color:rgba(255,80,80,0.4);color:#ff5050;}
-  .voto-score{font-size:12px;color:#4a6fa5;font-weight:700;margin-left:4px;}
+  .contrib-meta .contrib-data{color:#2a4a7a;font-weight:600;}
+  .contrib-sig{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.7;margin-bottom:0;}
+  .contrib-divider{height:1px;background:var(--borda);margin:16px 0;opacity:0.6;}
+  .contrib-secao{margin-bottom:14px;}
+  .contrib-secao-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#3a5a8a;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+  .contrib-secao-label::after{content:'';flex:1;height:1px;background:rgba(26,58,110,0.4);}
+  .contrib-votos{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(26,58,110,0.4);}
+  .voto-btn{display:flex;align-items:center;gap:7px;background:rgba(13,31,60,0.8);border:1.5px solid var(--borda);border-radius:50px;padding:7px 16px;cursor:pointer;transition:all 0.2s;font-size:14px;font-weight:800;color:#4a6fa5;}
+  .voto-btn:hover{border-color:var(--azul);color:var(--texto);transform:translateY(-1px);}
+  .voto-btn.like-ativo{background:rgba(100,255,150,0.1);border-color:rgba(100,255,150,0.45);color:#64ff96;}
+  .voto-btn.dislike-ativo{background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.35);color:#ff6b6b;}
+  .voto-num{font-size:13px;font-weight:900;}
+  .voto-score{font-size:11px;color:#2a4a7a;font-weight:700;margin-left:2px;letter-spacing:0.5px;}
+  .btn-novo-sig-wrap{margin-top:8px;margin-bottom:20px;}
+  .btn-novo-sig{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(163,255,74,0.06);border:1.5px dashed rgba(163,255,74,0.3);color:rgba(163,255,74,0.7);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.25s;width:100%;text-decoration:none;letter-spacing:0.3px;}
+  .btn-novo-sig:hover{background:rgba(163,255,74,0.12);border-color:rgba(163,255,74,0.5);color:#a3ff4a;}
 
   /* ── MODAL NOVO SIGNIFICADO ── */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto;}
@@ -633,7 +643,7 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
   votosPorSig = votosPorSig || {}
   meuVotoPorSig = meuVotoPorSig || {}
 
-  // Agrupar significados por contrib_id
+  // Agrupar por contrib_id
   var grupos = []
   sigs.forEach(function(s) {
     var cid = s.contrib_id != null ? s.contrib_id : 'original'
@@ -645,7 +655,7 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
     }
   })
 
-  // Ordenar: original primeiro, depois por score
+  // Ordenar: original primeiro, depois por score (likes - dislikes), desempate por data
   grupos.sort(function(a, b) {
     if (a.id === 'original') return -1
     if (b.id === 'original') return 1
@@ -655,12 +665,12 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
     return new Date(a.criadoEm || 0) - new Date(b.criadoEm || 0)
   })
 
-  var html = '<div id="contrib-cards-wrap">'
+  var html = '<div class="contrib-wrap">'
 
   grupos.forEach(function(grupo, gi) {
     var numStr = '//' + String(gi + 1).padStart(2, '0')
 
-    // Nome do autor
+    // Resolver autor
     var nomeAutor = null, linkAutor = null
     if (grupo.contribAutorUid && contribPerfisMap[grupo.contribAutorUid]) {
       var perf = contribPerfisMap[grupo.contribAutorUid]
@@ -671,29 +681,34 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
     }
 
     var avatarLetra = nomeAutor ? nomeAutor.replace('@','')[0].toUpperCase() : '?'
-    var dataHtml = grupo.criadoEm ? ' · ' + formatarData(grupo.criadoEm) : ''
+    var dataStr = grupo.criadoEm ? formatarData(grupo.criadoEm) : null
 
-    // Votos totais do grupo
+    // Votos
     var totalLike = 0, totalDislike = 0
     grupo.sigs.forEach(function(s) { var v = votosPorSig[s.id] || {}; totalLike += v.like||0; totalDislike += v.dislike||0 })
     var sigId0 = grupo.sigs.length ? grupo.sigs[0].id : null
     var meuVoto = sigId0 ? (meuVotoPorSig[sigId0] || null) : null
+    var score = totalLike - totalDislike
 
     html += '<div class="contrib-card">'
 
-    // Header
+    // ── Header ──
     html += '<div class="contrib-header">'
     html += '<span class="contrib-num">' + numStr + '</span>'
     if (nomeAutor) {
       html += '<div class="contrib-avatar">' + avatarLetra + '</div>'
-      var autorLink = linkAutor ? '<a href="' + linkAutor + '" style="color:var(--ciano);text-decoration:none;font-weight:800;">' + nomeAutor + '</a>' : '<strong style="color:var(--ciano);">' + nomeAutor + '</strong>'
-      html += '<span class="contrib-meta">por ' + autorLink + '<span style="color:#2a4a7a;">' + dataHtml + '</span></span>'
-    } else if (dataHtml) {
-      html += '<span class="contrib-meta" style="color:#2a4a7a;">' + dataHtml + '</span>'
+      var autorTag = linkAutor
+        ? '<a href="' + linkAutor + '">' + nomeAutor + '</a>'
+        : '<strong>' + nomeAutor + '</strong>'
+      html += '<div class="contrib-meta">' + autorTag
+      if (dataStr) html += '<br><span class="contrib-data">' + dataStr + '</span>'
+      html += '</div>'
+    } else if (dataStr) {
+      html += '<div class="contrib-meta"><span class="contrib-data">' + dataStr + '</span></div>'
     }
     html += '</div>'
 
-    // Significados
+    // ── Significados ──
     grupo.sigs.forEach(function(s, i) {
       var texto = s.descricao, extras = []
       if (texto && texto.indexOf('[extras]') !== -1) {
@@ -701,59 +716,66 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
         texto = parts[0].trim()
         try { extras = JSON.parse(parts[1]) } catch(e) {}
       }
-      if (grupo.sigs.length > 1) html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="sig-numero">' + (i+1) + '</div></div>'
+      if (grupo.sigs.length > 1) {
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        html += '<div class="sig-numero">' + (i+1) + '</div>'
+        html += '</div>'
+      }
       html += '<p class="contrib-sig">' + texto.replace(/\n/g, '<br>') + '</p>'
       extras.forEach(function(ex) {
-        if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
-        if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
+        if (ex.titulo || ex.texto) {
+          html += '<div class="contrib-divider"></div>'
+          if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
+          if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
+        }
       })
     })
 
-    // Exemplos: grupo original = todos sem contrib_id (ou seja, tudo que veio da tabela)
-    // Contribuições futuras terão contrib_id nas tabelas exemplos/sinonimos
+    // ── Exemplos ──
     var exGrupo = grupo.id === 'original'
       ? exemplosTodos.filter(function(e) { return !e.contrib_id })
       : exemplosTodos.filter(function(e) { return String(e.contrib_id) === String(grupo.id) })
-    // fallback: se grupo original e todos sem contrib_id retornou vazio, pega todos
-    if (grupo.id === 'original' && exGrupo.length === 0 && exemplosTodos.length > 0) {
-      exGrupo = exemplosTodos
-    }
+    if (grupo.id === 'original' && exGrupo.length === 0) exGrupo = exemplosTodos
     if (exGrupo.length) {
+      html += '<div class="contrib-divider"></div>'
+      html += '<div class="contrib-secao">'
       html += '<div class="contrib-secao-label">💬 Exemplos</div>'
       exGrupo.forEach(function(e) { html += '<div class="exemplo">— ' + (e.frase || '') + '</div>' })
+      html += '</div>'
     }
 
-    // Sinônimos
+    // ── Sinônimos ──
     var sinGrupo = grupo.id === 'original'
       ? sionimosTodos.filter(function(s) { return !s.contrib_id })
       : sionimosTodos.filter(function(s) { return String(s.contrib_id) === String(grupo.id) })
-    if (grupo.id === 'original' && sinGrupo.length === 0 && sionimosTodos.length > 0) {
-      sinGrupo = sionimosTodos
-    }
+    if (grupo.id === 'original' && sinGrupo.length === 0) sinGrupo = sionimosTodos
     if (sinGrupo.length) {
-      html += '<div class="contrib-secao-label">🔄 Sinônimos</div><div class="tags-list" style="margin-bottom:4px;">'
+      if (!exGrupo.length) html += '<div class="contrib-divider"></div>'
+      html += '<div class="contrib-secao">'
+      html += '<div class="contrib-secao-label">🔄 Sinônimos</div>'
+      html += '<div class="tags-list">'
       sinGrupo.forEach(function(s) {
         var sn = s.sinonimo || ''
         html += '<a href="javascript:void(0)" data-navegar="' + sn.replace(/"/g,'&quot;') + '" class="tag">' + sn + '</a>'
       })
-      html += '</div>'
+      html += '</div></div>'
     }
 
-    // Votos
+    // ── Votos ──
     html += '<div class="contrib-votos">'
-    html += '<button class="voto-btn' + (meuVoto==='like'?' like-ativo':'') + '" onclick="votar(' + sigId0 + ',\'like\',this)">👍 <span class="voto-num">' + totalLike + '</span></button>'
-    html += '<button class="voto-btn' + (meuVoto==='dislike'?' dislike-ativo':'') + '" onclick="votar(' + sigId0 + ',\'dislike\',this)">👎 <span class="voto-num">' + totalDislike + '</span></button>'
+    html += '<button class="voto-btn' + (meuVoto==='like' ? ' like-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'like\',this)">👍 <span class="voto-num">' + totalLike + '</span></button>'
+    html += '<button class="voto-btn' + (meuVoto==='dislike' ? ' dislike-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'dislike\',this)">👎 <span class="voto-num">' + totalDislike + '</span></button>'
     if (totalLike + totalDislike > 0) {
-      var score = totalLike - totalDislike
-      html += '<span class="voto-score">' + (score > 0 ? '+' : '') + score + ' pontos</span>'
+      html += '<span class="voto-score">' + (score > 0 ? '+' : '') + score + ' pts</span>'
     }
     html += '</div>'
 
     html += '</div>' // fim contrib-card
   })
 
-  html += '</div>'
-  html += '<button class="btn-novo-sig" onclick="abrirModal()" style="margin-top:4px;">✍️ Conhece outro significado? Envie o seu!</button>'
+  html += '</div>' // fim contrib-wrap
+
+  html += '<div class="btn-novo-sig-wrap"><button class="btn-novo-sig" onclick="abrirModal()">✍️ Conhece outro significado? Envie o seu!</button></div>'
   return html
 }
 
