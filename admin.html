@@ -844,38 +844,62 @@ function verContribuicao(contrib, palavra) {
   document.getElementById('modal-contribuicao').classList.add('aberto')
 }
 
+function renderExtraEdit(extra, sigIdx, extraIdx) {
+  return `<div class="mc-extra-bloco" data-sig="${sigIdx}" data-extra="${extraIdx}" style="background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;margin-top:8px;position:relative;">
+    <button onclick="removerExtraEdit(this)" style="position:absolute;top:6px;right:6px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:800;cursor:pointer;">✕</button>
+    <input class="mc-extra-titulo" type="text" value="${(extra.titulo||'').replace(/"/g,'&quot;')}" placeholder="Título (ex: Origem, Curiosidade...)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:Bangers,cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;">
+    <textarea class="mc-extra-texto" placeholder="Texto adicional..." style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:13px;resize:vertical;min-height:50px;">${(extra.texto||'').replace(/</g,'&lt;')}</textarea>
+  </div>`
+}
+
+function removerExtraEdit(btn) {
+  btn.closest('.mc-extra-bloco').remove()
+}
+
+function adicionarExtraEdit(btn) {
+  const wrap = btn.closest('.mc-sig-wrap')
+  const sigIdx = wrap.dataset.sig
+  const extrasDiv = wrap.querySelector('.mc-extras-wrap')
+  const extraIdx = extrasDiv.querySelectorAll('.mc-extra-bloco').length
+  extrasDiv.insertAdjacentHTML('beforeend', renderExtraEdit({titulo:'',texto:''}, sigIdx, extraIdx))
+}
+
 function ativarEdicaoContrib() {
   if (!_contribAtual) return
   document.getElementById('mc-modo-ver').style.display = 'none'
   document.getElementById('mc-modo-editar').style.display = 'block'
 
-  // Preencher textareas de significados
   const editSigs = document.getElementById('mc-edit-sigs')
   try {
     const sigs = JSON.parse(_contribAtual.significados || '[]')
     editSigs.innerHTML = sigs.map((s, i) => {
       let texto = s.descricao
-      if (texto.indexOf('[extras]') !== -1) texto = texto.split('[extras]')[0].trim()
-      return `<div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:5px;">SIGNIFICADO ${i+1}</div>
-        <textarea class="mc-sig-edit" data-index="${i}" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;">${texto}</textarea>
+      let extras = []
+      if (texto.indexOf('[extras]') !== -1) {
+        const parts = texto.split('[extras]')
+        texto = parts[0].trim()
+        try { extras = JSON.parse(parts[1]) } catch(e) {}
+      }
+      const extrasHtml = extras.map((ex, ei) => renderExtraEdit(ex, i, ei)).join('')
+      return `<div class="mc-sig-wrap" data-sig="${i}" style="margin-bottom:16px;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;">
+        <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:6px;">SIGNIFICADO ${i+1}</div>
+        <textarea class="mc-sig-edit" style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;resize:vertical;min-height:75px;">${texto.replace(/</g,'&lt;')}</textarea>
+        <div class="mc-extras-wrap">${extrasHtml}</div>
+        <button onclick="adicionarExtraEdit(this)" style="margin-top:8px;background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.25);color:var(--ciano);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:800;cursor:pointer;">➕ Adicionar título extra</button>
       </div>`
     }).join('')
   } catch(e) {}
 
-  // Preencher exemplos
   try {
     const exs = JSON.parse(_contribAtual.exemplos || '[]')
     document.getElementById('mc-edit-exemplos').value = exs.join('\n')
   } catch(e) {}
 
-  // Preencher sinônimos
   try {
     const sins = JSON.parse(_contribAtual.sinonimos || '[]')
     document.getElementById('mc-edit-sinonimos').value = sins.join(', ')
   } catch(e) {}
 
-  // Trocar botões
   const btns = document.getElementById('mc-btns')
   btns.innerHTML = `
     <button class="btn-cancelar" onclick="cancelarEdicaoContrib()">← VOLTAR</button>
@@ -898,20 +922,19 @@ function cancelarEdicaoContrib() {
 async function salvarEdicaoContrib() {
   if (!_contribAtual) return
 
-  // Coletar significados editados
-  const sigEls = document.getElementById('mc-edit-sigs').querySelectorAll('.mc-sig-edit')
-  const sigsOriginais = JSON.parse(_contribAtual.significados || '[]')
-  const novosSigs = [...sigEls].map((el, i) => {
-    const texto = el.value.trim()
-    // Preservar extras originais se existirem
-    const original = sigsOriginais[i]?.descricao || ''
-    const temExtras = original.indexOf('[extras]') !== -1
-    if (temExtras) {
-      const extras = original.split('[extras]')[1]
-      return { descricao: texto + '\n\n[extras]' + extras, ordem: i + 1 }
-    }
-    return { descricao: texto, ordem: i + 1 }
-  }).filter(s => s.descricao.trim())
+  // Coletar significados + extras do DOM
+  const sigWraps = document.getElementById('mc-edit-sigs').querySelectorAll('.mc-sig-wrap')
+  const novosSigs = [...sigWraps].map((wrap, i) => {
+    const texto = wrap.querySelector('.mc-sig-edit').value.trim()
+    if (!texto) return null
+    const extrasEls = wrap.querySelectorAll('.mc-extra-bloco')
+    const extras = [...extrasEls].map(ex => ({
+      titulo: ex.querySelector('.mc-extra-titulo').value.trim(),
+      texto: ex.querySelector('.mc-extra-texto').value.trim()
+    })).filter(ex => ex.titulo || ex.texto)
+    const descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
+    return { descricao, ordem: i + 1 }
+  }).filter(Boolean)
 
   const novosExemplos = document.getElementById('mc-edit-exemplos').value
     .split('\n').map(e => e.trim()).filter(Boolean)
