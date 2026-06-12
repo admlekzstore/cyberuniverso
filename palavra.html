@@ -91,6 +91,55 @@
   .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;}
   .btn-novo-sig{display:flex;align-items:center;gap:8px;background:rgba(163,255,74,0.08);border:1.5px dashed rgba(163,255,74,0.35);color:#a3ff4a;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;margin-top:4px;text-decoration:none;}
   .btn-novo-sig:hover{background:rgba(163,255,74,0.15);}
+
+  /* ── CONTRIBUIÇÕES ── */
+  .contrib-sep{display:flex;align-items:center;gap:10px;margin:20px 0 18px;}
+  .contrib-num{font-family:'Bangers',cursive;font-size:18px;color:var(--ciano);letter-spacing:2px;white-space:nowrap;}
+  .contrib-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,234,255,0.4),transparent);}
+  .contrib-autor{font-size:12px;color:#4a6fa5;font-weight:700;white-space:nowrap;}
+  .contrib-bloco{margin-bottom:8px;}
+
+  /* ── MODAL NOVO SIGNIFICADO ── */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto;}
+  .modal-overlay.aberto{display:flex;}
+  .modal-box{background:var(--card);border:1px solid var(--borda);border-radius:18px;padding:28px;width:100%;max-width:640px;position:relative;overflow:hidden;animation:fadeUp 0.3s ease both;}
+  .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#a3ff4a,var(--ciano),transparent);}
+  .modal-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:#a3ff4a;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:#4a6fa5;margin-bottom:22px;line-height:1.5;}
+  .modal-palavra{color:var(--ciano);font-weight:900;}
+  .modal-fechar{position:absolute;top:16px;right:16px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:800;font-size:14px;}
+  .modal-fechar:hover{background:#ff5050;color:#fff;}
+  .m-campo{margin-bottom:14px;}
+  .m-campo label{display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+  .m-campo input,.m-campo textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .m-campo input:focus,.m-campo textarea:focus{border-color:#a3ff4a;}
+  .m-campo textarea{resize:vertical;min-height:90px;}
+  .m-campo input::placeholder,.m-campo textarea::placeholder{color:#2a4a7a;}
+  .m-sig-extras{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .m-extra-item{background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;position:relative;}
+  .m-extra-titulo{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:'Bangers',cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;}
+  .m-extra-titulo::placeholder{color:#2a4a7a;font-family:'Nunito',sans-serif;font-size:12px;letter-spacing:0;}
+  .m-extra-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:55px;}
+  .m-extra-texto::placeholder{color:#2a4a7a;}
+  .m-btn-rem-extra{position:absolute;top:6px;right:6px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:800;cursor:pointer;}
+  .m-lista-din{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+  .m-lista-item{display:flex;gap:8px;}
+  .m-lista-item input{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 13px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .m-lista-item input:focus{border-color:#a3ff4a;}
+  .m-btn-rem{background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;}
+  .m-btn-add{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.08);border:1.5px dashed rgba(26,110,245,0.3);color:#4a8aff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;width:100%;justify-content:center;margin-bottom:14px;}
+  .m-btn-add:hover{background:rgba(26,110,245,0.15);}
+  .m-btn-add-sub{background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.25);color:var(--ciano);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:800;cursor:pointer;margin-top:8px;}
+  .m-apelido-row{display:flex;gap:10px;align-items:flex-end;}
+  .m-apelido-row .m-campo{flex:1;margin-bottom:0;}
+  .m-apelido-info{font-size:12px;color:#4a6fa5;padding-bottom:4px;}
+  .btn-m-enviar{width:100%;background:linear-gradient(135deg,#a3ff4a,#64ff96);color:#05080f;border:none;border-radius:12px;padding:14px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;cursor:pointer;margin-top:8px;transition:all 0.2s;}
+  .btn-m-enviar:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(163,255,74,0.3);}
+  .btn-m-enviar:disabled{background:#1a3a6e;color:#4a6fa5;cursor:not-allowed;transform:none;box-shadow:none;}
+  .modal-sucesso{display:none;text-align:center;padding:30px 10px;}
+  .modal-sucesso .ms-emoji{font-size:60px;margin-bottom:14px;}
+  .modal-sucesso h3{font-family:'Bangers',cursive;font-size:28px;color:#a3ff4a;letter-spacing:2px;margin-bottom:10px;}
+  .modal-sucesso p{font-size:14px;color:#7ab0ff;line-height:1.6;}
   .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
   .alfa-grupo.direita{text-align:right;align-items:flex-end;}
@@ -157,6 +206,70 @@
     <div class="sidebar-card" id="sidebarRecentes"><div class="sidebar-title">🆕 Últimas Adicionadas</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
   </aside>
 </div>
+<!-- MODAL NOVO SIGNIFICADO -->
+<div class="modal-overlay" id="modalNovoSig">
+  <div class="modal-box">
+    <button class="modal-fechar" onclick="fecharModal()">✕ Fechar</button>
+    <!-- FORMULÁRIO -->
+    <div id="modalForm">
+      <div class="modal-titulo">✍️ NOVO SIGNIFICADO</div>
+      <p class="modal-sub">Você está contribuindo com um novo significado para <span class="modal-palavra" id="modalPalavraExibida"></span>. Sua contribuição será revisada antes de aparecer no site.</p>
+
+      <!-- Apelido -->
+      <div id="modalApelidoWrap" class="m-campo">
+        <label>Seu apelido <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <input type="text" id="m-apelido" placeholder="ex: João, Anônimo... (ou deixe em branco)">
+      </div>
+
+      <!-- Significados -->
+      <div class="m-campo">
+        <label>Significado <span style="color:#f5e800;">*</span></label>
+        <div id="m-lista-sigs">
+          <div class="m-sig-wrap" style="margin-bottom:12px;">
+            <textarea class="m-sig-texto" placeholder="Descreva o significado..." style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:90px;"></textarea>
+            <div class="m-sig-extras"></div>
+            <button class="m-btn-add-sub" onclick="mAdicionarExtra(this)">➕ Adicionar título extra (Origem, Curiosidade...)</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarSig()">➕ Adicionar outro significado</button>
+      </div>
+
+      <!-- Exemplos -->
+      <div class="m-campo">
+        <label>Exemplos em frases <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <div class="m-lista-din" id="m-lista-exemplos">
+          <div class="m-lista-item">
+            <input type="text" placeholder='Ex: "Usa a palavra em uma frase..."'>
+            <button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarExemplo()">➕ Adicionar exemplo</button>
+      </div>
+
+      <!-- Sinônimos -->
+      <div class="m-campo">
+        <label>Sinônimos <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <div class="m-lista-din" id="m-lista-sinonimos">
+          <div class="m-lista-item">
+            <input type="text" placeholder="ex: Bora, Vamo...">
+            <button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarSinonimo()">➕ Adicionar sinônimo</button>
+      </div>
+
+      <button class="btn-m-enviar" id="btnMEnviar" onclick="enviarNovoSignificado()">🚀 ENVIAR CONTRIBUIÇÃO</button>
+    </div>
+    <!-- SUCESSO -->
+    <div class="modal-sucesso" id="modalSucesso">
+      <div class="ms-emoji">🎉</div>
+      <h3>CONTRIBUIÇÃO ENVIADA!</h3>
+      <p>Valeu! Seu significado foi enviado e será revisado pela equipe do CyberUniverso.<br>Se aprovado, aparecerá nessa página em breve.</p>
+      <button class="btn-m-enviar" style="margin-top:20px;max-width:280px;margin-left:auto;margin-right:auto;display:block;" onclick="fecharModal()">✔ Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase.js"></script>
 <script>
@@ -476,22 +589,57 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
 
 function renderSignificados(sigs, termo) {
   var html = '<div class="card"><div class="card-title">📖 Significado</div>'
-  sigs.forEach(function(s, i) {
-    var texto = s.descricao
-    var extras = []
-    if (texto && texto.indexOf('[extras]') !== -1) {
-      var parts = texto.split('[extras]')
-      texto = parts[0].trim()
-      try { extras = JSON.parse(parts[1]) } catch(e) {}
+
+  // Agrupar por contribuição (campo contrib_id se existir, senão tudo na contrib 1)
+  // Estrutura esperada: sig.contrib_id, sig.contrib_autor, sig.contrib_apelido
+  // Se não tiver contrib_id, exibe tudo como uma única contribuição (comportamento atual)
+  var grupos = []
+  sigs.forEach(function(s) {
+    var cid = s.contrib_id || 'original'
+    var idx = grupos.findIndex(function(g) { return g.id === cid })
+    if (idx === -1) {
+      grupos.push({ id: cid, autor: s.contrib_autor || s.contrib_apelido || null, sigs: [s] })
+    } else {
+      grupos[idx].sigs.push(s)
     }
-    html += '<div class="significado-bloco"><div class="sig-header"><div class="sig-numero">' + (i+1) + '</div></div><p class="significado-text">' + texto.replace(/\n/g, '<br>') + '</p>'
-    extras.forEach(function(ex) {
-      if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
-      if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
-    })
-    html += '</div>'
   })
-  html += '<a class="btn-novo-sig" href="enviar.html?termo=' + encodeURIComponent(termo) + '">✍️ Conhece outro significado? Envie o seu!</a>'
+
+  grupos.forEach(function(grupo, gi) {
+    var numStr = '//' + String(gi + 1).padStart(2, '0')
+    if (gi > 0) {
+      // separador visual entre contribuições
+      html += '<div class="contrib-sep">'
+      html += '<span class="contrib-num">' + numStr + '</span>'
+      html += '<div class="contrib-line"></div>'
+      if (grupo.autor) html += '<span class="contrib-autor">por ' + grupo.autor + '</span>'
+      html += '</div>'
+    } else {
+      // primeiro significado: número sutil acima
+      html += '<div style="font-family:\'Bangers\',cursive;font-size:14px;color:rgba(0,234,255,0.45);letter-spacing:2px;margin-bottom:10px;">' + numStr + '</div>'
+    }
+
+    grupo.sigs.forEach(function(s, i) {
+      var texto = s.descricao
+      var extras = []
+      if (texto && texto.indexOf('[extras]') !== -1) {
+        var parts = texto.split('[extras]')
+        texto = parts[0].trim()
+        try { extras = JSON.parse(parts[1]) } catch(e) {}
+      }
+      html += '<div class="significado-bloco contrib-bloco">'
+      if (grupo.sigs.length > 1) {
+        html += '<div class="sig-header"><div class="sig-numero">' + (i + 1) + '</div></div>'
+      }
+      html += '<p class="significado-text">' + texto.replace(/\n/g, '<br>') + '</p>'
+      extras.forEach(function(ex) {
+        if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
+        if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
+      })
+      html += '</div>'
+    })
+  })
+
+  html += '<button class="btn-novo-sig" onclick="abrirModal()">✍️ Conhece outro significado? Envie o seu!</button>'
   html += '</div>'
   return html
 }
@@ -697,6 +845,128 @@ function formatarData(str) {
 
 function copiarLink() { navigator.clipboard.writeText(window.location.href).then(function() { alert('Link copiado! 🔗') }) }
 function buscarSidebar() { var val = document.getElementById('sidebarBusca').value.trim(); if (val) window.location.href = 'todas.html?busca=' + encodeURIComponent(val) }
+
+// ── MODAL NOVO SIGNIFICADO ──
+function abrirModal() {
+  var modal = document.getElementById('modalNovoSig')
+  var p = document.getElementById('modalPalavraExibida')
+  if (p) {
+    var titulo = document.getElementById('palavraTitulo')
+    p.textContent = titulo ? '"' + titulo.textContent + '"' : 'esta palavra'
+  }
+  document.getElementById('modalForm').style.display = 'block'
+  document.getElementById('modalSucesso').style.display = 'none'
+  var apelidoWrap = document.getElementById('modalApelidoWrap')
+  if (apelidoWrap) apelidoWrap.style.display = userSession ? 'none' : 'block'
+  modal.classList.add('aberto')
+  document.body.style.overflow = 'hidden'
+}
+
+function fecharModal() {
+  document.getElementById('modalNovoSig').classList.remove('aberto')
+  document.body.style.overflow = ''
+}
+
+document.getElementById('modalNovoSig').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal()
+})
+
+function mAdicionarExtra(btn) {
+  var extrasDiv = btn.previousElementSibling
+  var div = document.createElement('div')
+  div.className = 'm-extra-item'
+  div.innerHTML = '<button class="m-btn-rem-extra" onclick="this.parentElement.remove()">✕</button>' +
+    '<input class="m-extra-titulo" type="text" placeholder="Título adicional (ex: Origem, Curiosidade...)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:Bangers,cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;">' +
+    '<textarea class="m-extra-texto" placeholder="Texto adicional..." style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:13px;resize:vertical;min-height:55px;"></textarea>'
+  extrasDiv.appendChild(div)
+}
+
+function mAdicionarSig() {
+  var lista = document.getElementById('m-lista-sigs')
+  var num = lista.querySelectorAll('.m-sig-wrap').length + 1
+  var div = document.createElement('div')
+  div.className = 'm-sig-wrap'
+  div.style.marginBottom = '12px'
+  div.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+    '<span style="font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:1px;">SIGNIFICADO ' + num + '</span>' +
+    '<button style="background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;" onclick="this.closest(\'.m-sig-wrap\').remove()">✕</button></div>' +
+    '<textarea class="m-sig-texto" placeholder="Descreva o significado..." style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>' +
+    '<div class="m-sig-extras"></div>' +
+    '<button class="m-btn-add-sub" onclick="mAdicionarExtra(this)">➕ Adicionar título extra</button>'
+  lista.appendChild(div)
+}
+
+function mAdicionarExemplo() {
+  var div = document.createElement('div')
+  div.className = 'm-lista-item'
+  div.innerHTML = '<input type="text" placeholder=\'Ex: "Usa a palavra em uma frase..."\'><button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>'
+  document.getElementById('m-lista-exemplos').appendChild(div)
+}
+
+function mAdicionarSinonimo() {
+  var div = document.createElement('div')
+  div.className = 'm-lista-item'
+  div.innerHTML = '<input type="text" placeholder="Sinônimo..."><button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>'
+  document.getElementById('m-lista-sinonimos').appendChild(div)
+}
+
+function mRemItem(btn) {
+  var lista = btn.closest('.m-lista-din')
+  if (lista && lista.querySelectorAll('.m-lista-item').length > 1) btn.closest('.m-lista-item').remove()
+}
+
+async function enviarNovoSignificado() {
+  var btn = document.getElementById('btnMEnviar')
+  var blocos = document.getElementById('m-lista-sigs').querySelectorAll('.m-sig-wrap')
+  var significados = []
+  blocos.forEach(function(bloco, i) {
+    var textoEl = bloco.querySelector('.m-sig-texto')
+    var texto = textoEl ? textoEl.value.trim() : ''
+    if (!texto) return
+    var extras = []
+    bloco.querySelectorAll('.m-extra-item').forEach(function(ex) {
+      var tit = ex.querySelector('.m-extra-titulo') ? ex.querySelector('.m-extra-titulo').value.trim() : ''
+      var txt = ex.querySelector('.m-extra-texto') ? ex.querySelector('.m-extra-texto').value.trim() : ''
+      if (tit || txt) extras.push({ titulo: tit, texto: txt })
+    })
+    var descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
+    significados.push({ descricao: descricao, ordem: i + 1 })
+  })
+
+  if (!significados.length) { alert('⚠️ Escreva pelo menos um significado!'); return }
+
+  var exemplos = [...document.getElementById('m-lista-exemplos').querySelectorAll('input')]
+    .map(function(i) { return i.value.trim() }).filter(Boolean)
+  var sinonimos = [...document.getElementById('m-lista-sinonimos').querySelectorAll('input')]
+    .map(function(i) { return i.value.trim() }).filter(Boolean)
+
+  var apelido = 'Visitante'
+  if (!userSession) {
+    var apelidoEl = document.getElementById('m-apelido')
+    apelido = (apelidoEl && apelidoEl.value.trim()) ? apelidoEl.value.trim() : 'Visitante'
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Enviando...'
+
+  var { error } = await sb.from('contribuicoes_significado').insert({
+    palavra_id: palavraId,
+    usuario_id: userSession ? userSession.user.id : null,
+    enviado_por: userSession ? null : apelido,
+    status: 'pendente',
+    significados: JSON.stringify(significados),
+    exemplos: JSON.stringify(exemplos),
+    sinonimos: JSON.stringify(sinonimos)
+  })
+
+  btn.disabled = false
+  btn.textContent = '🚀 ENVIAR CONTRIBUIÇÃO'
+
+  if (error) { alert('Erro ao enviar: ' + error.message); return }
+
+  document.getElementById('modalForm').style.display = 'none'
+  document.getElementById('modalSucesso').style.display = 'block'
+}
 
 init()
 </script>
