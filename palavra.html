@@ -626,60 +626,134 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
   ajustarTitulo()
 }
 
-function renderSignificados(sigs, termo) {
-  var html = '<div class="card"><div class="card-title">📖 Significado</div>'
+function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPerfisMap, votosPorSig, meuVotoPorSig) {
+  exemplosTodos = exemplosTodos || []
+  sionimosTodos = sionimosTodos || []
+  contribPerfisMap = contribPerfisMap || {}
+  votosPorSig = votosPorSig || {}
+  meuVotoPorSig = meuVotoPorSig || {}
 
-  // Agrupar por contribuição (campo contrib_id se existir, senão tudo na contrib 1)
-  // Estrutura esperada: sig.contrib_id, sig.contrib_autor, sig.contrib_apelido
-  // Se não tiver contrib_id, exibe tudo como uma única contribuição (comportamento atual)
+  // Agrupar significados por contrib_id
   var grupos = []
   sigs.forEach(function(s) {
-    var cid = s.contrib_id || 'original'
+    var cid = s.contrib_id != null ? s.contrib_id : 'original'
     var idx = grupos.findIndex(function(g) { return g.id === cid })
     if (idx === -1) {
-      grupos.push({ id: cid, autor: s.contrib_autor || s.contrib_apelido || null, sigs: [s] })
+      grupos.push({ id: cid, contribAutorUid: s.contrib_autor || null, contribApelido: s.contrib_apelido || null, criadoEm: s.criado_em || null, sigs: [s] })
     } else {
       grupos[idx].sigs.push(s)
     }
   })
 
+  // Ordenar: original primeiro, depois por score
+  grupos.sort(function(a, b) {
+    if (a.id === 'original') return -1
+    if (b.id === 'original') return 1
+    var scoreA = a.sigs.reduce(function(acc, s) { var v = votosPorSig[s.id] || {}; return acc + (v.like||0) - (v.dislike||0) }, 0)
+    var scoreB = b.sigs.reduce(function(acc, s) { var v = votosPorSig[s.id] || {}; return acc + (v.like||0) - (v.dislike||0) }, 0)
+    if (scoreB !== scoreA) return scoreB - scoreA
+    return new Date(a.criadoEm || 0) - new Date(b.criadoEm || 0)
+  })
+
+  var html = '<div id="contrib-cards-wrap">'
+
   grupos.forEach(function(grupo, gi) {
     var numStr = '//' + String(gi + 1).padStart(2, '0')
-    if (gi > 0) {
-      // separador visual entre contribuições
-      html += '<div class="contrib-sep">'
-      html += '<span class="contrib-num">' + numStr + '</span>'
-      html += '<div class="contrib-line"></div>'
-      if (grupo.autor) html += '<span class="contrib-autor">por ' + grupo.autor + '</span>'
-      html += '</div>'
-    } else {
-      // primeiro significado: número sutil acima
-      html += '<div style="font-family:\'Bangers\',cursive;font-size:14px;color:rgba(0,234,255,0.45);letter-spacing:2px;margin-bottom:10px;">' + numStr + '</div>'
+
+    // Nome do autor
+    var nomeAutor = null, linkAutor = null
+    if (grupo.contribAutorUid && contribPerfisMap[grupo.contribAutorUid]) {
+      var perf = contribPerfisMap[grupo.contribAutorUid]
+      nomeAutor = perf.exibir_como === 'nome' && perf.nome ? perf.nome : '@' + (perf.username || 'usuário')
+      linkAutor = 'perfil.html?id=' + grupo.contribAutorUid
+    } else if (grupo.contribApelido) {
+      nomeAutor = grupo.contribApelido
     }
 
+    var avatarLetra = nomeAutor ? nomeAutor.replace('@','')[0].toUpperCase() : '?'
+    var dataHtml = grupo.criadoEm ? ' · ' + formatarData(grupo.criadoEm) : ''
+
+    // Votos totais do grupo
+    var totalLike = 0, totalDislike = 0
+    grupo.sigs.forEach(function(s) { var v = votosPorSig[s.id] || {}; totalLike += v.like||0; totalDislike += v.dislike||0 })
+    var sigId0 = grupo.sigs.length ? grupo.sigs[0].id : null
+    var meuVoto = sigId0 ? (meuVotoPorSig[sigId0] || null) : null
+
+    html += '<div class="contrib-card">'
+
+    // Header
+    html += '<div class="contrib-header">'
+    html += '<span class="contrib-num">' + numStr + '</span>'
+    if (nomeAutor) {
+      html += '<div class="contrib-avatar">' + avatarLetra + '</div>'
+      var autorLink = linkAutor ? '<a href="' + linkAutor + '" style="color:var(--ciano);text-decoration:none;font-weight:800;">' + nomeAutor + '</a>' : '<strong style="color:var(--ciano);">' + nomeAutor + '</strong>'
+      html += '<span class="contrib-meta">por ' + autorLink + '<span style="color:#2a4a7a;">' + dataHtml + '</span></span>'
+    } else if (dataHtml) {
+      html += '<span class="contrib-meta" style="color:#2a4a7a;">' + dataHtml + '</span>'
+    }
+    html += '</div>'
+
+    // Significados
     grupo.sigs.forEach(function(s, i) {
-      var texto = s.descricao
-      var extras = []
+      var texto = s.descricao, extras = []
       if (texto && texto.indexOf('[extras]') !== -1) {
         var parts = texto.split('[extras]')
         texto = parts[0].trim()
         try { extras = JSON.parse(parts[1]) } catch(e) {}
       }
-      html += '<div class="significado-bloco contrib-bloco">'
-      if (grupo.sigs.length > 1) {
-        html += '<div class="sig-header"><div class="sig-numero">' + (i + 1) + '</div></div>'
-      }
-      html += '<p class="significado-text">' + texto.replace(/\n/g, '<br>') + '</p>'
+      if (grupo.sigs.length > 1) html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="sig-numero">' + (i+1) + '</div></div>'
+      html += '<p class="contrib-sig">' + texto.replace(/\n/g, '<br>') + '</p>'
       extras.forEach(function(ex) {
         if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
         if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
       })
-      html += '</div>'
     })
+
+    // Exemplos: grupo original = todos sem contrib_id (ou seja, tudo que veio da tabela)
+    // Contribuições futuras terão contrib_id nas tabelas exemplos/sinonimos
+    var exGrupo = grupo.id === 'original'
+      ? exemplosTodos.filter(function(e) { return !e.contrib_id })
+      : exemplosTodos.filter(function(e) { return String(e.contrib_id) === String(grupo.id) })
+    // fallback: se grupo original e todos sem contrib_id retornou vazio, pega todos
+    if (grupo.id === 'original' && exGrupo.length === 0 && exemplosTodos.length > 0) {
+      exGrupo = exemplosTodos
+    }
+    if (exGrupo.length) {
+      html += '<div class="contrib-secao-label">💬 Exemplos</div>'
+      exGrupo.forEach(function(e) { html += '<div class="exemplo">— ' + (e.frase || '') + '</div>' })
+    }
+
+    // Sinônimos
+    var sinGrupo = grupo.id === 'original'
+      ? sionimosTodos.filter(function(s) { return !s.contrib_id })
+      : sionimosTodos.filter(function(s) { return String(s.contrib_id) === String(grupo.id) })
+    if (grupo.id === 'original' && sinGrupo.length === 0 && sionimosTodos.length > 0) {
+      sinGrupo = sionimosTodos
+    }
+    if (sinGrupo.length) {
+      html += '<div class="contrib-secao-label">🔄 Sinônimos</div><div class="tags-list" style="margin-bottom:4px;">'
+      sinGrupo.forEach(function(s) {
+        var sn = s.sinonimo || ''
+        html += '<a href="javascript:void(0)" data-navegar="' + sn.replace(/"/g,'&quot;') + '" class="tag">' + sn + '</a>'
+      })
+      html += '</div>'
+    }
+
+    // Votos
+    html += '<div class="contrib-votos">'
+    html += '<button class="voto-btn' + (meuVoto==='like'?' like-ativo':'') + '" onclick="votar(' + sigId0 + ',\'like\',this)">👍 <span class="voto-num">' + totalLike + '</span></button>'
+    html += '<button class="voto-btn' + (meuVoto==='dislike'?' dislike-ativo':'') + '" onclick="votar(' + sigId0 + ',\'dislike\',this)">👎 <span class="voto-num">' + totalDislike + '</span></button>'
+    if (totalLike + totalDislike > 0) {
+      var score = totalLike - totalDislike
+      html += '<span class="voto-score">' + (score > 0 ? '+' : '') + score + ' pontos</span>'
+    }
+    html += '</div>'
+
+    html += '</div>' // fim contrib-card
   })
 
-  html += '<button class="btn-novo-sig" onclick="abrirModal()">✍️ Conhece outro significado? Envie o seu!</button>'
   html += '</div>'
+  html += '<button class="btn-novo-sig" onclick="abrirModal()" style="margin-top:4px;">✍️ Conhece outro significado? Envie o seu!</button>'
   return html
 }
 
