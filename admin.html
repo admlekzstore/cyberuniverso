@@ -162,6 +162,7 @@
     <a class="nav-item" onclick="irPara('categorias')">
       <span class="nav-item-icon">🗂️</span> Categorias
     </a>
+    <a class="nav-item" onclick="irPara('contribuicoes')"><span class="nav-item-icon">✍️</span> Contribuições<span class="nav-badge" id="badge-contribuicoes">0</span></a>
     <div class="nav-section">Comunidade</div>
     <a class="nav-item" onclick="irPara('usuarios')">
       <span class="nav-item-icon">👥</span> Usuários
@@ -203,6 +204,7 @@
         <div class="stat-card verde"><div class="stat-icon">👥</div><div class="stat-num" id="stat-usuarios">—</div><div class="stat-label">Usuários cadastrados</div></div>
         <div class="stat-card amarelo"><div class="stat-icon">💬</div><div class="stat-num" id="stat-comentarios">—</div><div class="stat-label">Comentários</div></div>
         <div class="stat-card vermelho"><div class="stat-icon">⏳</div><div class="stat-num" id="stat-pendentes">—</div><div class="stat-label">Pendentes de aprovação</div></div>
+        <div class="stat-card azul"><div class="stat-icon">✍️</div><div class="stat-num" id="stat-contribuicoes">—</div><div class="stat-label">Contribuições pendentes</div></div>
       </div>
       <div class="tabela-wrap">
         <div class="tabela-header">
@@ -283,6 +285,21 @@
           <table>
             <thead><tr><th>Comentário</th><th>Palavra</th><th>Data</th><th>Ações</th></tr></thead>
             <tbody id="tbody-comentarios"><tr><td colspan="4" class="vazio-msg">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="secao" id="sec-contribuicoes">
+      <div class="tabela-wrap">
+        <div class="tabela-header">
+          <div class="tabela-titulo">✍️ CONTRIBUIÇÕES DE SIGNIFICADO</div>
+          <input class="busca-tabela" placeholder="Buscar palavra..." oninput="filtrarTabela('tbody-contribuicoes', this.value)">
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Palavra</th><th>Enviado por</th><th>Prévia</th><th>Data</th><th>Ações</th></tr></thead>
+            <tbody id="tbody-contribuicoes"><tr><td colspan="5" class="vazio-msg">Carregando...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -397,22 +414,26 @@ async function carregarTudo() {
     carregarCategorias(),
     carregarUsuarios(),
     carregarComentarios(),
+    carregarContribuicoes(),
   ])
 }
 
 // ── STATS ──
 async function carregarStats() {
-  const [{ count: aprovadas }, { count: pendentes }, { count: usuarios }, { count: comentarios }] = await Promise.all([
+  const [{ count: aprovadas }, { count: pendentes }, { count: usuarios }, { count: comentarios }, { count: contribuicoes }] = await Promise.all([
     sb.from('palavras').select('*', { count: 'exact', head: true }).eq('status', 'aprovada'),
     sb.from('palavras').select('*', { count: 'exact', head: true }).eq('status', 'pendente'),
     sb.from('perfis').select('*', { count: 'exact', head: true }),
     sb.from('comentarios').select('*', { count: 'exact', head: true }),
+    sb.from('contribuicoes_significado').select('*', { count: 'exact', head: true }).eq('status', 'pendente'),
   ])
   document.getElementById('stat-aprovadas').textContent = aprovadas || 0
   document.getElementById('stat-pendentes').textContent = pendentes || 0
   document.getElementById('stat-usuarios').textContent = usuarios || 0
   document.getElementById('stat-comentarios').textContent = comentarios || 0
+  document.getElementById('stat-contribuicoes').textContent = contribuicoes || 0
   document.getElementById('badge-pendentes').textContent = pendentes || 0
+  document.getElementById('badge-contribuicoes').textContent = contribuicoes || 0
 }
 
 // ── PENDENTES ──
@@ -707,11 +728,188 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('aberto') })
 })
 
+// ── CONTRIBUIÇÕES ──
+async function carregarContribuicoes() {
+  const { data } = await sb.from('contribuicoes_significado')
+    .select('id, palavra_id, enviado_por, usuario_id, status, significados, exemplos, sinonimos, criado_em')
+    .order('criado_em', { ascending: false })
+
+  // buscar nomes das palavras
+  const pids = [...new Set((data || []).map(c => c.palavra_id).filter(Boolean))]
+  const pm = {}
+  if (pids.length) {
+    const { data: palavras } = await sb.from('palavras').select('id, termo, slug').in('id', pids)
+    ;(palavras || []).forEach(p => { pm[p.id] = p })
+  }
+
+  // buscar nomes dos usuários
+  const uids = [...new Set((data || []).map(c => c.usuario_id).filter(Boolean))]
+  const um = {}
+  if (uids.length) {
+    const { data: perfis } = await sb.from('perfis').select('id, username').in('id', uids)
+    ;(perfis || []).forEach(u => { um[u.id] = u })
+  }
+
+  const tbody = document.getElementById('tbody-contribuicoes')
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhuma contribuição ainda 🎉</td></tr>'
+    return
+  }
+  tbody.innerHTML = data.map(c => {
+    const palavra = pm[c.palavra_id]
+    const nomeAutor = c.usuario_id && um[c.usuario_id] ? '@' + um[c.usuario_id].username : (c.enviado_por || 'Visitante')
+    let previa = '—'
+    try {
+      const sigs = JSON.parse(c.significados || '[]')
+      if (sigs.length) previa = sigs[0].descricao.split('\n')[0].substring(0, 60) + (sigs[0].descricao.length > 60 ? '...' : '')
+    } catch(e) {}
+    const badgeClass = c.status === 'pendente' ? 'badge-pendente' : c.status === 'aprovada' ? 'badge-aprovado' : 'badge-rejeitado'
+    return `<tr id="row-contrib-${c.id}">
+      <td><strong>${palavra?.termo || '—'}</strong><br><span style="font-size:11px;color:#4a6fa5;">${palavra?.slug || ''}</span></td>
+      <td style="color:#4a6fa5">${nomeAutor}</td>
+      <td style="max-width:200px;font-size:13px;color:#7ab0ff;font-style:italic;">"${previa}"</td>
+      <td>${formatarData(c.criado_em)}</td>
+      <td><div class="acoes-cell">
+        <button class="btn-mini btn-editar" onclick="verContribuicao(${JSON.stringify(c).replace(/"/g, '&quot;')}, ${JSON.stringify(palavra || {}).replace(/"/g, '&quot;')})">👁️ Ver</button>
+        ${c.status === 'pendente' ? `
+        <button class="btn-mini btn-aprovar" onclick="aprovarContribuicao(${c.id}, this)">✓ Aprovar</button>
+        <button class="btn-mini btn-rejeitar" onclick="rejeitarContribuicao(${c.id}, this)">✗ Rejeitar</button>` : `<span class="badge-status ${badgeClass}">${c.status}</span>`}
+      </div></td>
+    </tr>`
+  }).join('')
+}
+
+let _contribAtual = null
+
+function verContribuicao(contrib, palavra) {
+  _contribAtual = contrib
+  document.getElementById('mc-palavra').textContent = palavra.termo || '—'
+  document.getElementById('mc-autor').textContent = contrib.enviado_por || 'usuário logado'
+  document.getElementById('mc-data').textContent = formatarData(contrib.criado_em)
+  document.getElementById('mc-status-badge').textContent = contrib.status
+  document.getElementById('mc-status-badge').className = 'badge-status badge-' + contrib.status
+
+  // Renderizar significados
+  let sigsHtml = ''
+  try {
+    const sigs = JSON.parse(contrib.significados || '[]')
+    sigs.forEach((s, i) => {
+      let texto = s.descricao
+      let extras = []
+      if (texto.indexOf('[extras]') !== -1) {
+        const parts = texto.split('[extras]')
+        texto = parts[0].trim()
+        try { extras = JSON.parse(parts[1]) } catch(e) {}
+      }
+      sigsHtml += `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--borda);">
+        <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:6px;">SIGNIFICADO ${i+1}</div>
+        <div style="font-size:15px;font-weight:700;color:#e8f4ff;line-height:1.6;">${texto.replace(/\n/g,'<br>')}</div>`
+      extras.forEach(ex => {
+        if (ex.titulo) sigsHtml += `<div style="font-family:'Fredoka One',cursive;color:#a3ff4a;margin-top:10px;">${ex.titulo}</div>`
+        if (ex.texto) sigsHtml += `<div style="font-size:14px;color:var(--texto);line-height:1.6;">${ex.texto.replace(/\n/g,'<br>')}</div>`
+      })
+      sigsHtml += '</div>'
+    })
+  } catch(e) { sigsHtml = '<span style="color:#ff5050">Erro ao ler significados</span>' }
+  document.getElementById('mc-significados').innerHTML = sigsHtml
+
+  // Exemplos
+  let exHtml = ''
+  try {
+    const exs = JSON.parse(contrib.exemplos || '[]')
+    exHtml = exs.length ? exs.map(e => `<div style="background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px;font-size:14px;font-style:italic;color:#b0ccff;">— ${e}</div>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum exemplo</span>'
+  } catch(e) { exHtml = '—' }
+  document.getElementById('mc-exemplos').innerHTML = exHtml
+
+  // Sinônimos
+  let sinHtml = ''
+  try {
+    const sins = JSON.parse(contrib.sinonimos || '[]')
+    sinHtml = sins.length ? sins.map(s => `<span style="background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;margin:3px;">${s}</span>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum sinônimo</span>'
+  } catch(e) { sinHtml = '—' }
+  document.getElementById('mc-sinonimos').innerHTML = sinHtml
+
+  // Botões de ação
+  const btns = document.getElementById('mc-btns')
+  if (contrib.status === 'pendente') {
+    btns.innerHTML = `
+      <button class="btn-cancelar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>
+      <button class="btn-mini btn-rejeitar" style="padding:10px 20px;font-size:15px;" onclick="rejeitarContribuicao(${contrib.id}, this)">✗ REJEITAR</button>
+      <button class="btn-salvar" onclick="aprovarContribuicao(${contrib.id}, this)">✓ APROVAR</button>`
+  } else {
+    btns.innerHTML = `<button class="btn-salvar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>`
+  }
+
+  document.getElementById('modal-contribuicao').classList.add('aberto')
+}
+
+async function aprovarContribuicao(id, btn) {
+  if (!confirm('Aprovar esta contribuição? Os significados, exemplos e sinônimos serão adicionados à palavra.')) return
+  btn.disabled = true
+  btn.textContent = 'Aprovando...'
+
+  // Buscar a contribuição
+  const { data: c } = await sb.from('contribuicoes_significado').select('*').eq('id', id).single()
+  if (!c) { mostrarToast('Contribuição não encontrada', 'erro'); btn.disabled = false; return }
+
+  // Contar significados existentes para definir ordem
+  const { count: ordemBase } = await sb.from('significados').select('*', { count: 'exact', head: true }).eq('palavra_id', c.palavra_id)
+
+  // Inserir significados
+  try {
+    const sigs = JSON.parse(c.significados || '[]')
+    for (let i = 0; i < sigs.length; i++) {
+      await sb.from('significados').insert({
+        palavra_id: c.palavra_id,
+        descricao: sigs[i].descricao,
+        ordem: (ordemBase || 0) + i + 1,
+        contrib_id: id,
+        contrib_apelido: c.enviado_por,
+        contrib_autor: c.usuario_id ? c.usuario_id : null
+      })
+    }
+  } catch(e) {}
+
+  // Inserir exemplos
+  try {
+    const exs = JSON.parse(c.exemplos || '[]')
+    for (const frase of exs) {
+      if (frase) await sb.from('exemplos').insert({ palavra_id: c.palavra_id, frase })
+    }
+  } catch(e) {}
+
+  // Inserir sinônimos
+  try {
+    const sins = JSON.parse(c.sinonimos || '[]')
+    for (const sinonimo of sins) {
+      if (sinonimo) await sb.from('sinonimos').insert({ palavra_id: c.palavra_id, sinonimo })
+    }
+  } catch(e) {}
+
+  // Marcar como aprovada
+  await sb.from('contribuicoes_significado').update({ status: 'aprovada' }).eq('id', id)
+
+  mostrarToast('✅ Contribuição aprovada e publicada!', 'sucesso')
+  document.getElementById('modal-contribuicao').classList.remove('aberto')
+  carregarContribuicoes()
+  carregarStats()
+}
+
+async function rejeitarContribuicao(id, btn) {
+  if (!confirm('Rejeitar esta contribuição?')) return
+  btn.disabled = true
+  await sb.from('contribuicoes_significado').update({ status: 'rejeitada' }).eq('id', id)
+  mostrarToast('✗ Contribuição rejeitada.', 'erro')
+  document.getElementById('modal-contribuicao').classList.remove('aberto')
+  carregarContribuicoes()
+  carregarStats()
+}
+
 // ── NAVEGAÇÃO ──
 const titulos = {
   dashboard:'📊 DASHBOARD', pendentes:'⏳ PENDENTES',
   palavras:'📖 TODAS AS PALAVRAS', categorias:'🗂️ CATEGORIAS',
-  usuarios:'👥 USUÁRIOS', comentarios:'💬 COMENTÁRIOS',
+  usuarios:'👥 USUÁRIOS', comentarios:'💬 COMENTÁRIOS', contribuicoes:'✍️ CONTRIBUIÇÕES',
 }
 
 function irPara(secao) {
@@ -838,6 +1036,27 @@ init()
       <button class="btn-cancelar" onclick="document.getElementById('modal-editar-subcat').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" onclick="salvarEdicaoSubcat()">SALVAR ✓</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-contribuicao">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-titulo">✍️ CONTRIBUIÇÃO</div>
+        <div style="font-size:13px;color:#4a6fa5;margin-top:2px;">Palavra: <strong style="color:var(--ciano)" id="mc-palavra"></strong> &nbsp;·&nbsp; por <strong style="color:#a3ff4a" id="mc-autor"></strong> &nbsp;·&nbsp; <span id="mc-data"></span> &nbsp;·&nbsp; <span id="mc-status-badge" class="badge-status"></span></div>
+      </div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:60vh;overflow-y:auto;">
+      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📖 Significados</div>
+      <div id="mc-significados" style="margin-bottom:18px;"></div>
+      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">💬 Exemplos</div>
+      <div id="mc-exemplos" style="margin-bottom:18px;"></div>
+      <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">🔄 Sinônimos</div>
+      <div id="mc-sinonimos" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+    <div class="modal-footer" id="mc-btns" style="gap:8px;"></div>
   </div>
 </div>
 </body>
