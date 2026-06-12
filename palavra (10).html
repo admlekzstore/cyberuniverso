@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">CyberDicionário</title>
+<meta name="description" id="metaDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
+<meta property="og:title" id="ogTitle" content="CyberDicionário">
+<meta property="og:description" id="ogDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
+<meta property="og:type" content="article">
+<meta property="og:url" id="ogUrl" content="">
+<meta property="og:site_name" content="CyberDicionário">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" id="twitterTitle" content="CyberDicionário">
+<meta name="twitter:description" id="twitterDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
+<meta name="robots" content="index, follow">
+<meta name="language" content="pt-BR">
+<link rel="canonical" id="canonicalUrl" href="">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--azul:#1a6ef5;--azul-escuro:#0d3fa6;--amarelo:#f5e800;--ciano:#00eaff;--fundo:#05080f;--card:#0a1628;--card2:#0d1f3c;--borda:#1a3a6e;--texto:#d0e4ff;}
+  body{font-family:'Nunito',sans-serif;background:var(--fundo);color:var(--texto);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .page-wrap{max-width:1100px;margin:0 auto;padding:90px 16px 60px;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a6fa5;margin-bottom:20px;flex-wrap:wrap;}
+  .breadcrumb a{color:#4a6fa5;text-decoration:none;}
+  .breadcrumb a:hover{color:var(--ciano);}
+  .palavra-titulo{font-family:'Bangers',cursive;font-size:clamp(28px,12vw,100px);line-height:1.05;letter-spacing:3px;color:var(--amarelo);text-shadow:4px 4px 0 var(--azul),8px 8px 0 var(--azul-escuro);-webkit-text-stroke:2px var(--azul);animation:titlePop 0.7s cubic-bezier(0.175,0.885,0.32,1.275) both;margin-bottom:16px;word-break:break-word;}
+  .palavra-titulo.curta{font-size:clamp(60px,15vw,100px);}
+  .palavra-titulo.media{font-size:clamp(40px,10vw,72px);}
+  .palavra-titulo.longa{font-size:clamp(28px,7vw,52px);}
+  .palavra-titulo.muito-longa{font-size:clamp(22px,5vw,38px);letter-spacing:1px;}
+  @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+  @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .pronuncia{font-size:14px;color:#4a8aff;font-weight:700;letter-spacing:2px;margin-bottom:16px;}
+  .pronuncia span{background:rgba(26,110,245,0.15);border:1px solid rgba(26,110,245,0.3);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:16px;}
+  .meta-info{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:nowrap;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;}
+  .meta-text{font-size:13px;color:#4a6fa5;}
+  .meta-text strong{color:var(--ciano);font-weight:800;}
+  .categorias{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .cat-tag{background:rgba(26,110,245,0.15);border:1.5px solid rgba(26,110,245,0.4);color:#7ab0ff;border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;text-decoration:none;text-transform:uppercase;transition:all 0.2s;}
+  .cat-tag:hover{background:var(--azul);color:#fff;}
+  .tags-section{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;align-items:center;}
+  .tags-label{font-size:11px;color:#2a4a7a;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+  .hash-tag{background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);color:#4ab8cc;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;}
+  .hash-tag:hover{background:rgba(0,234,255,0.15);color:var(--ciano);}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+  .badge{display:flex;align-items:center;gap:6px;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;}
+  .badge-nivel{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.3);color:var(--ciano);}
+  .badge-regiao{background:rgba(245,232,0,0.1);border:1px solid rgba(245,232,0,0.3);color:var(--amarelo);}
+  .badge-contexto{background:rgba(255,100,200,0.1);border:1px solid rgba(255,100,200,0.3);color:#ff64c8;}
+  .badge-epoca{background:rgba(100,255,150,0.1);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
+  .palavra-imagem{width:100%;border-radius:14px;overflow:hidden;margin-bottom:16px;border:1px solid var(--borda);}
+  .palavra-imagem img{width:100%;max-height:320px;object-fit:cover;display:block;}
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .card-title{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--ciano);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .significado-bloco{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--borda);}
+  .significado-bloco:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .sig-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .sig-numero{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;font-family:'Bangers',cursive;font-size:15px;}
+  .significado-text{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;}
+  .subtitulo{font-family:'Fredoka One',cursive;font-size:17px;color:#a3ff4a;margin:16px 0 8px;}
+  .origem-text{font-size:15px;color:var(--texto);line-height:1.7;}
+  .exemplo{background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:10px;font-size:15px;font-style:italic;color:#b0ccff;line-height:1.6;}
+  .tags-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag{background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--texto);text-decoration:none;transition:all 0.2s;}
+  .tag:hover{background:var(--azul);color:#fff;}
+  .reacoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .reacao-btn{background:var(--card2);border:1.5px solid var(--borda);border-radius:12px;padding:10px 18px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;min-width:70px;}
+  .reacao-btn:hover{border-color:var(--azul);transform:translateY(-3px);}
+  .reacao-btn.ativo{background:rgba(26,110,245,0.2);border-color:var(--azul);}
+  .reacao-emoji{font-size:26px;}
+  .reacao-count{font-size:13px;font-weight:800;color:var(--texto);}
+  .reacao-label{font-size:9px;color:#4a6fa5;font-weight:700;}
+
+
+  /* ── CONTRIBUIÇÕES ── */
+  .contrib-wrap{display:flex;flex-direction:column;gap:0;margin-bottom:20px;}
+  .contrib-card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:24px 24px 18px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+  .contrib-card:hover{border-color:rgba(26,110,245,0.4);}
+  .contrib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .contrib-card + .contrib-card{margin-top:12px;}
+  .contrib-card + .contrib-card::before{background:linear-gradient(90deg,transparent,rgba(26,110,245,0.4),rgba(0,234,255,0.4),transparent);}
+  .contrib-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .contrib-num{font-family:'Bangers',cursive;font-size:15px;color:rgba(0,234,255,0.4);letter-spacing:2px;min-width:36px;}
+  .contrib-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff;flex-shrink:0;}
+  .contrib-meta{font-size:12px;color:#4a6fa5;font-weight:700;line-height:1.4;}
+  .contrib-meta strong,.contrib-meta a{color:var(--ciano);text-decoration:none;font-weight:800;}
+  .contrib-meta a:hover{color:var(--amarelo);}
+  .contrib-meta .contrib-data{color:#2a4a7a;font-weight:600;}
+  .contrib-sig{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.7;margin-bottom:0;}
+  .contrib-divider{height:1px;background:var(--borda);margin:16px 0;opacity:0.6;}
+  .contrib-secao{margin-bottom:14px;}
+  .contrib-secao-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#3a5a8a;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+  .contrib-secao-label::after{content:'';flex:1;height:1px;background:rgba(26,58,110,0.4);}
+  .contrib-votos{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(26,58,110,0.4);}
+  .voto-btn{display:flex;align-items:center;gap:7px;background:rgba(13,31,60,0.8);border:1.5px solid var(--borda);border-radius:50px;padding:7px 16px;cursor:pointer;transition:all 0.2s;font-size:14px;font-weight:800;color:#4a6fa5;}
+  .voto-btn:hover{border-color:var(--azul);color:var(--texto);transform:translateY(-1px);}
+  .voto-btn.like-ativo{background:rgba(100,255,150,0.1);border-color:rgba(100,255,150,0.45);color:#64ff96;}
+  .voto-btn.dislike-ativo{background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.35);color:#ff6b6b;}
+  .voto-num{font-size:13px;font-weight:900;}
+  .voto-score{font-size:11px;color:#2a4a7a;font-weight:700;margin-left:2px;letter-spacing:0.5px;}
+  .btn-novo-sig-wrap{margin-top:8px;margin-bottom:20px;}
+  .btn-novo-sig{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(163,255,74,0.06);border:1.5px dashed rgba(163,255,74,0.3);color:rgba(163,255,74,0.7);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.25s;width:100%;text-decoration:none;letter-spacing:0.3px;}
+  .btn-novo-sig:hover{background:rgba(163,255,74,0.12);border-color:rgba(163,255,74,0.5);color:#a3ff4a;}
+
+  /* ── MODAL NOVO SIGNIFICADO ── */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto;}
+  .modal-overlay.aberto{display:flex;}
+  .modal-box{background:var(--card);border:1px solid var(--borda);border-radius:18px;padding:28px;width:100%;max-width:640px;position:relative;overflow:hidden;animation:fadeUp 0.3s ease both;}
+  .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#a3ff4a,var(--ciano),transparent);}
+  .modal-titulo{font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;color:#a3ff4a;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:#4a6fa5;margin-bottom:22px;line-height:1.5;}
+  .modal-palavra{color:var(--ciano);font-weight:900;}
+  .modal-fechar{position:absolute;top:16px;right:16px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:800;font-size:14px;}
+  .modal-fechar:hover{background:#ff5050;color:#fff;}
+  .m-campo{margin-bottom:14px;}
+  .m-campo label{display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+  .m-campo input,.m-campo textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .m-campo input:focus,.m-campo textarea:focus{border-color:#a3ff4a;}
+  .m-campo textarea{resize:vertical;min-height:90px;}
+  .m-campo input::placeholder,.m-campo textarea::placeholder{color:#2a4a7a;}
+  .m-sig-extras{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .m-extra-item{background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;position:relative;}
+  .m-extra-titulo{width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:'Bangers',cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;}
+  .m-extra-titulo::placeholder{color:#2a4a7a;font-family:'Nunito',sans-serif;font-size:12px;letter-spacing:0;}
+  .m-extra-texto{width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:'Nunito',sans-serif;font-size:13px;resize:vertical;min-height:55px;}
+  .m-extra-texto::placeholder{color:#2a4a7a;}
+  .m-btn-rem-extra{position:absolute;top:6px;right:6px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:800;cursor:pointer;}
+  .m-lista-din{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+  .m-lista-item{display:flex;gap:8px;}
+  .m-lista-item input{flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 13px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;}
+  .m-lista-item input:focus{border-color:#a3ff4a;}
+  .m-btn-rem{background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;}
+  .m-btn-add{display:flex;align-items:center;gap:6px;background:rgba(26,110,245,0.08);border:1.5px dashed rgba(26,110,245,0.3);color:#4a8aff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;width:100%;justify-content:center;margin-bottom:14px;}
+  .m-btn-add:hover{background:rgba(26,110,245,0.15);}
+  .m-btn-add-sub{background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.25);color:var(--ciano);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:800;cursor:pointer;margin-top:8px;}
+  .m-apelido-row{display:flex;gap:10px;align-items:flex-end;}
+  .m-apelido-row .m-campo{flex:1;margin-bottom:0;}
+  .m-apelido-info{font-size:12px;color:#4a6fa5;padding-bottom:4px;}
+  .btn-m-enviar{width:100%;background:linear-gradient(135deg,#a3ff4a,#64ff96);color:#05080f;border:none;border-radius:12px;padding:14px;font-family:'Bangers',cursive;font-size:22px;letter-spacing:2px;cursor:pointer;margin-top:8px;transition:all 0.2s;}
+  .btn-m-enviar:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(163,255,74,0.3);}
+  .btn-m-enviar:disabled{background:#1a3a6e;color:#4a6fa5;cursor:not-allowed;transform:none;box-shadow:none;}
+  .modal-sucesso{display:none;text-align:center;padding:30px 10px;}
+  .modal-sucesso .ms-emoji{font-size:60px;margin-bottom:14px;}
+  .modal-sucesso h3{font-family:'Bangers',cursive;font-size:28px;color:#a3ff4a;letter-spacing:2px;margin-bottom:10px;}
+  .modal-sucesso p{font-size:14px;color:#7ab0ff;line-height:1.6;}
+  .alfa-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .alfa-grupo{display:flex;flex-direction:column;gap:4px;flex:1;}
+  .alfa-grupo.direita{text-align:right;align-items:flex-end;}
+  .alfa-label{font-size:11px;color:#4a6fa5;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .alfa-link{color:var(--ciano);text-decoration:none;font-size:16px;font-weight:800;transition:color 0.2s;}
+  .alfa-link:hover{color:var(--amarelo);}
+  .alfa-sep{color:var(--borda);font-size:24px;}
+  .share-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .share-btn{display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+  .share-btn:hover{transform:translateY(-2px);}
+  .share-wpp{background:#25d366;color:#fff;}
+  .share-copy{background:var(--card2);border:1px solid var(--borda);color:var(--texto);}
+  .share-twitter{background:#1da1f2;color:#fff;}
+  .comentario{display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--borda);}
+  .com-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#f5e800,#f5a800);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;}
+  .com-meta{font-size:12px;color:#4a6fa5;margin-bottom:4px;}
+  .com-meta strong{color:var(--ciano);}
+  .com-text{font-size:14px;color:var(--texto);line-height:1.5;}
+  .comment-form{margin-top:16px;}
+  .comment-form textarea{width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px 16px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;min-height:90px;outline:none;}
+  .comment-form textarea:focus{border-color:var(--azul);}
+  .comment-form textarea::placeholder{color:#2a4a7a;}
+  .btn-comentar{margin-top:10px;background:var(--azul);color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;}
+  .btn-comentar:hover{background:#0050cc;}
+  .sidebar{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;}
+  .sidebar-card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+  .sidebar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amarelo),transparent);}
+  .sidebar-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--amarelo);margin-bottom:14px;}
+  .top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;}
+  .top-item:last-child{border-bottom:none;}
+  .top-item:hover .top-word{color:var(--amarelo);}
+  .top-rank{font-family:'Bangers',cursive;font-size:18px;color:var(--azul);width:24px;text-align:center;}
+  .top-rank.ouro{color:#ffd700;}.top-rank.prata{color:#c0c0c0;}.top-rank.bronze{color:#cd7f32;}
+  .top-word{font-size:14px;font-weight:800;color:var(--texto);flex:1;}
+  .recente-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(26,58,110,0.5);text-decoration:none;}
+  .recente-item:last-child{border-bottom:none;}
+  .recente-item:hover .recente-word{color:var(--ciano);}
+  .recente-dot{width:6px;height:6px;border-radius:50%;background:var(--ciano);}
+  .recente-word{font-size:14px;font-weight:800;color:var(--texto);flex:1;}
+  .recente-data{font-size:11px;color:#4a6fa5;}
+  .sidebar-search{display:flex;overflow:hidden;border-radius:8px;border:1.5px solid var(--borda);}
+  .sidebar-search input{flex:1;background:var(--card2);border:none;outline:none;padding:10px 12px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;}
+  .sidebar-search input::placeholder{color:#2a4a7a;}
+  .sidebar-search button{background:var(--azul);border:none;padding:0 14px;color:#fff;font-size:16px;cursor:pointer;}
+  .not-found{text-align:center;padding:80px 20px;}
+  .not-found-emoji{font-size:64px;margin-bottom:16px;}
+  .not-found-titulo{font-family:'Bangers',cursive;font-size:36px;color:#ff5050;letter-spacing:2px;margin-bottom:8px;}
+  .not-found-sub{color:#4a6fa5;font-size:15px;}
+  @media(max-width:768px){.page-wrap{grid-template-columns:1fr;}.sidebar{position:static;}.nav-links{display:none;}.menu-btn{display:flex;}}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <main id="mainCol"><p style="color:#4a6fa5;padding:40px;text-align:center;">Carregando...</p></main>
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">🔍 Buscar</div>
+      <div class="sidebar-search">
+        <input type="text" id="sidebarBusca" placeholder="Buscar palavra..." onkeydown="if(event.key==='Enter')buscarSidebar()">
+        <button onclick="buscarSidebar()">→</button>
+      </div>
+    </div>
+    <div class="sidebar-card" id="sidebarTop"><div class="sidebar-title">🏆 Top Palavras</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
+    <div class="sidebar-card" id="sidebarRecentes"><div class="sidebar-title">🆕 Últimas Adicionadas</div><p style="color:#4a6fa5;font-size:13px;">Carregando...</p></div>
+  </aside>
+</div>
+<!-- MODAL NOVO SIGNIFICADO -->
+<div class="modal-overlay" id="modalNovoSig">
+  <div class="modal-box">
+    <button class="modal-fechar" onclick="fecharModal()">✕ Fechar</button>
+    <!-- FORMULÁRIO -->
+    <div id="modalForm">
+      <div class="modal-titulo">✍️ NOVO SIGNIFICADO</div>
+      <p class="modal-sub">Você está contribuindo com um novo significado para <span class="modal-palavra" id="modalPalavraExibida"></span>. Sua contribuição será revisada antes de aparecer no site.</p>
+
+      <!-- Apelido -->
+      <div id="modalApelidoWrap" class="m-campo">
+        <label>Seu apelido <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <input type="text" id="m-apelido" placeholder="ex: João, Anônimo... (ou deixe em branco)">
+      </div>
+
+      <!-- Significados -->
+      <div class="m-campo">
+        <label>Significado <span style="color:#f5e800;">*</span></label>
+        <div id="m-lista-sigs">
+          <div class="m-sig-wrap" style="margin-bottom:12px;">
+            <textarea class="m-sig-texto" placeholder="Descreva o significado..." style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:90px;"></textarea>
+            <div class="m-sig-extras"></div>
+            <button class="m-btn-add-sub" onclick="mAdicionarExtra(this)">➕ Adicionar título extra (Origem, Curiosidade...)</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarSig()">➕ Adicionar outro significado</button>
+      </div>
+
+      <!-- Exemplos -->
+      <div class="m-campo">
+        <label>Exemplos em frases <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <div class="m-lista-din" id="m-lista-exemplos">
+          <div class="m-lista-item">
+            <input type="text" placeholder='Ex: "Usa a palavra em uma frase..."'>
+            <button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarExemplo()">➕ Adicionar exemplo</button>
+      </div>
+
+      <!-- Sinônimos -->
+      <div class="m-campo">
+        <label>Sinônimos <span style="color:#4a6fa5;font-weight:600;">(opcional)</span></label>
+        <div class="m-lista-din" id="m-lista-sinonimos">
+          <div class="m-lista-item">
+            <input type="text" placeholder="ex: Bora, Vamo...">
+            <button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>
+          </div>
+        </div>
+        <button class="m-btn-add" onclick="mAdicionarSinonimo()">➕ Adicionar sinônimo</button>
+      </div>
+
+      <button class="btn-m-enviar" id="btnMEnviar" onclick="enviarNovoSignificado()">🚀 ENVIAR CONTRIBUIÇÃO</button>
+    </div>
+    <!-- SUCESSO -->
+    <div class="modal-sucesso" id="modalSucesso">
+      <div class="ms-emoji">🎉</div>
+      <h3>CONTRIBUIÇÃO ENVIADA!</h3>
+      <p>Valeu! Seu significado foi enviado e será revisado pela equipe do CyberUniverso.<br>Se aprovado, aparecerá nessa página em breve.</p>
+      <button class="btn-m-enviar" style="margin-top:20px;max-width:280px;margin-left:auto;margin-right:auto;display:block;" onclick="fecharModal()">✔ Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
+<script>
+const sb = window._supabase
+const params = new URLSearchParams(window.location.search)
+const slug = params.get('w')
+let palavraId = null
+let userSession = null
+let reacaoAtiva = null
+
+// ID anônimo persistente para reações sem login
+function getAnonId() {
+  var id = localStorage.getItem('cyberuniverso_anon_id')
+  if (!id) {
+    id = 'anon_' + Math.random().toString(36).slice(2) + Date.now().toString(36)
+    localStorage.setItem('cyberuniverso_anon_id', id)
+  }
+  return id
+}
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession()
+  userSession = session
+  if (session) { const el = document.getElementById('navEntrar'); if (el) el.textContent = 'Minha Conta' }
+  if (!slug) { mostrarNotFound('Nenhuma palavra especificada.'); return }
+  await Promise.all([carregarPalavra(), carregarSidebar()])
+}
+
+async function carregarPalavra() {
+  const { data: p, error } = await sb
+    .from('palavras')
+    .select('id, termo, slug, pronuncia, imagem_url, nivel_uso, regiao, contexto, epoca, criado_em, categoria_id, status, usuario_id, enviado_por')
+    .eq('slug', slug)
+    .eq('status', 'aprovada')
+    .single()
+
+  if (error || !p) { mostrarNotFound('A palavra "' + slug + '" não foi encontrada.'); return }
+
+  palavraId = p.id
+  // Título do Google — usa personalizado se existir
+  var tituloSEO = p.seo_titulo
+    ? p.seo_titulo + ' — CyberDicionário'
+    : 'O que é ' + p.termo + '? — CyberDicionário'
+  document.getElementById('pageTitle').textContent = tituloSEO
+
+  // Meta description
+  var primeiroSig = ''
+  // será preenchido após carregar significados — veja injetarSEO()
+
+  // URL canônica
+  var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+  var canonical = document.getElementById('canonicalUrl')
+  if (canonical) canonical.setAttribute('href', urlCanonica)
+  var ogUrl = document.getElementById('ogUrl')
+  if (ogUrl) ogUrl.setAttribute('content', urlCanonica)
+
+  // OG title
+  var ogTitle = document.getElementById('ogTitle')
+  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || ('O que é ' + p.termo + '? Significado e origem da gíria'))
+
+  // buscar dados relacionados separadamente
+  const [
+    { data: significados },
+    { data: exemplos },
+    { data: sinonimos },
+    { data: categoria },
+    { data: tagsRel },
+    { data: catsMultiplas },
+    { data: relacionadas },
+    { data: autorPerfil },
+    { data: opostos },
+    { data: variacoesGenero },
+    { data: plurais }
+  ] = await Promise.all([
+    sb.from('significados').select('id, descricao, ordem, contrib_id, contrib_apelido, contrib_autor, criado_em').eq('palavra_id', p.id).order('ordem'),
+    sb.from('exemplos').select('frase').eq('palavra_id', p.id),
+    sb.from('sinonimos').select('sinonimo').eq('palavra_id', p.id),
+    p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
+    sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id),
+    sb.from('palavras_categorias').select('categoria_id, subcategoria_id, categorias(id, nome, icone), subcategorias(id, nome)').eq('palavra_id', p.id),
+    sb.from('palavras_relacionadas').select('relacionada').eq('palavra_id', p.id),
+    p.usuario_id ? sb.from('perfis').select('username, nome, exibir_como, avatar_galeria, avatar_url, emoji').eq('id', p.usuario_id).single() : Promise.resolve({ data: null }),
+    sb.from('opostos').select('oposto').eq('palavra_id', p.id),
+    sb.from('variacoes_genero').select('valor, tipo').eq('palavra_id', p.id),
+    sb.from('variacoes_plural').select('plural').eq('palavra_id', p.id)
+  ])
+
+  // Buscar perfis dos autores de contribuições
+  const contribUids = [...new Set((significados || []).map(s => s.contrib_autor).filter(Boolean))]
+  const contribPerfisMap = {}
+  if (contribUids.length) {
+    const { data: cPerfis } = await sb.from('perfis').select('id, username, nome, exibir_como, emoji').in('id', contribUids)
+    ;(cPerfis || []).forEach(cp => { contribPerfisMap[cp.id] = cp })
+  }
+
+  // Buscar exemplos e sinônimos por contrib_id (significados de contribuições)
+  const contribIds = [...new Set((significados || []).map(s => s.contrib_id).filter(Boolean))]
+  const exemplosPorContrib = {}
+  const sionimosPorContrib = {}
+  // Os exemplos e sinônimos globais já foram buscados; vamos associá-los via contrib_id se disponível
+
+  // Buscar votos por significado (contrib)
+  const sigIds = (significados || []).map(s => s.id).filter(Boolean)
+  const votosPorSig = {}
+  const meuVotoPorSig = {}
+  if (sigIds.length) {
+    const uid = userSession ? userSession.user.id : getAnonId()
+    const { data: votosData } = await sb.from('votos_significado').select('significado_id, tipo').in('significado_id', sigIds)
+    ;(votosData || []).forEach(v => {
+      if (!votosPorSig[v.significado_id]) votosPorSig[v.significado_id] = { like: 0, dislike: 0 }
+      votosPorSig[v.significado_id][v.tipo] = (votosPorSig[v.significado_id][v.tipo] || 0) + 1
+    })
+    const { data: meuVoto } = await sb.from('votos_significado').select('significado_id, tipo').in('significado_id', sigIds).eq('usuario_id', uid)
+    ;(meuVoto || []).forEach(v => { meuVotoPorSig[v.significado_id] = v.tipo })
+  }
+
+  const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
+  const reacoes = await carregarReacoes(p.id)
+  const masculinos = (variacoesGenero || []).filter(v => v.tipo === 'masculino')
+  const femininos = (variacoesGenero || []).filter(v => v.tipo === 'feminino')
+
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil, opostos || [], masculinos, femininos, plurais || [], contribPerfisMap, votosPorSig, meuVotoPorSig)
+
+  // SEO: meta description + schema com o primeiro significado
+  var sigTexto = ''
+  if (significados && significados.length > 0) {
+    var raw = significados[0].descricao || ''
+    sigTexto = raw.includes('[extras]') ? raw.split('[extras]')[0].trim() : raw.trim()
+    sigTexto = sigTexto.replace(/\n/g, ' ').substring(0, 155)
+  }
+  var descSEO = p.seo_descricao
+    ? p.seo_descricao
+    : sigTexto
+      ? 'O que significa ' + p.termo + '? ' + sigTexto.split(' ').slice(0, 5).join(' ') + '... Veja abaixo o significado, a origem da gíria, sinônimos e exemplos.'
+      : 'O que significa ' + p.termo + '? Veja abaixo o significado, a origem da gíria, sinônimos e exemplos.'
+
+  var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
+
+  // Meta description
+  var metaDesc = document.getElementById('metaDesc')
+  if (metaDesc) metaDesc.setAttribute('content', descSEO)
+  var ogDesc = document.getElementById('ogDesc')
+  if (ogDesc) ogDesc.setAttribute('content', descSEO)
+  var twitterTitle = document.getElementById('twitterTitle')
+  if (twitterTitle) twitterTitle.setAttribute('content', 'O que é ' + p.termo + '? — CyberDicionário')
+  var twitterDesc = document.getElementById('twitterDesc')
+  if (twitterDesc) twitterDesc.setAttribute('content', descSEO)
+
+  // ── SCHEMA 1: DefinedTerm (enriquecido) ──
+  var schemaDef = {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    "name": p.termo,
+    "description": sigTexto || descSEO,
+    "url": urlCanonica,
+    "inDefinedTermSet": {
+      "@type": "DefinedTermSet",
+      "name": "CyberDicionário — Dicionário de Gírias Brasileiras",
+      "url": "https://cyberuniverso.com",
+      "description": "Dicionário colaborativo de gírias e expressões do português brasileiro"
+    }
+  }
+  if (p.pronuncia) schemaDef["alternateName"] = p.pronuncia
+  if (sinonimos && sinonimos.length > 0) {
+    schemaDef["sameAs"] = sinonimos.slice(0, 3).map(function(s) {
+      return 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(s.sinonimo)
+    })
+  }
+
+  // ── SCHEMA 2: FAQPage ──
+  var faqEntries = []
+  faqEntries.push({
+    "@type": "Question",
+    "name": "O que significa " + p.termo + "?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": sigTexto || ('Confira o significado completo de ' + p.termo + ' no CyberUniverso.')
+    }
+  })
+  if (exemplos && exemplos.length > 0) {
+    faqEntries.push({
+      "@type": "Question",
+      "name": "Como usar " + p.termo + " em uma frase?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": exemplos.slice(0, 2).map(function(e) { return '— ' + e.frase }).join(' ')
+      }
+    })
+  }
+  if (sinonimos && sinonimos.length > 0) {
+    faqEntries.push({
+      "@type": "Question",
+      "name": "Quais são os sinônimos de " + p.termo + "?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": sinonimos.map(function(s) { return s.sinonimo }).join(', ')
+      }
+    })
+  }
+  var schemaFAQ = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqEntries
+  }
+
+  // ── SCHEMA 3: BreadcrumbList ──
+  var schemaBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Início", "item": "https://cyberuniverso.com" },
+      { "@type": "ListItem", "position": 2, "name": "Todas as Palavras", "item": "https://cyberuniverso.com/todas.html" },
+      { "@type": "ListItem", "position": 3, "name": p.termo, "item": urlCanonica }
+    ]
+  }
+
+  // ── SCHEMA 4: Article ──
+  var schemaArticle = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "O que significa " + p.termo + "? Significado, origem e exemplos",
+    "description": descSEO,
+    "url": urlCanonica,
+    "datePublished": p.criado_em,
+    "dateModified": p.criado_em,
+    "publisher": {
+      "@type": "Organization",
+      "name": "CyberDicionário",
+      "url": "https://cyberuniverso.com"
+    },
+    "inLanguage": "pt-BR",
+    "about": { "@type": "DefinedTerm", "name": p.termo }
+  }
+
+  // Injetar todos os schemas
+  var schemas = [schemaDef, schemaFAQ, schemaBreadcrumb, schemaArticle]
+  schemas.forEach(function(s) {
+    var tag = document.createElement('script')
+    tag.type = 'application/ld+json'
+    tag.textContent = JSON.stringify(s)
+    document.head.appendChild(tag)
+  })
+
+  await carregarComentarios(p.id)
+  await carregarVizinhas(p.termo)
+  // Registrar visualização
+  sb.from('visualizacoes').insert({ palavra_id: p.id }).then(function() {})
+}
+
+async function carregarReacoes(pid) {
+  const tipos = ['daora', 'rachei', 'tendnao', 'bizarro', 'amei']
+  const counts = {}
+  for (const tipo of tipos) {
+    const { count } = await sb.from('reacoes').select('*', { count: 'exact', head: true }).eq('palavra_id', pid).eq('tipo', tipo)
+    counts[tipo] = count || 0
+  }
+  // Verificar reação do visitante atual (logado ou anônimo)
+  const uid = userSession ? userSession.user.id : getAnonId()
+  const { data } = await sb.from('reacoes').select('tipo').eq('palavra_id', pid).eq('usuario_id', uid).maybeSingle()
+  reacaoAtiva = data?.tipo || null
+  return counts
+}
+
+
+async function navegarPalavra(termo) {
+  var sl = termo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+  var { data } = await window._supabase.from('palavras').select('slug').eq('slug', sl).eq('status','aprovada').maybeSingle()
+  if (data) {
+    window.location.href = 'palavra.html?w=' + data.slug
+  } else {
+    window.location.href = 'tag.html?t=' + encodeURIComponent(termo)
+  }
+}
+
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-navegar]')
+  if (!el) return
+  e.preventDefault()
+  navegarPalavra(el.getAttribute('data-navegar'))
+})
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil, opostos, masculinos, femininos, plurais, contribPerfisMap, votosPorSig, meuVotoPorSig) {
+  const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const main = document.getElementById('mainCol')
+  main.innerHTML =
+    '<div class="breadcrumb"><a href="index.html">Início</a><span style="color:#2a4a7a"> › </span><a href="todas.html">Todas</a><span style="color:#2a4a7a"> › </span><span style="color:var(--ciano)">' + p.termo + '</span></div>' +
+    '<h1 class="palavra-titulo" id="palavraTitulo">' + p.termo.toUpperCase() + '</h1>' +
+    (p.pronuncia ? '<div class="pronuncia">🔊 Como pronunciar: <span>' + p.pronuncia + '</span></div>' : '') +
+    (function() {
+      var nomeAutor = 'Visitante'
+      var linkAutor = null
+      if (autorPerfil) {
+        nomeAutor = autorPerfil.exibir_como === 'nome' && autorPerfil.nome ? autorPerfil.nome : '@' + (autorPerfil.username || 'usuário')
+        linkAutor = 'perfil.html?id=' + p.usuario_id
+      } else if (p.enviado_por && p.enviado_por !== 'Visitante') {
+        nomeAutor = p.enviado_por
+      }
+      var avatarHtml = autorPerfil?.emoji
+        ? '<div class="avatar" style="font-size:18px;">' + autorPerfil.emoji + '</div>'
+        : '<div class="avatar">' + nomeAutor[0].toUpperCase() + '</div>'
+      var autorHtml = linkAutor
+        ? '<a href="' + linkAutor + '" style="color:var(--ciano);font-weight:800;text-decoration:none;">' + nomeAutor + '</a>'
+        : '<strong>' + nomeAutor + '</strong>'
+      return '<div class="meta-info">' + avatarHtml + '<div class="meta-text">Adicionado por ' + autorHtml + ' em <strong>' + dataFmt + '</strong></div></div>'
+    })() +
+    (function() {
+      // múltiplas categorias
+      var catsParaExibir = catsMultiplas && catsMultiplas.length > 0 ? catsMultiplas : (categoria ? [{ categorias: categoria, subcategorias: null }] : [])
+      if (!catsParaExibir.length) return ''
+      var html = '<div class="categorias">'
+      catsParaExibir.forEach(function(c) {
+        var cat = c.categorias
+        var sub = c.subcategorias
+        if (!cat) return
+        if (sub) {
+          html += '<a href="categoria.html?c=' + cat.id + '" class="cat-tag">' + (cat.icone || '📁') + ' ' + cat.nome + '</a>'
+          html += '<a href="categoria.html?c=' + sub.id + '&sub=1" class="cat-tag">' + sub.nome + '</a>'
+        } else {
+          html += '<a href="categoria.html?c=' + cat.id + '" class="cat-tag">' + (cat.icone || '📁') + ' ' + cat.nome + '</a>'
+        }
+      })
+      html += '</div>'
+      return html
+    })() +
+    '<div class="badges">' +
+    (p.nivel_uso ? '<div class="badge badge-nivel">⚡ ' + p.nivel_uso + '</div>' : '') +
+    (p.regiao ? '<div class="badge badge-regiao">📍 ' + p.regiao + '</div>' : '') +
+    (p.contexto ? '<div class="badge badge-contexto">🌐 ' + p.contexto + '</div>' : '') +
+    (p.epoca ? '<div class="badge badge-epoca">📅 ' + p.epoca + '</div>' : '') +
+    '</div>' +
+    (p.imagem_url ? '<div class="palavra-imagem"><img src="' + p.imagem_url + '" alt="' + p.termo + '"></div>' : '') +
+    (significados.length ? renderSignificados(significados, p.termo, exemplos, sinonimos, contribPerfisMap || {}, votosPorSig || {}, meuVotoPorSig || {}) : '') +
+    (opostos && opostos.length ? renderOpostos(opostos) : '') +
+    (masculinos && masculinos.length || femininos && femininos.length ? renderVariacoesGenero(masculinos, femininos) : '') +
+    (plurais && plurais.length ? renderPlurais(plurais) : '') +
+    (relacionadas && relacionadas.length ? renderRelacionadas(relacionadas) : '') +
+    renderReacoes(reacoes) +
+    (tags.length ? '<div class="tags-section"><span class="tags-label">#</span>' + tags.map(t => '<a href="tag.html?t=' + encodeURIComponent(t) + '" class="hash-tag">#' + t + '</a>').join('') + '</div>' : '') +
+    '<div class="card" id="navAlfaCard"><div class="card-title">🔤 Navegação alfabética</div><div class="alfa-nav" id="navAlfa"><span style="color:#4a6fa5">Carregando...</span></div></div>' +
+    renderCompartilhar(p.termo) +
+    '<div class="card"><div class="card-title">💬 Comentários <span id="comentariosCount" style="font-size:14px;color:#4a6fa5;font-family:Nunito,sans-serif;font-weight:700;"></span></div><div id="comentariosLista"></div><div class="comment-form"><textarea id="comentarioTexto" placeholder="Deixe seu comentário..."></textarea><button class="btn-comentar" onclick="enviarComentario()">COMENTAR</button></div></div>'
+
+  ajustarTitulo()
+}
+
+function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPerfisMap, votosPorSig, meuVotoPorSig) {
+  exemplosTodos = exemplosTodos || []
+  sionimosTodos = sionimosTodos || []
+  contribPerfisMap = contribPerfisMap || {}
+  votosPorSig = votosPorSig || {}
+  meuVotoPorSig = meuVotoPorSig || {}
+
+  // Agrupar por contrib_id
+  var grupos = []
+  sigs.forEach(function(s) {
+    var cid = s.contrib_id != null ? s.contrib_id : 'original'
+    var idx = grupos.findIndex(function(g) { return g.id === cid })
+    if (idx === -1) {
+      grupos.push({ id: cid, contribAutorUid: s.contrib_autor || null, contribApelido: s.contrib_apelido || null, criadoEm: s.criado_em || null, sigs: [s] })
+    } else {
+      grupos[idx].sigs.push(s)
+    }
+  })
+
+  // Ordenar: original primeiro, depois por score (likes - dislikes), desempate por data
+  grupos.sort(function(a, b) {
+    if (a.id === 'original') return -1
+    if (b.id === 'original') return 1
+    var scoreA = a.sigs.reduce(function(acc, s) { var v = votosPorSig[s.id] || {}; return acc + (v.like||0) - (v.dislike||0) }, 0)
+    var scoreB = b.sigs.reduce(function(acc, s) { var v = votosPorSig[s.id] || {}; return acc + (v.like||0) - (v.dislike||0) }, 0)
+    if (scoreB !== scoreA) return scoreB - scoreA
+    return new Date(a.criadoEm || 0) - new Date(b.criadoEm || 0)
+  })
+
+  var html = '<div class="contrib-wrap">'
+
+  grupos.forEach(function(grupo, gi) {
+    var numStr = '//' + String(gi + 1).padStart(2, '0')
+
+    // Resolver autor
+    var nomeAutor = null, linkAutor = null
+    if (grupo.contribAutorUid && contribPerfisMap[grupo.contribAutorUid]) {
+      var perf = contribPerfisMap[grupo.contribAutorUid]
+      nomeAutor = perf.exibir_como === 'nome' && perf.nome ? perf.nome : '@' + (perf.username || 'usuário')
+      linkAutor = 'perfil.html?id=' + grupo.contribAutorUid
+    } else if (grupo.contribApelido) {
+      nomeAutor = grupo.contribApelido
+    }
+
+    var avatarLetra = nomeAutor ? nomeAutor.replace('@','')[0].toUpperCase() : '?'
+    var dataStr = grupo.criadoEm ? formatarData(grupo.criadoEm) : null
+
+    // Votos
+    var totalLike = 0, totalDislike = 0
+    grupo.sigs.forEach(function(s) { var v = votosPorSig[s.id] || {}; totalLike += v.like||0; totalDislike += v.dislike||0 })
+    var sigId0 = grupo.sigs.length ? grupo.sigs[0].id : null
+    var meuVoto = sigId0 ? (meuVotoPorSig[sigId0] || null) : null
+    var score = totalLike - totalDislike
+
+    html += '<div class="contrib-card">'
+
+    // ── Header ──
+    html += '<div class="contrib-header">'
+    html += '<span class="contrib-num">' + numStr + '</span>'
+    if (nomeAutor) {
+      html += '<div class="contrib-avatar">' + avatarLetra + '</div>'
+      var autorTag = linkAutor
+        ? '<a href="' + linkAutor + '">' + nomeAutor + '</a>'
+        : '<strong>' + nomeAutor + '</strong>'
+      html += '<div class="contrib-meta">' + autorTag
+      if (dataStr) html += '<br><span class="contrib-data">' + dataStr + '</span>'
+      html += '</div>'
+    } else if (dataStr) {
+      html += '<div class="contrib-meta"><span class="contrib-data">' + dataStr + '</span></div>'
+    }
+    html += '</div>'
+
+    // ── Significados ──
+    grupo.sigs.forEach(function(s, i) {
+      var texto = s.descricao, extras = []
+      if (texto && texto.indexOf('[extras]') !== -1) {
+        var parts = texto.split('[extras]')
+        texto = parts[0].trim()
+        try { extras = JSON.parse(parts[1]) } catch(e) {}
+      }
+      if (grupo.sigs.length > 1) {
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+        html += '<div class="sig-numero">' + (i+1) + '</div>'
+        html += '</div>'
+      }
+      html += '<p class="contrib-sig">' + texto.replace(/\n/g, '<br>') + '</p>'
+      extras.forEach(function(ex) {
+        if (ex.titulo || ex.texto) {
+          html += '<div class="contrib-divider"></div>'
+          if (ex.titulo) html += '<div class="subtitulo">' + ex.titulo + '</div>'
+          if (ex.texto) html += '<p class="origem-text">' + ex.texto.replace(/\n/g, '<br>') + '</p>'
+        }
+      })
+    })
+
+    // ── Exemplos ──
+    var exGrupo = grupo.id === 'original'
+      ? exemplosTodos.filter(function(e) { return !e.contrib_id })
+      : exemplosTodos.filter(function(e) { return String(e.contrib_id) === String(grupo.id) })
+    if (grupo.id === 'original' && exGrupo.length === 0) exGrupo = exemplosTodos
+    if (exGrupo.length) {
+      html += '<div class="contrib-divider"></div>'
+      html += '<div class="contrib-secao">'
+      html += '<div class="contrib-secao-label">💬 Exemplos</div>'
+      exGrupo.forEach(function(e) { html += '<div class="exemplo">— ' + (e.frase || '') + '</div>' })
+      html += '</div>'
+    }
+
+    // ── Sinônimos ──
+    var sinGrupo = grupo.id === 'original'
+      ? sionimosTodos.filter(function(s) { return !s.contrib_id })
+      : sionimosTodos.filter(function(s) { return String(s.contrib_id) === String(grupo.id) })
+    if (grupo.id === 'original' && sinGrupo.length === 0) sinGrupo = sionimosTodos
+    if (sinGrupo.length) {
+      if (!exGrupo.length) html += '<div class="contrib-divider"></div>'
+      html += '<div class="contrib-secao">'
+      html += '<div class="contrib-secao-label">🔄 Sinônimos</div>'
+      html += '<div class="tags-list">'
+      sinGrupo.forEach(function(s) {
+        var sn = s.sinonimo || ''
+        html += '<a href="javascript:void(0)" data-navegar="' + sn.replace(/"/g,'&quot;') + '" class="tag">' + sn + '</a>'
+      })
+      html += '</div></div>'
+    }
+
+    // ── Votos ──
+    html += '<div class="contrib-votos">'
+    html += '<button class="voto-btn' + (meuVoto==='like' ? ' like-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'like\',this)">👍 <span class="voto-num">' + totalLike + '</span></button>'
+    html += '<button class="voto-btn' + (meuVoto==='dislike' ? ' dislike-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'dislike\',this)">👎 <span class="voto-num">' + totalDislike + '</span></button>'
+    if (totalLike + totalDislike > 0) {
+      html += '<span class="voto-score">' + (score > 0 ? '+' : '') + score + ' pts</span>'
+    }
+    html += '</div>'
+
+    html += '</div>' // fim contrib-card
+  })
+
+  html += '</div>' // fim contrib-wrap
+
+  html += '<div class="btn-novo-sig-wrap"><button class="btn-novo-sig" onclick="abrirModal()">✍️ Conhece outro significado? Envie o seu!</button></div>'
+  return html
+}
+
+function renderExemplos(exemplos) {
+  var html = '<div class="card"><div class="card-title">💬 Exemplos em frases</div>'
+  exemplos.forEach(function(e) { html += '<div class="exemplo">— ' + e.frase + '</div>' })
+  html += '</div>'
+  return html
+}
+
+function renderSinonimos(sinonimos) {
+  var html = '<div class="card"><div class="card-title">🔄 Sinônimos</div><div class="tags-list">'
+  sinonimos.forEach(function(s) {
+    var sl = s.sinonimo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="javascript:void(0)" data-navegar="' + s.sinonimo.replace(/"/g, '&quot;') + '" class="tag">' + s.sinonimo + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderRelacionadas(relacionadas) {
+  var html = '<div class="card"><div class="card-title">🔀 Palavras Relacionadas</div><div class="tags-list">'
+  relacionadas.forEach(function(r) {
+    var sl = r.relacionada.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="javascript:void(0)" data-navegar="' + r.relacionada.replace(/"/g, '&quot;') + '" class="tag">' + r.relacionada + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderOpostos(opostos) {
+  var html = '<div class="card"><div class="card-title">⚡ Opostos</div><div class="tags-list">'
+  opostos.forEach(function(o) {
+    var sl = o.oposto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + o.oposto + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderVariacoesGenero(masculinos, femininos) {
+  var html = '<div class="card"><div class="card-title">🔄 Variações de Gênero</div><div style="display:flex;gap:24px;flex-wrap:wrap;">'
+  if (masculinos && masculinos.length) {
+    html += '<div><div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">♂️ Masculino</div><div class="tags-list">'
+    masculinos.forEach(function(m) {
+      var sl = m.valor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      html += '<a href="palavra.html?w=' + sl + '" class="tag">' + m.valor + '</a>'
+    })
+    html += '</div></div>'
+  }
+  if (femininos && femininos.length) {
+    html += '<div><div style="font-size:11px;font-weight:800;color:#ff64c8;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">♀️ Feminino</div><div class="tags-list">'
+    femininos.forEach(function(f) {
+      var sl = f.valor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      html += '<a href="palavra.html?w=' + sl + '" class="tag">' + f.valor + '</a>'
+    })
+    html += '</div></div>'
+  }
+  html += '</div></div>'
+  return html
+}
+
+function renderPlurais(plurais) {
+  var html = '<div class="card"><div class="card-title">📦 Plural</div><div class="tags-list">'
+  plurais.forEach(function(pl) {
+    var sl = pl.plural.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+    html += '<a href="palavra.html?w=' + sl + '" class="tag">' + pl.plural + '</a>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderReacoes(reacoes) {
+  var tipos = [
+    { tipo: 'daora', emoji: '🔥', label: 'DAORA' },
+    { tipo: 'rachei', emoji: '😂', label: 'RACHEI' },
+    { tipo: 'tendnao', emoji: '🤔', label: 'TENDI NÃO' },
+    { tipo: 'bizarro', emoji: '👻', label: 'BIZARRO' },
+    { tipo: 'amei', emoji: '😍', label: 'AMEI' }
+  ]
+  var html = '<div class="card"><div class="card-title">⚡ O que você achou?</div><div class="reacoes">'
+  tipos.forEach(function(r) {
+    var ativo = reacaoAtiva === r.tipo ? ' ativo' : ''
+    html += '<button class="reacao-btn' + ativo + '" onclick="reagir(\'' + r.tipo + '\',this)" data-tipo="' + r.tipo + '">'
+    html += '<span class="reacao-emoji">' + r.emoji + '</span>'
+    html += '<span class="reacao-count">' + (reacoes[r.tipo] || 0) + '</span>'
+    html += '<span class="reacao-label">' + r.label + '</span>'
+    html += '</button>'
+  })
+  html += '</div></div>'
+  return html
+}
+
+function renderCompartilhar(termo) {
+  var url = encodeURIComponent(window.location.href)
+  var t = encodeURIComponent(termo)
+  return '<div class="card"><div class="card-title">📤 Compartilhar</div><div class="share-btns">' +
+    '<a href="https://wa.me/?text=Sabia%20o%20que%20significa%20' + t + '%3F%20' + url + '" target="_blank" class="share-btn share-wpp">📱 WhatsApp</a>' +
+    '<button class="share-btn share-copy" onclick="copiarLink()">🔗 Copiar link</button>' +
+    '<a href="https://twitter.com/intent/tweet?text=Sabia%20o%20que%20significa%20' + t + '%3F" target="_blank" class="share-btn share-twitter">𝕏 Twitter</a>' +
+    '</div></div>'
+}
+
+async function carregarComentarios(pid) {
+  const { data } = await sb.from('comentarios').select('id, texto, criado_em').eq('palavra_id', pid).order('criado_em', { ascending: false })
+  const lista = document.getElementById('comentariosLista')
+  const count = document.getElementById('comentariosCount')
+  if (!lista) return
+  count.textContent = '(' + (data ? data.length : 0) + ')'
+  if (!data || data.length === 0) { lista.innerHTML = '<div style="color:#4a6fa5;font-size:13px;margin-bottom:16px;">Seja o primeiro a comentar!</div>'; return }
+  lista.innerHTML = data.map(function(c) {
+    return '<div class="comentario"><div class="com-avatar">U</div><div class="com-body"><div class="com-meta"><strong>Usuário</strong> · ' + formatarData(c.criado_em) + '</div><div class="com-text">' + c.texto + '</div></div></div>'
+  }).join('')
+}
+
+async function enviarComentario() {
+  if (!userSession) { alert('Você precisa estar logado para comentar!'); window.location.href = 'cadastro.html'; return }
+  var texto = document.getElementById('comentarioTexto').value.trim()
+  if (!texto) return
+  await sb.from('comentarios').insert({ palavra_id: palavraId, usuario_id: userSession.user.id, texto: texto })
+  document.getElementById('comentarioTexto').value = ''
+  await carregarComentarios(palavraId)
+}
+
+async function reagir(tipo, btn) {
+  var uid = userSession ? userSession.user.id : getAnonId()
+  var countEl = btn.querySelector('.reacao-count')
+  var jaAtivo = btn.classList.contains('ativo')
+  if (reacaoAtiva) {
+    await sb.from('reacoes').delete().eq('palavra_id', palavraId).eq('usuario_id', uid)
+    document.querySelectorAll('.reacao-btn').forEach(function(b) { b.classList.remove('ativo') })
+  }
+  if (!jaAtivo || reacaoAtiva !== tipo) {
+    var res = await sb.from('reacoes').insert({ palavra_id: palavraId, usuario_id: uid, tipo: tipo })
+    if (!res.error) { btn.classList.add('ativo'); countEl.textContent = parseInt(countEl.textContent) + 1; reacaoAtiva = tipo }
+  } else {
+    reacaoAtiva = null
+    countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1)
+  }
+}
+
+
+
+async function carregarVizinhas(termo) {
+  var anterior = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').lt('termo', termo).order('termo', { ascending: false }).limit(3)
+  var proxima = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').gt('termo', termo).order('termo', { ascending: true }).limit(3)
+  var navAlfa = document.getElementById('navAlfa')
+  if (!navAlfa) return
+  var antHtml = (anterior.data || []).map(function(p) { return '<a href="palavra.html?w=' + p.slug + '" class="alfa-link">' + p.termo + '</a>' }).join('') || '<span style="color:#2a4a7a">—</span>'
+  var proxHtml = (proxima.data || []).map(function(p) { return '<a href="palavra.html?w=' + p.slug + '" class="alfa-link">' + p.termo + '</a>' }).join('') || '<span style="color:#2a4a7a">—</span>'
+  navAlfa.innerHTML = '<div class="alfa-grupo"><span class="alfa-label">◀ Anterior</span>' + antHtml + '</div><div class="alfa-sep">|</div><div class="alfa-grupo direita"><span class="alfa-label">Próxima ▶</span>' + proxHtml + '</div>'
+}
+
+async function carregarSidebar() {
+  // Buscar top palavras por visualizações
+  var { data: topViz } = await sb.rpc('top_palavras_visualizacoes', { limite: 10 })
+  var st = document.getElementById('sidebarTop')
+  if (!topViz || topViz.length === 0) {
+    // fallback: mais recentes
+    var { data: fallback } = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
+    topViz = (fallback || []).map(function(p) { return { termo: p.termo, slug: p.slug, total: 0 } })
+  }
+  if (topViz && st) {
+    st.innerHTML = '<div class="sidebar-title">🏆 Top Palavras</div>' + topViz.map(function(p, i) {
+      var cls = i===0?'ouro':i===1?'prata':i===2?'bronze':''
+      return '<a href="palavra.html?w=' + p.slug + '" class="top-item"><span class="top-rank ' + cls + '">' + (i+1) + '</span><span class="top-word">' + p.termo + '</span></a>'
+    }).join('')
+  }
+  var rec = await sb.from('palavras').select('termo, slug, criado_em').eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
+  var sr = document.getElementById('sidebarRecentes')
+  if (rec.data && sr) {
+    sr.innerHTML = '<div class="sidebar-title">🆕 Últimas Adicionadas</div>' + rec.data.map(function(p) {
+      return '<a href="palavra.html?w=' + p.slug + '" class="recente-item"><span class="recente-dot"></span><span class="recente-word">' + p.termo + '</span><span class="recente-data">' + formatarData(p.criado_em) + '</span></a>'
+    }).join('')
+  }
+}
+
+function mostrarNotFound(msg) {
+  document.getElementById('mainCol').innerHTML = '<div class="not-found"><div class="not-found-emoji">🔍</div><div class="not-found-titulo">PALAVRA NÃO ENCONTRADA</div><div class="not-found-sub">' + msg + '</div><br><a href="todas.html" style="color:var(--ciano);font-weight:800;font-size:16px;">← Ver todas as palavras</a></div>'
+}
+
+function ajustarTitulo() {
+  var el = document.getElementById('palavraTitulo')
+  if (!el) return
+  var len = el.textContent.trim().length
+  el.classList.remove('curta','media','longa','muito-longa')
+  if (len <= 6) el.classList.add('curta')
+  else if (len <= 12) el.classList.add('media')
+  else if (len <= 20) el.classList.add('longa')
+  else el.classList.add('muito-longa')
+}
+
+function formatarData(str) {
+  if (!str) return ''
+  var d = new Date(str)
+  var diff = Math.floor((Date.now() - d) / 86400000)
+  if (diff === 0) return 'hoje'
+  if (diff === 1) return 'ontem'
+  if (diff < 7) return diff + ' dias'
+  return d.toLocaleDateString('pt-BR')
+}
+
+function copiarLink() { navigator.clipboard.writeText(window.location.href).then(function() { alert('Link copiado! 🔗') }) }
+function buscarSidebar() { var val = document.getElementById('sidebarBusca').value.trim(); if (val) window.location.href = 'todas.html?busca=' + encodeURIComponent(val) }
+
+// ── MODAL NOVO SIGNIFICADO ──
+function abrirModal() {
+  var modal = document.getElementById('modalNovoSig')
+  var p = document.getElementById('modalPalavraExibida')
+  if (p) {
+    var titulo = document.getElementById('palavraTitulo')
+    p.textContent = titulo ? '"' + titulo.textContent + '"' : 'esta palavra'
+  }
+  document.getElementById('modalForm').style.display = 'block'
+  document.getElementById('modalSucesso').style.display = 'none'
+  var apelidoWrap = document.getElementById('modalApelidoWrap')
+  if (apelidoWrap) apelidoWrap.style.display = userSession ? 'none' : 'block'
+  modal.classList.add('aberto')
+  document.body.style.overflow = 'hidden'
+}
+
+function fecharModal() {
+  document.getElementById('modalNovoSig').classList.remove('aberto')
+  document.body.style.overflow = ''
+}
+
+document.getElementById('modalNovoSig').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal()
+})
+
+function mAdicionarExtra(btn) {
+  var extrasDiv = btn.previousElementSibling
+  var div = document.createElement('div')
+  div.className = 'm-extra-item'
+  div.innerHTML = '<button class="m-btn-rem-extra" onclick="this.parentElement.remove()">✕</button>' +
+    '<input class="m-extra-titulo" type="text" placeholder="Título adicional (ex: Origem, Curiosidade...)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:Bangers,cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;">' +
+    '<textarea class="m-extra-texto" placeholder="Texto adicional..." style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:13px;resize:vertical;min-height:55px;"></textarea>'
+  extrasDiv.appendChild(div)
+}
+
+function mAdicionarSig() {
+  var lista = document.getElementById('m-lista-sigs')
+  var num = lista.querySelectorAll('.m-sig-wrap').length + 1
+  var div = document.createElement('div')
+  div.className = 'm-sig-wrap'
+  div.style.marginBottom = '12px'
+  div.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+    '<span style="font-size:11px;color:#4a6fa5;font-weight:800;letter-spacing:1px;">SIGNIFICADO ' + num + '</span>' +
+    '<button style="background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;" onclick="this.closest(\'.m-sig-wrap\').remove()">✕</button></div>' +
+    '<textarea class="m-sig-texto" placeholder="Descreva o significado..." style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;"></textarea>' +
+    '<div class="m-sig-extras"></div>' +
+    '<button class="m-btn-add-sub" onclick="mAdicionarExtra(this)">➕ Adicionar título extra</button>'
+  lista.appendChild(div)
+}
+
+function mAdicionarExemplo() {
+  var div = document.createElement('div')
+  div.className = 'm-lista-item'
+  div.innerHTML = '<input type="text" placeholder=\'Ex: "Usa a palavra em uma frase..."\'><button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>'
+  document.getElementById('m-lista-exemplos').appendChild(div)
+}
+
+function mAdicionarSinonimo() {
+  var div = document.createElement('div')
+  div.className = 'm-lista-item'
+  div.innerHTML = '<input type="text" placeholder="Sinônimo..."><button class="m-btn-rem" onclick="mRemItem(this)">🗑️</button>'
+  document.getElementById('m-lista-sinonimos').appendChild(div)
+}
+
+function mRemItem(btn) {
+  var lista = btn.closest('.m-lista-din')
+  if (lista && lista.querySelectorAll('.m-lista-item').length > 1) btn.closest('.m-lista-item').remove()
+}
+
+async function enviarNovoSignificado() {
+  var btn = document.getElementById('btnMEnviar')
+  var blocos = document.getElementById('m-lista-sigs').querySelectorAll('.m-sig-wrap')
+  var significados = []
+  blocos.forEach(function(bloco, i) {
+    var textoEl = bloco.querySelector('.m-sig-texto')
+    var texto = textoEl ? textoEl.value.trim() : ''
+    if (!texto) return
+    var extras = []
+    bloco.querySelectorAll('.m-extra-item').forEach(function(ex) {
+      var tit = ex.querySelector('.m-extra-titulo') ? ex.querySelector('.m-extra-titulo').value.trim() : ''
+      var txt = ex.querySelector('.m-extra-texto') ? ex.querySelector('.m-extra-texto').value.trim() : ''
+      if (tit || txt) extras.push({ titulo: tit, texto: txt })
+    })
+    var descricao = extras.length ? texto + '\n\n[extras]' + JSON.stringify(extras) : texto
+    significados.push({ descricao: descricao, ordem: i + 1 })
+  })
+
+  if (!significados.length) { alert('⚠️ Escreva pelo menos um significado!'); return }
+
+  var exemplos = [...document.getElementById('m-lista-exemplos').querySelectorAll('input')]
+    .map(function(i) { return i.value.trim() }).filter(Boolean)
+  var sinonimos = [...document.getElementById('m-lista-sinonimos').querySelectorAll('input')]
+    .map(function(i) { return i.value.trim() }).filter(Boolean)
+
+  var apelido = 'Visitante'
+  if (!userSession) {
+    var apelidoEl = document.getElementById('m-apelido')
+    apelido = (apelidoEl && apelidoEl.value.trim()) ? apelidoEl.value.trim() : 'Visitante'
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Enviando...'
+
+  var { error } = await sb.from('contribuicoes_significado').insert({
+    palavra_id: palavraId,
+    usuario_id: userSession ? userSession.user.id : null,
+    enviado_por: userSession ? null : apelido,
+    status: 'pendente',
+    significados: JSON.stringify(significados),
+    exemplos: JSON.stringify(exemplos),
+    sinonimos: JSON.stringify(sinonimos)
+  })
+
+  btn.disabled = false
+  btn.textContent = '🚀 ENVIAR CONTRIBUIÇÃO'
+
+  if (error) { alert('Erro ao enviar: ' + error.message); return }
+
+  document.getElementById('modalForm').style.display = 'none'
+  document.getElementById('modalSucesso').style.display = 'block'
+}
+
+// ── VOTOS POR SIGNIFICADO ──
+async function votar(sigId, tipo, btn) {
+  var uid = userSession ? userSession.user.id : getAnonId()
+  var card = btn.closest('.contrib-votos')
+  var btnLike = card.querySelector('[onclick*="like"]')
+  var btnDislike = card.querySelector('[onclick*="dislike"]')
+  var numLike = btnLike.querySelector('.voto-num')
+  var numDislike = btnDislike.querySelector('.voto-num')
+  var jaAtivo = btn.classList.contains('like-ativo') || btn.classList.contains('dislike-ativo')
+  var tipoAtivo = btnLike.classList.contains('like-ativo') ? 'like' : btnDislike.classList.contains('dislike-ativo') ? 'dislike' : null
+
+  // Remover voto existente
+  if (tipoAtivo) {
+    await sb.from('votos_significado').delete().eq('significado_id', sigId).eq('usuario_id', uid)
+    btnLike.classList.remove('like-ativo')
+    btnDislike.classList.remove('dislike-ativo')
+    if (tipoAtivo === 'like') numLike.textContent = Math.max(0, parseInt(numLike.textContent) - 1)
+    else numDislike.textContent = Math.max(0, parseInt(numDislike.textContent) - 1)
+  }
+
+  // Adicionar novo voto se clicou num diferente
+  if (!jaAtivo || tipoAtivo !== tipo) {
+    var { error } = await sb.from('votos_significado').insert({ significado_id: sigId, usuario_id: uid, tipo: tipo })
+    if (!error) {
+      btn.classList.add(tipo === 'like' ? 'like-ativo' : 'dislike-ativo')
+      if (tipo === 'like') numLike.textContent = parseInt(numLike.textContent) + 1
+      else numDislike.textContent = parseInt(numDislike.textContent) + 1
+    }
+  }
+
+  // Atualizar score
+  var scoreEl = card.querySelector('.voto-score')
+  var likes = parseInt(numLike.textContent)
+  var dislikes = parseInt(numDislike.textContent)
+  if (!scoreEl && (likes + dislikes) > 0) {
+    scoreEl = document.createElement('span')
+    scoreEl.className = 'voto-score'
+    card.appendChild(scoreEl)
+  }
+  if (scoreEl) {
+    var score = likes - dislikes
+    scoreEl.textContent = (score > 0 ? '+' : '') + score + ' pontos'
+  }
+}
+
+init()
+</script>
+<script src="./header.js"></script>
+</body>
+</html>
