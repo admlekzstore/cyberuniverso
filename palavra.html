@@ -93,11 +93,23 @@
   .btn-novo-sig:hover{background:rgba(163,255,74,0.15);}
 
   /* ── CONTRIBUIÇÕES ── */
-  .contrib-sep{display:flex;align-items:center;gap:10px;margin:20px 0 18px;}
-  .contrib-num{font-family:'Bangers',cursive;font-size:18px;color:var(--ciano);letter-spacing:2px;white-space:nowrap;}
-  .contrib-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,234,255,0.4),transparent);}
-  .contrib-autor{font-size:12px;color:#4a6fa5;font-weight:700;white-space:nowrap;}
-  .contrib-bloco{margin-bottom:8px;}
+  .contrib-card{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;}
+  .contrib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul),var(--ciano),transparent);}
+  .contrib-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .contrib-num{font-family:'Bangers',cursive;font-size:17px;color:rgba(0,234,255,0.5);letter-spacing:2px;}
+  .contrib-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--azul),var(--ciano));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;}
+  .contrib-meta{font-size:12px;color:#4a6fa5;font-weight:700;}
+  .contrib-meta strong{color:var(--ciano);}
+  .contrib-meta a{color:var(--ciano);text-decoration:none;}
+  .contrib-meta a:hover{color:var(--amarelo);}
+  .contrib-sig{font-size:17px;font-weight:700;color:#e8f4ff;line-height:1.6;margin-bottom:12px;}
+  .contrib-secao-label{font-size:11px;font-weight:800;color:#2a4a7a;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;}
+  .contrib-votos{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--borda);}
+  .voto-btn{display:flex;align-items:center;gap:6px;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:7px 14px;cursor:pointer;transition:all 0.2s;font-size:13px;font-weight:800;color:var(--texto);}
+  .voto-btn:hover{transform:translateY(-2px);}
+  .voto-btn.like-ativo{background:rgba(100,255,150,0.15);border-color:rgba(100,255,150,0.5);color:#64ff96;}
+  .voto-btn.dislike-ativo{background:rgba(255,80,80,0.12);border-color:rgba(255,80,80,0.4);color:#ff5050;}
+  .voto-score{font-size:12px;color:#4a6fa5;font-weight:700;margin-left:4px;}
 
   /* ── MODAL NOVO SIGNIFICADO ── */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto;}
@@ -344,7 +356,7 @@ async function carregarPalavra() {
     { data: variacoesGenero },
     { data: plurais }
   ] = await Promise.all([
-    sb.from('significados').select('descricao, ordem').eq('palavra_id', p.id).order('ordem'),
+    sb.from('significados').select('id, descricao, ordem, contrib_id, contrib_apelido, contrib_autor, criado_em').eq('palavra_id', p.id).order('ordem'),
     sb.from('exemplos').select('frase').eq('palavra_id', p.id),
     sb.from('sinonimos').select('sinonimo').eq('palavra_id', p.id),
     p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
@@ -357,12 +369,41 @@ async function carregarPalavra() {
     sb.from('variacoes_plural').select('plural').eq('palavra_id', p.id)
   ])
 
+  // Buscar perfis dos autores de contribuições
+  const contribUids = [...new Set((significados || []).map(s => s.contrib_autor).filter(Boolean))]
+  const contribPerfisMap = {}
+  if (contribUids.length) {
+    const { data: cPerfis } = await sb.from('perfis').select('id, username, nome, exibir_como, emoji').in('id', contribUids)
+    ;(cPerfis || []).forEach(cp => { contribPerfisMap[cp.id] = cp })
+  }
+
+  // Buscar exemplos e sinônimos por contrib_id (significados de contribuições)
+  const contribIds = [...new Set((significados || []).map(s => s.contrib_id).filter(Boolean))]
+  const exemplosPorContrib = {}
+  const sionimosPorContrib = {}
+  // Os exemplos e sinônimos globais já foram buscados; vamos associá-los via contrib_id se disponível
+
+  // Buscar votos por significado (contrib)
+  const sigIds = (significados || []).map(s => s.id).filter(Boolean)
+  const votosPorSig = {}
+  const meuVotoPorSig = {}
+  if (sigIds.length) {
+    const uid = userSession ? userSession.user.id : getAnonId()
+    const { data: votosData } = await sb.from('votos_significado').select('significado_id, tipo').in('significado_id', sigIds)
+    ;(votosData || []).forEach(v => {
+      if (!votosPorSig[v.significado_id]) votosPorSig[v.significado_id] = { like: 0, dislike: 0 }
+      votosPorSig[v.significado_id][v.tipo] = (votosPorSig[v.significado_id][v.tipo] || 0) + 1
+    })
+    const { data: meuVoto } = await sb.from('votos_significado').select('significado_id, tipo').in('significado_id', sigIds).eq('usuario_id', uid)
+    ;(meuVoto || []).forEach(v => { meuVotoPorSig[v.significado_id] = v.tipo })
+  }
+
   const tags = (tagsRel || []).map(t => t.tags?.nome).filter(Boolean)
   const reacoes = await carregarReacoes(p.id)
   const masculinos = (variacoesGenero || []).filter(v => v.tipo === 'masculino')
   const femininos = (variacoesGenero || []).filter(v => v.tipo === 'feminino')
 
-  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil, opostos || [], masculinos, femininos, plurais || [])
+  renderPalavra(p, significados || [], exemplos || [], sinonimos || [], categoria, tags, reacoes, catsMultiplas || [], relacionadas || [], autorPerfil, opostos || [], masculinos, femininos, plurais || [], contribPerfisMap, votosPorSig, meuVotoPorSig)
 
   // SEO: meta description + schema com o primeiro significado
   var sigTexto = ''
@@ -521,7 +562,7 @@ document.addEventListener('click', function(e) {
   e.preventDefault()
   navegarPalavra(el.getAttribute('data-navegar'))
 })
-function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil, opostos, masculinos, femininos, plurais) {
+function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, reacoes, catsMultiplas, relacionadas, autorPerfil, opostos, masculinos, femininos, plurais, contribPerfisMap, votosPorSig, meuVotoPorSig) {
   const dataFmt = new Date(p.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   const main = document.getElementById('mainCol')
   main.innerHTML =
@@ -571,9 +612,7 @@ function renderPalavra(p, significados, exemplos, sinonimos, categoria, tags, re
     (p.epoca ? '<div class="badge badge-epoca">📅 ' + p.epoca + '</div>' : '') +
     '</div>' +
     (p.imagem_url ? '<div class="palavra-imagem"><img src="' + p.imagem_url + '" alt="' + p.termo + '"></div>' : '') +
-    (significados.length ? renderSignificados(significados, p.termo) : '') +
-    (exemplos.length ? renderExemplos(exemplos) : '') +
-    (sinonimos.length ? renderSinonimos(sinonimos) : '') +
+    (significados.length ? renderSignificados(significados, p.termo, exemplos, sinonimos, contribPerfisMap || {}, votosPorSig || {}, meuVotoPorSig || {}) : '') +
     (opostos && opostos.length ? renderOpostos(opostos) : '') +
     (masculinos && masculinos.length || femininos && femininos.length ? renderVariacoesGenero(masculinos, femininos) : '') +
     (plurais && plurais.length ? renderPlurais(plurais) : '') +
@@ -966,6 +1005,51 @@ async function enviarNovoSignificado() {
 
   document.getElementById('modalForm').style.display = 'none'
   document.getElementById('modalSucesso').style.display = 'block'
+}
+
+// ── VOTOS POR SIGNIFICADO ──
+async function votar(sigId, tipo, btn) {
+  var uid = userSession ? userSession.user.id : getAnonId()
+  var card = btn.closest('.contrib-votos')
+  var btnLike = card.querySelector('[onclick*="like"]')
+  var btnDislike = card.querySelector('[onclick*="dislike"]')
+  var numLike = btnLike.querySelector('.voto-num')
+  var numDislike = btnDislike.querySelector('.voto-num')
+  var jaAtivo = btn.classList.contains('like-ativo') || btn.classList.contains('dislike-ativo')
+  var tipoAtivo = btnLike.classList.contains('like-ativo') ? 'like' : btnDislike.classList.contains('dislike-ativo') ? 'dislike' : null
+
+  // Remover voto existente
+  if (tipoAtivo) {
+    await sb.from('votos_significado').delete().eq('significado_id', sigId).eq('usuario_id', uid)
+    btnLike.classList.remove('like-ativo')
+    btnDislike.classList.remove('dislike-ativo')
+    if (tipoAtivo === 'like') numLike.textContent = Math.max(0, parseInt(numLike.textContent) - 1)
+    else numDislike.textContent = Math.max(0, parseInt(numDislike.textContent) - 1)
+  }
+
+  // Adicionar novo voto se clicou num diferente
+  if (!jaAtivo || tipoAtivo !== tipo) {
+    var { error } = await sb.from('votos_significado').insert({ significado_id: sigId, usuario_id: uid, tipo: tipo })
+    if (!error) {
+      btn.classList.add(tipo === 'like' ? 'like-ativo' : 'dislike-ativo')
+      if (tipo === 'like') numLike.textContent = parseInt(numLike.textContent) + 1
+      else numDislike.textContent = parseInt(numDislike.textContent) + 1
+    }
+  }
+
+  // Atualizar score
+  var scoreEl = card.querySelector('.voto-score')
+  var likes = parseInt(numLike.textContent)
+  var dislikes = parseInt(numDislike.textContent)
+  if (!scoreEl && (likes + dislikes) > 0) {
+    scoreEl = document.createElement('span')
+    scoreEl.className = 'voto-score'
+    card.appendChild(scoreEl)
+  }
+  if (scoreEl) {
+    var score = likes - dislikes
+    scoreEl.textContent = (score > 0 ? '+' : '') + score + ' pontos'
+  }
 }
 
 init()
