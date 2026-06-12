@@ -761,7 +761,8 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
       html += '</div></div>'
     }
 
-    // ── Votos ──
+    // ── Votos (só aparece com mais de uma contribuição) ──
+    if (grupos.length > 1) {
     html += '<div class="contrib-votos">'
     html += '<button class="voto-btn' + (meuVoto==='like' ? ' like-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'like\',this)">👍 <span class="voto-num">' + totalLike + '</span></button>'
     html += '<button class="voto-btn' + (meuVoto==='dislike' ? ' dislike-ativo' : '') + '" onclick="votar(' + sigId0 + ',\'dislike\',this)">👎 <span class="voto-num">' + totalDislike + '</span></button>'
@@ -769,6 +770,7 @@ function renderSignificados(sigs, termo, exemplosTodos, sionimosTodos, contribPe
       html += '<span class="voto-score">' + (score > 0 ? '+' : '') + score + ' pts</span>'
     }
     html += '</div>'
+    } // fim if grupos.length > 1
 
     html += '</div>' // fim contrib-card
   })
