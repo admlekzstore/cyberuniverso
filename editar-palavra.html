@@ -202,8 +202,10 @@ async function carregarPalavra() {
     categoriasSelecionadas = [{ categoria_id: String(p.categoria_id), subcategoria_id: null }]
   }
 
-  // preparar significados — separar texto de extras
-  const sigs = (p.significados || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(s => {
+  // preparar significados — apenas originais (sem contrib_id)
+  const sigs = (p.significados || [])
+    .filter(s => !s.contrib_id)
+    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(s => {
     let texto = s.descricao || ''
     let extras = []
     if (texto.includes('[extras]')) {
@@ -256,7 +258,7 @@ function renderFormulario(p, sigs) {
     <div class="secao-card">
       <div class="secao-titulo">💬 Exemplos de Frases</div>
       <div class="lista-dinamica" id="lista-exemplos">
-        ${(p?.exemplos?.length ? p.exemplos : [{frase:''}]).map(e => `
+        ${(p?.exemplos?.filter(e=>!e.contrib_id).length ? p.exemplos.filter(e=>!e.contrib_id) : [{frase:''}]).map(e => `
           <div class="lista-item">
             <input type="text" placeholder='Ex: "Simbora pra praia!"' value="${(e.frase||'').replace(/"/g,'&quot;')}">
             <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
@@ -339,7 +341,7 @@ function renderFormulario(p, sigs) {
     <div class="secao-card">
       <div class="secao-titulo">🔗 Sinônimos</div>
       <div class="lista-dinamica" id="lista-sinonimos">
-        ${(p?.sinonimos?.length ? p.sinonimos : [{sinonimo:''}]).map(s=>`
+        ${(p?.sinonimos?.filter(s=>!s.contrib_id).length ? p.sinonimos.filter(s=>!s.contrib_id) : [{sinonimo:''}]).map(s=>`
           <div class="lista-item">
             <input type="text" placeholder="ex: Bora, Vamo" value="${(s.sinonimo||'').replace(/"/g,'&quot;')}">
             <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
@@ -677,7 +679,7 @@ async function salvarTudo() {
   }
 
   // significados com extras
-  await sb.from('significados').delete().eq('palavra_id', id)
+  await sb.from('significados').delete().eq('palavra_id', id).is('contrib_id', null)
   const blocos = document.getElementById('lista-significados').querySelectorAll('.sig-bloco')
   const significados = []
   blocos.forEach((bloco, i) => {
@@ -693,13 +695,13 @@ async function salvarTudo() {
   if (significados.length) await sb.from('significados').insert(significados)
 
   // exemplos
-  await sb.from('exemplos').delete().eq('palavra_id', id)
+  await sb.from('exemplos').delete().eq('palavra_id', id).is('contrib_id', null)
   const exemplos = [...document.getElementById('lista-exemplos').querySelectorAll('input')]
     .map(i => ({ palavra_id: id, frase: i.value.trim() })).filter(e => e.frase)
   if (exemplos.length) await sb.from('exemplos').insert(exemplos)
 
   // sinônimos
-  await sb.from('sinonimos').delete().eq('palavra_id', id)
+  await sb.from('sinonimos').delete().eq('palavra_id', id).is('contrib_id', null)
   const sinonimos = [...document.getElementById('lista-sinonimos').querySelectorAll('input')]
     .map(i => ({ palavra_id: id, sinonimo: i.value.trim() })).filter(s => s.sinonimo)
   if (sinonimos.length) await sb.from('sinonimos').insert(sinonimos)
