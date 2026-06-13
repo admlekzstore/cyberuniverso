@@ -1001,6 +1001,37 @@ async function salvarEdicaoContrib() {
 
   if (error) { mostrarToast('Erro ao salvar: ' + error.message, 'erro'); return }
 
+  // Se já aprovada, sincronizar nas tabelas principais também
+  if (_contribAtual.status === 'aprovada') {
+    const cid = _contribAtual.id
+    const pid = _contribAtual.palavra_id
+
+    // Atualizar significados — deletar os antigos desta contrib e reinserir
+    await sb.from('significados').delete().eq('contrib_id', cid)
+    for (let i = 0; i < novosSigs.length; i++) {
+      await sb.from('significados').insert({
+        palavra_id: pid,
+        descricao: novosSigs[i].descricao,
+        ordem: novosSigs[i].ordem,
+        contrib_id: cid,
+        contrib_apelido: _contribAtual.enviado_por,
+        contrib_autor: _contribAtual.usuario_id || null
+      })
+    }
+
+    // Atualizar exemplos
+    await sb.from('exemplos').delete().eq('contrib_id', cid)
+    for (const frase of novosExemplos) {
+      if (frase) await sb.from('exemplos').insert({ palavra_id: pid, frase, contrib_id: cid })
+    }
+
+    // Atualizar sinônimos
+    await sb.from('sinonimos').delete().eq('contrib_id', cid)
+    for (const sinonimo of novosSinonimos) {
+      if (sinonimo) await sb.from('sinonimos').insert({ palavra_id: pid, sinonimo, contrib_id: cid })
+    }
+  }
+
   // Atualizar objeto local
   _contribAtual.significados = JSON.stringify(novosSigs)
   _contribAtual.exemplos = JSON.stringify(novosExemplos)
