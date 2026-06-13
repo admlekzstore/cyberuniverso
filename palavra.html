@@ -44,14 +44,14 @@
   /* Desktop */
   .palavra-titulo.curta    {font-size:clamp(64px,8vw,100px);}
   .palavra-titulo.media    {font-size:clamp(48px,6vw,76px);}
-  .palavra-titulo.longa    {font-size:clamp(36px,4.5vw,56px);letter-spacing:2px;}
-  .palavra-titulo.muito-longa{font-size:clamp(26px,3.2vw,42px);letter-spacing:1px;line-height:1.15;}
-  /* Mobile — sobrepõe os clamps acima em telas pequenas */
-  @media(max-width:480px){
-    .palavra-titulo.curta    {font-size:clamp(48px,14vw,72px);}
-    .palavra-titulo.media    {font-size:clamp(36px,11vw,56px);}
-    .palavra-titulo.longa    {font-size:clamp(26px,8.5vw,40px);letter-spacing:1px;}
-    .palavra-titulo.muito-longa{font-size:clamp(20px,6.5vw,30px);letter-spacing:0.5px;line-height:1.2;}
+  .palavra-titulo.longa    {font-size:clamp(32px,4vw,52px);letter-spacing:2px;}
+  .palavra-titulo.muito-longa{font-size:clamp(22px,2.4vw,34px);letter-spacing:1px;line-height:1.2;}
+  .palavra-titulo.enorme   {font-size:clamp(18px,1.8vw,26px);letter-spacing:0.5px;line-height:1.3;}
+  /* Mobile */
+  @media(max-width:768px){
+    .palavra-titulo.longa    {font-size:clamp(26px,7vw,40px);letter-spacing:1px;}
+    .palavra-titulo.muito-longa{font-size:clamp(20px,5.5vw,30px);letter-spacing:0.5px;line-height:1.25;}
+    .palavra-titulo.enorme   {font-size:clamp(16px,4.5vw,22px);letter-spacing:0px;line-height:1.3;}
   }
   @keyframes titlePop{from{transform:scale(0.6) translateY(20px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
   @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
@@ -971,11 +971,12 @@ function ajustarTitulo() {
   var el = document.getElementById('palavraTitulo')
   if (!el) return
   var len = el.textContent.trim().length
-  el.classList.remove('curta','media','longa','muito-longa')
+  el.classList.remove('curta','media','longa','muito-longa','enorme')
   if (len <= 7)       el.classList.add('curta')
   else if (len <= 14) el.classList.add('media')
   else if (len <= 22) el.classList.add('longa')
-  else                el.classList.add('muito-longa')
+  else if (len <= 32) el.classList.add('muito-longa')
+  else                el.classList.add('enorme')
 }
 
 function formatarData(str) {
