@@ -993,7 +993,7 @@ async function aprovarContribuicao(id, btn) {
   try {
     const exs = JSON.parse(c.exemplos || '[]')
     for (const frase of exs) {
-      if (frase) await sb.from('exemplos').insert({ palavra_id: c.palavra_id, frase })
+      if (frase) await sb.from('exemplos').insert({ palavra_id: c.palavra_id, frase, contrib_id: id })
     }
   } catch(e) {}
 
@@ -1001,7 +1001,7 @@ async function aprovarContribuicao(id, btn) {
   try {
     const sins = JSON.parse(c.sinonimos || '[]')
     for (const sinonimo of sins) {
-      if (sinonimo) await sb.from('sinonimos').insert({ palavra_id: c.palavra_id, sinonimo })
+      if (sinonimo) await sb.from('sinonimos').insert({ palavra_id: c.palavra_id, sinonimo, contrib_id: id })
     }
   } catch(e) {}
 
