@@ -367,8 +367,8 @@ async function carregarPalavra() {
     { data: plurais }
   ] = await Promise.all([
     sb.from('significados').select('id, descricao, ordem, contrib_id, contrib_apelido, contrib_autor, criado_em').eq('palavra_id', p.id).order('ordem'),
-    sb.from('exemplos').select('frase').eq('palavra_id', p.id),
-    sb.from('sinonimos').select('sinonimo').eq('palavra_id', p.id),
+    sb.from('exemplos').select('frase, contrib_id').eq('palavra_id', p.id),
+    sb.from('sinonimos').select('sinonimo, contrib_id').eq('palavra_id', p.id),
     p.categoria_id ? sb.from('categorias').select('id, nome, icone').eq('id', p.categoria_id).single() : Promise.resolve({ data: null }),
     sb.from('palavras_tags').select('tag_id, tags(nome)').eq('palavra_id', p.id),
     sb.from('palavras_categorias').select('categoria_id, subcategoria_id, categorias(id, nome, icone), subcategorias(id, nome)').eq('palavra_id', p.id),
