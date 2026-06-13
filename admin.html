@@ -836,9 +836,12 @@ function verContribuicao(contrib, palavra) {
       <button class="btn-cancelar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>
       <button class="btn-mini btn-editar" style="padding:10px 16px;font-size:14px;" onclick="ativarEdicaoContrib()">✏️ EDITAR</button>
       <button class="btn-mini btn-rejeitar" style="padding:10px 16px;font-size:14px;" onclick="rejeitarContribuicao(${contrib.id}, this)">✗ REJEITAR</button>
+      <button class="btn-mini" style="padding:10px 16px;font-size:14px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;cursor:pointer;" onclick="excluirContribuicao(${contrib.id})">🗑️ EXCLUIR</button>
       <button class="btn-salvar" onclick="aprovarContribuicao(${contrib.id}, this)">✓ APROVAR</button>`
   } else {
-    btns.innerHTML = `<button class="btn-salvar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>`
+    btns.innerHTML = `
+      <button class="btn-cancelar" onclick="document.getElementById('modal-contribuicao').classList.remove('aberto')">FECHAR</button>
+      <button class="btn-mini" style="padding:10px 16px;font-size:14px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;cursor:pointer;" onclick="excluirContribuicao(${contrib.id})">🗑️ EXCLUIR</button>`
   }
 
   document.getElementById('modal-contribuicao').classList.add('aberto')
@@ -862,6 +865,41 @@ function adicionarExtraEdit(btn) {
   const extrasDiv = wrap.querySelector('.mc-extras-wrap')
   const extraIdx = extrasDiv.querySelectorAll('.mc-extra-bloco').length
   extrasDiv.insertAdjacentHTML('beforeend', renderExtraEdit({titulo:'',texto:''}, sigIdx, extraIdx))
+}
+
+function mcItemHtml(val, placeholder) {
+  return '<div style="display:flex;gap:8px;"><input type="text" value="' + (val||'').replace(/"/g,'&quot;') + '" placeholder="' + placeholder + '" style="flex:1;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:9px 13px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;"><button onclick="mcRemItem(this)" style="background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;">🗑️</button></div>'
+}
+
+function mcAdicionarItem(listaId, placeholder) {
+  document.getElementById(listaId).insertAdjacentHTML('beforeend', mcItemHtml('', placeholder))
+}
+
+function mcRemItem(btn) {
+  var lista = btn.closest('[id^="mc-lista"]')
+  if (lista && lista.querySelectorAll('div').length > 1) btn.closest('div').remove()
+  else btn.previousElementSibling.value = ''
+}
+
+async function excluirContribuicao(id) {
+  if (!confirm('Excluir esta contribuição? Os exemplos e sinônimos vinculados também serão removidos, mas a palavra permanece intacta.')) return
+
+  // Deletar apenas exemplos e sinônimos vinculados a esta contribuição
+  await sb.from('exemplos').delete().eq('contrib_id', id)
+  await sb.from('sinonimos').delete().eq('contrib_id', id)
+
+  // Deletar também os significados inseridos por esta contribuição (se aprovada)
+  await sb.from('significados').delete().eq('contrib_id', id)
+
+  // Deletar a contribuição em si
+  const { error } = await sb.from('contribuicoes_significado').delete().eq('id', id)
+
+  if (error) { mostrarToast('Erro ao excluir: ' + error.message, 'erro'); return }
+
+  mostrarToast('🗑️ Contribuição excluída. A palavra continua intacta.', 'sucesso')
+  document.getElementById('modal-contribuicao').classList.remove('aberto')
+  carregarContribuicoes()
+  carregarStats()
 }
 
 function ativarEdicaoContrib() {
@@ -890,14 +928,26 @@ function ativarEdicaoContrib() {
     }).join('')
   } catch(e) {}
 
+  // Preencher lista de exemplos
   try {
     const exs = JSON.parse(_contribAtual.exemplos || '[]')
-    document.getElementById('mc-edit-exemplos').value = exs.join('\n')
+    const listaEx = document.getElementById('mc-lista-exemplos')
+    listaEx.innerHTML = ''
+    const exArr = exs.length ? exs : ['']
+    exArr.forEach(function(ex) {
+      listaEx.insertAdjacentHTML('beforeend', mcItemHtml(ex, 'Exemplo em frase...'))
+    })
   } catch(e) {}
 
+  // Preencher lista de sinônimos
   try {
     const sins = JSON.parse(_contribAtual.sinonimos || '[]')
-    document.getElementById('mc-edit-sinonimos').value = sins.join(', ')
+    const listaSin = document.getElementById('mc-lista-sinonimos')
+    listaSin.innerHTML = ''
+    const sinArr = sins.length ? sins : ['']
+    sinArr.forEach(function(sin) {
+      listaSin.insertAdjacentHTML('beforeend', mcItemHtml(sin, 'Sinônimo...'))
+    })
   } catch(e) {}
 
   const btns = document.getElementById('mc-btns')
@@ -936,11 +986,11 @@ async function salvarEdicaoContrib() {
     return { descricao, ordem: i + 1 }
   }).filter(Boolean)
 
-  const novosExemplos = document.getElementById('mc-edit-exemplos').value
-    .split('\n').map(e => e.trim()).filter(Boolean)
+  const novosExemplos = [...document.getElementById('mc-lista-exemplos').querySelectorAll('input')]
+    .map(i => i.value.trim()).filter(Boolean)
 
-  const novosSinonimos = document.getElementById('mc-edit-sinonimos').value
-    .split(',').map(s => s.trim()).filter(Boolean)
+  const novosSinonimos = [...document.getElementById('mc-lista-sinonimos').querySelectorAll('input')]
+    .map(i => i.value.trim()).filter(Boolean)
 
   const { error } = await sb.from('contribuicoes_significado').update({
     significados: JSON.stringify(novosSigs),
@@ -1181,10 +1231,12 @@ init()
       <div id="mc-modo-editar" style="display:none;">
         <div style="font-size:11px;font-weight:800;color:#f5e800;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">✏️ MODO EDIÇÃO</div>
         <div id="mc-edit-sigs"></div>
-        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">💬 Exemplos <span style="font-weight:600;color:#2a4a7a;">(um por linha)</span></div>
-        <textarea id="mc-edit-exemplos" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;resize:vertical;min-height:70px;" placeholder="Exemplo 1&#10;Exemplo 2..."></textarea>
-        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">🔄 Sinônimos <span style="font-weight:600;color:#2a4a7a;">(separados por vírgula)</span></div>
-        <input id="mc-edit-sinonimos" type="text" style="width:100%;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:10px 14px;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;outline:none;" placeholder="ex: bora, vamos, simbora">
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">💬 Exemplos</div>
+        <div id="mc-lista-exemplos" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+        <button class="m-btn-add" onclick="mcAdicionarItem('mc-lista-exemplos','Exemplo em frase...')">➕ Adicionar exemplo</button>
+        <div style="font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;">🔄 Sinônimos</div>
+        <div id="mc-lista-sinonimos" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+        <button class="m-btn-add" onclick="mcAdicionarItem('mc-lista-sinonimos','Sinônimo...')">➕ Adicionar sinônimo</button>
       </div>
     </div>
     <div class="modal-footer" id="mc-btns" style="gap:8px;flex-wrap:wrap;"></div>
