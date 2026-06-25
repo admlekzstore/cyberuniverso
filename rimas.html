@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title id="page-title">Rimas — CyberUniverso</title>
   <meta name="description" id="page-desc" content="Encontre rimas para qualquer palavra. Gírias, palavras comuns e cultura pop para compositores de funk, trap e rap." />
-  <link rel="canonical" id="page-canonical" href="https://cyberuniverso.com/rimas" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -14,103 +13,92 @@
   <script src="./header.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --azul: #1a6ef5; --amarelo: #f5e800; --ciano: #00eaff;
-      --roxo: #9b4dff; --card: #0a1628; --borda: #1a3a6e;
-      --bg: #000000; --texto: #e0e8ff;
-    }
+    :root { --azul:#1a6ef5; --amarelo:#f5e800; --ciano:#00eaff; --roxo:#9b4dff; --card:#0a1628; --borda:#1a3a6e; --bg:#000; --texto:#e0e8ff; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--texto); font-family: 'Nunito', sans-serif; min-height: 100vh; overflow-x: hidden; }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
-      pointer-events: none; z-index: 9999;
-    }
-    .hero { padding: 80px 20px 40px; text-align: center; }
-    .hero-eyebrow { font-family: 'Fredoka One', sans-serif; color: var(--ciano); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; opacity: 0.8; }
-    .hero h1 { font-family: 'Bangers', sans-serif; font-size: clamp(2.8rem, 8vw, 5.5rem); line-height: 1; letter-spacing: 2px; margin-bottom: 8px; }
-    .hero h1 .palavra-destaque { color: var(--amarelo); text-shadow: 0 0 30px rgba(245,232,0,0.5); }
-    .hero-sub { color: rgba(224,232,255,0.55); font-size: 1rem; margin-bottom: 40px; }
-    .busca-wrapper { max-width: 640px; margin: 0 auto; position: relative; }
-    .busca-container {
-      display: flex; align-items: center; background: var(--card);
-      border: 2px solid var(--ciano); border-radius: 12px; padding: 6px 6px 6px 20px;
-      box-shadow: 0 0 30px rgba(0,234,255,0.15); transition: box-shadow 0.3s;
-    }
-    .busca-container:focus-within { box-shadow: 0 0 40px rgba(0,234,255,0.3); }
-    .busca-prefix { font-family: 'Fredoka One', sans-serif; color: rgba(224,232,255,0.4); font-size: 1rem; white-space: nowrap; margin-right: 8px; }
-    #input-busca { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-family: 'Nunito', sans-serif; font-size: 1.2rem; font-weight: 700; caret-color: var(--ciano); }
-    #input-busca::placeholder { color: rgba(255,255,255,0.25); }
-    #btn-buscar { background: var(--ciano); color: #000; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Fredoka One', sans-serif; font-size: 1rem; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
-    #btn-buscar:hover { background: #fff; }
-    #btn-buscar:active { transform: scale(0.97); }
-    .autocomplete-box { position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; z-index: 100; display: none; }
-    .autocomplete-box.ativo { display: block; }
-    .autocomplete-item { padding: 10px 20px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; display: flex; align-items: center; gap: 8px; }
-    .autocomplete-item:hover { background: rgba(0,234,255,0.08); }
-    .badge-giria { font-size: 0.65rem; background: rgba(0,234,255,0.15); color: var(--ciano); border: 1px solid rgba(0,234,255,0.3); border-radius: 4px; padding: 1px 5px; font-family: 'Fredoka One', sans-serif; }
-    #resultados { max-width: 900px; margin: 48px auto 0; padding: 0 20px 80px; display: none; }
-    #resultados.ativo { display: block; }
-    .resultado-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--borda); }
-    .resultado-titulo { font-family: 'Bangers', sans-serif; font-size: 2rem; letter-spacing: 1px; }
-    .resultado-titulo span { color: var(--amarelo); }
-    .resultado-count { font-size: 0.85rem; color: rgba(224,232,255,0.45); }
-    .secao { margin-bottom: 48px; }
-    .secao-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .secao-titulo { font-family: 'Fredoka One', sans-serif; font-size: 1.1rem; color: var(--ciano); text-transform: uppercase; letter-spacing: 2px; }
-    .secao-count { font-size: 0.8rem; color: rgba(224,232,255,0.4); }
-    .secao-divider { flex: 1; height: 1px; background: linear-gradient(to right, var(--borda), transparent); }
-    .filtro-categorias { margin-bottom: 20px; }
-    .filtro-label { font-size: 0.75rem; color: rgba(224,232,255,0.4); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-    .categorias-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-    .pill-categoria { background: rgba(26,110,245,0.1); border: 1px solid rgba(26,110,245,0.3); color: rgba(224,232,255,0.7); border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
-    .pill-categoria:hover { border-color: var(--azul); color: #fff; }
-    .pill-categoria.ativa { background: var(--azul); border-color: var(--azul); color: #fff; box-shadow: 0 0 12px rgba(26,110,245,0.4); }
-    .girias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-    .card-giria { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; text-decoration: none; display: block; }
-    .card-giria:hover { border-color: var(--ciano); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,234,255,0.1); }
-    .card-giria-nome { font-family: 'Fredoka One', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 4px; }
-    .card-giria-rima { font-size: 0.75rem; color: var(--ciano); opacity: 0.7; }
-    .card-giria-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
-    .cat-mini { font-size: 0.65rem; background: rgba(155,77,255,0.15); color: #b380ff; border: 1px solid rgba(155,77,255,0.25); border-radius: 4px; padding: 1px 6px; font-family: 'Fredoka One', sans-serif; }
-    .palavras-lista { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag-palavra { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 14px; font-size: 0.9rem; color: rgba(224,232,255,0.75); transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-    .tag-palavra:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
-    .tag-palavra .sil { font-size: 0.65rem; color: rgba(224,232,255,0.3); }
-    .filtro-silabas { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-    .btn-sil { background: transparent; border: 1px solid var(--borda); color: rgba(224,232,255,0.5); border-radius: 6px; padding: 4px 12px; font-size: 0.8rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.15s; }
-    .btn-sil:hover, .btn-sil.ativo { border-color: var(--azul); color: #fff; background: rgba(26,110,245,0.15); }
-    .pop-toggle { width: 100%; background: transparent; border: 1px solid var(--borda); border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; color: var(--texto); }
-    .pop-toggle:hover { border-color: var(--roxo); }
-    .pop-toggle-titulo { font-family: 'Fredoka One', sans-serif; font-size: 1rem; color: #b380ff; letter-spacing: 1px; }
-    .pop-toggle-icone { color: rgba(224,232,255,0.4); transition: transform 0.3s; }
-    .pop-toggle.aberto .pop-toggle-icone { transform: rotate(180deg); }
-    .pop-conteudo { display: none; padding: 20px 0 0; }
-    .pop-conteudo.aberto { display: block; }
-    .pop-abas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-    .pop-aba { background: transparent; border: 1px solid var(--borda); color: rgba(224,232,255,0.5); border-radius: 8px; padding: 5px 14px; font-size: 0.82rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.15s; }
-    .pop-aba:hover, .pop-aba.ativa { border-color: var(--roxo); color: #b380ff; background: rgba(155,77,255,0.1); }
-    .pop-lista { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag-pop { background: rgba(155,77,255,0.08); border: 1px solid rgba(155,77,255,0.2); border-radius: 8px; padding: 6px 14px; font-size: 0.88rem; color: #c49dff; display: flex; align-items: center; gap: 6px; }
-    .tag-pop .pop-sub { font-size: 0.65rem; color: rgba(196,157,255,0.5); }
-    .ia-secao { background: linear-gradient(135deg, rgba(155,77,255,0.08), rgba(0,234,255,0.05)); border: 1px solid rgba(155,77,255,0.25); border-radius: 16px; padding: 28px; margin-top: 48px; }
-    .ia-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .ia-icone { width: 36px; height: 36px; background: linear-gradient(135deg, var(--roxo), var(--ciano)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .ia-titulo { font-family: 'Bangers', sans-serif; font-size: 1.6rem; letter-spacing: 1px; color: #b380ff; }
-    .ia-desc { font-size: 0.88rem; color: rgba(224,232,255,0.5); margin-bottom: 20px; line-height: 1.6; }
-    .ia-campo { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(155,77,255,0.3); border-radius: 10px; padding: 14px 16px; color: var(--texto); font-family: 'Nunito', sans-serif; font-size: 0.95rem; resize: vertical; min-height: 80px; outline: none; transition: border-color 0.2s; margin-bottom: 12px; }
-    .ia-campo:focus { border-color: var(--roxo); }
-    .ia-campo::placeholder { color: rgba(224,232,255,0.25); }
-    #btn-ia-compostor { background: linear-gradient(135deg, var(--roxo), #6b2fff); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'Fredoka One', sans-serif; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; }
-    #btn-ia-compostor:hover { opacity: 0.85; }
-    #btn-ia-compostor:disabled { opacity: 0.4; cursor: not-allowed; }
-    .ia-resultado { margin-top: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(155,77,255,0.2); border-radius: 10px; padding: 20px; display: none; }
-    .ia-resultado.ativo { display: block; }
-    .ia-resultado-titulo { font-family: 'Fredoka One', sans-serif; font-size: 0.85rem; color: #b380ff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-    .ia-verso { background: rgba(155,77,255,0.08); border-left: 3px solid var(--roxo); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 10px; font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; }
-    .vazio { text-align: center; padding: 32px; color: rgba(224,232,255,0.3); font-size: 0.9rem; width: 100%; }
-    @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(0,234,255,0.4)} 50%{text-shadow:0 0 40px rgba(0,234,255,0.8),0 0 80px rgba(0,234,255,0.3)} }
-    .ciano-neon { animation: neon-pulse 3s ease-in-out infinite; color: var(--ciano); }
+    body { background:var(--bg); color:var(--texto); font-family:'Nunito',sans-serif; min-height:100vh; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px); pointer-events:none; z-index:9999; }
+    .hero { padding:80px 20px 40px; text-align:center; }
+    .hero-eyebrow { font-family:'Fredoka One',sans-serif; color:var(--ciano); font-size:.85rem; letter-spacing:4px; text-transform:uppercase; margin-bottom:16px; opacity:.8; }
+    .hero h1 { font-family:'Bangers',sans-serif; font-size:clamp(2.8rem,8vw,5.5rem); line-height:1; letter-spacing:2px; margin-bottom:8px; }
+    .palavra-destaque { color:var(--amarelo); text-shadow:0 0 30px rgba(245,232,0,.5); }
+    .hero-sub { color:rgba(224,232,255,.55); font-size:1rem; margin-bottom:40px; }
+    .busca-wrapper { max-width:640px; margin:0 auto; position:relative; }
+    .busca-container { display:flex; align-items:center; background:var(--card); border:2px solid var(--ciano); border-radius:12px; padding:6px 6px 6px 20px; box-shadow:0 0 30px rgba(0,234,255,.15); transition:box-shadow .3s; }
+    .busca-container:focus-within { box-shadow:0 0 40px rgba(0,234,255,.3); }
+    .busca-prefix { font-family:'Fredoka One',sans-serif; color:rgba(224,232,255,.4); font-size:1rem; white-space:nowrap; margin-right:8px; }
+    #input-busca { flex:1; background:transparent; border:none; outline:none; color:#fff; font-family:'Nunito',sans-serif; font-size:1.2rem; font-weight:700; caret-color:var(--ciano); }
+    #input-busca::placeholder { color:rgba(255,255,255,.25); }
+    #btn-buscar { background:var(--ciano); color:#000; border:none; border-radius:8px; padding:10px 24px; font-family:'Fredoka One',sans-serif; font-size:1rem; cursor:pointer; transition:background .2s; white-space:nowrap; }
+    #btn-buscar:hover { background:#fff; }
+    .autocomplete-box { position:absolute; top:calc(100% + 8px); left:0; right:0; background:var(--card); border:1px solid var(--borda); border-radius:10px; overflow:hidden; z-index:100; display:none; }
+    .autocomplete-box.ativo { display:block; }
+    .autocomplete-item { padding:10px 20px; cursor:pointer; font-size:.95rem; transition:background .15s; display:flex; align-items:center; gap:8px; }
+    .autocomplete-item:hover { background:rgba(0,234,255,.08); }
+    .badge-giria { font-size:.65rem; background:rgba(0,234,255,.15); color:var(--ciano); border:1px solid rgba(0,234,255,.3); border-radius:4px; padding:1px 5px; font-family:'Fredoka One',sans-serif; }
+    #resultados { max-width:900px; margin:48px auto 0; padding:0 20px 80px; display:none; }
+    #resultados.ativo { display:block; }
+    .resultado-header { display:flex; align-items:baseline; gap:12px; margin-bottom:32px; padding-bottom:16px; border-bottom:1px solid var(--borda); }
+    .resultado-titulo { font-family:'Bangers',sans-serif; font-size:2rem; letter-spacing:1px; }
+    .resultado-titulo span { color:var(--amarelo); }
+    .resultado-count { font-size:.85rem; color:rgba(224,232,255,.45); }
+    .chaves-usadas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; }
+    .secao { margin-bottom:48px; }
+    .secao-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .secao-titulo { font-family:'Fredoka One',sans-serif; font-size:1.1rem; color:var(--ciano); text-transform:uppercase; letter-spacing:2px; }
+    .secao-count { font-size:.8rem; color:rgba(224,232,255,.4); }
+    .secao-divider { flex:1; height:1px; background:linear-gradient(to right,var(--borda),transparent); }
+    .filtro-label { font-size:.75rem; color:rgba(224,232,255,.4); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; display:block; }
+    .categorias-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+    .pill-categoria { background:rgba(26,110,245,.1); border:1px solid rgba(26,110,245,.3); color:rgba(224,232,255,.7); border-radius:20px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; user-select:none; }
+    .pill-categoria:hover { border-color:var(--azul); color:#fff; }
+    .pill-categoria.ativa { background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 12px rgba(26,110,245,.4); }
+    .girias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+    .card-giria { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .2s,transform .2s,box-shadow .2s; text-decoration:none; display:block; }
+    .card-giria:hover { border-color:var(--ciano); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,234,255,.1); }
+    .card-giria-nome { font-family:'Fredoka One',sans-serif; font-size:1.2rem; color:#fff; margin-bottom:4px; }
+    .card-giria-rima { font-size:.75rem; color:var(--ciano); opacity:.7; }
+    .card-giria-cats { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
+    .cat-mini { font-size:.65rem; background:rgba(155,77,255,.15); color:#b380ff; border:1px solid rgba(155,77,255,.25); border-radius:4px; padding:1px 6px; font-family:'Fredoka One',sans-serif; }
+    .palavras-lista { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag-palavra { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:6px 14px; font-size:.9rem; color:rgba(224,232,255,.75); transition:all .15s; display:flex; align-items:center; gap:6px; }
+    .tag-palavra:hover { border-color:rgba(255,255,255,.25); color:#fff; }
+    .tag-palavra .sil { font-size:.65rem; color:rgba(224,232,255,.3); }
+    .filtro-silabas { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+    .filtro-sil-label { font-size:.75rem; color:rgba(224,232,255,.4); }
+    .btn-sil { background:transparent; border:1px solid var(--borda); color:rgba(224,232,255,.5); border-radius:6px; padding:4px 12px; font-size:.8rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .15s; }
+    .btn-sil:hover,.btn-sil.ativo { border-color:var(--azul); color:#fff; background:rgba(26,110,245,.15); }
+    .pop-toggle { width:100%; background:transparent; border:1px solid var(--borda); border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:border-color .2s; color:var(--texto); }
+    .pop-toggle:hover { border-color:var(--roxo); }
+    .pop-toggle-titulo { font-family:'Fredoka One',sans-serif; font-size:1rem; color:#b380ff; letter-spacing:1px; }
+    .pop-toggle-icone { color:rgba(224,232,255,.4); transition:transform .3s; }
+    .pop-toggle.aberto .pop-toggle-icone { transform:rotate(180deg); }
+    .pop-conteudo { display:none; padding:20px 0 0; }
+    .pop-conteudo.aberto { display:block; }
+    .pop-abas { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .pop-aba { background:transparent; border:1px solid var(--borda); color:rgba(224,232,255,.5); border-radius:8px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .15s; }
+    .pop-aba:hover,.pop-aba.ativa { border-color:var(--roxo); color:#b380ff; background:rgba(155,77,255,.1); }
+    .pop-lista { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag-pop { background:rgba(155,77,255,.08); border:1px solid rgba(155,77,255,.2); border-radius:8px; padding:6px 14px; font-size:.88rem; color:#c49dff; display:flex; align-items:center; gap:6px; }
+    .tag-pop .pop-sub { font-size:.65rem; color:rgba(196,157,255,.5); }
+    .ia-secao { background:linear-gradient(135deg,rgba(155,77,255,.08),rgba(0,234,255,.05)); border:1px solid rgba(155,77,255,.25); border-radius:16px; padding:28px; margin-top:48px; }
+    .ia-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    .ia-icone { width:36px; height:36px; background:linear-gradient(135deg,var(--roxo),var(--ciano)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .ia-titulo { font-family:'Bangers',sans-serif; font-size:1.6rem; letter-spacing:1px; color:#b380ff; }
+    .ia-desc { font-size:.88rem; color:rgba(224,232,255,.5); margin-bottom:20px; line-height:1.6; }
+    .ia-campo { width:100%; background:rgba(0,0,0,.4); border:1px solid rgba(155,77,255,.3); border-radius:10px; padding:14px 16px; color:var(--texto); font-family:'Nunito',sans-serif; font-size:.95rem; resize:vertical; min-height:80px; outline:none; transition:border-color .2s; margin-bottom:12px; }
+    .ia-campo:focus { border-color:var(--roxo); }
+    .ia-campo::placeholder { color:rgba(224,232,255,.25); }
+    #btn-ia-compostor { background:linear-gradient(135deg,var(--roxo),#6b2fff); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-family:'Fredoka One',sans-serif; font-size:1rem; cursor:pointer; transition:opacity .2s; display:flex; align-items:center; gap:8px; }
+    #btn-ia-compostor:hover { opacity:.85; }
+    #btn-ia-compostor:disabled { opacity:.4; cursor:not-allowed; }
+    .ia-resultado { margin-top:20px; background:rgba(0,0,0,.3); border:1px solid rgba(155,77,255,.2); border-radius:10px; padding:20px; display:none; }
+    .ia-resultado.ativo { display:block; }
+    .ia-resultado-titulo { font-family:'Fredoka One',sans-serif; font-size:.85rem; color:#b380ff; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+    .ia-verso { background:rgba(155,77,255,.08); border-left:3px solid var(--roxo); border-radius:0 8px 8px 0; padding:12px 16px; margin-bottom:10px; font-size:.95rem; line-height:1.7; white-space:pre-wrap; }
+    .vazio { text-align:center; padding:32px; color:rgba(224,232,255,.3); font-size:.9rem; width:100%; }
+    @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(0,234,255,.4)} 50%{text-shadow:0 0 40px rgba(0,234,255,.8),0 0 80px rgba(0,234,255,.3)} }
+    .ciano-neon { animation:neon-pulse 3s ease-in-out infinite; color:var(--ciano); }
     @media(max-width:600px) { .hero{padding:60px 16px 32px} .girias-grid{grid-template-columns:1fr 1fr} }
   </style>
 </head>
@@ -132,48 +120,49 @@
 
 <section id="resultados">
   <div class="resultado-header">
-    <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
+    <div>
+      <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
+      <div class="chaves-usadas" id="chaves-usadas"></div>
+    </div>
     <span class="resultado-count" id="res-count"></span>
   </div>
 
-  <div class="secao" id="secao-girias">
+  <div class="secao">
     <div class="secao-header">
       <span class="secao-titulo">⚡ Gírias</span>
       <span class="secao-count" id="count-girias"></span>
       <div class="secao-divider"></div>
     </div>
-    <div class="filtro-categorias">
-      <span class="filtro-label">Categorias &amp; Temas</span>
-      <div class="categorias-pills" id="pills-categorias">
-        <span class="pill-categoria" data-cat="trap">trap</span>
-        <span class="pill-categoria" data-cat="funk">funk</span>
-        <span class="pill-categoria" data-cat="skate">skate</span>
-        <span class="pill-categoria" data-cat="surf">surf</span>
-        <span class="pill-categoria" data-cat="favela">favela</span>
-        <span class="pill-categoria" data-cat="gamer">gamer</span>
-        <span class="pill-categoria" data-cat="anime">anime</span>
-        <span class="pill-categoria" data-cat="futebol">futebol</span>
-        <span class="pill-categoria" data-cat="festa">festa</span>
-        <span class="pill-categoria" data-cat="apelidos amigos">apelidos amigos</span>
-        <span class="pill-categoria" data-cat="apelidos romanticos">apelidos românticos</span>
-        <span class="pill-categoria" data-cat="animais">animais</span>
-        <span class="pill-categoria" data-cat="comida">comida</span>
-        <span class="pill-categoria" data-cat="roupas">roupas</span>
-      </div>
+    <span class="filtro-label">Categorias &amp; Temas</span>
+    <div class="categorias-pills">
+      <span class="pill-categoria" data-cat="trap">trap</span>
+      <span class="pill-categoria" data-cat="funk">funk</span>
+      <span class="pill-categoria" data-cat="skate">skate</span>
+      <span class="pill-categoria" data-cat="surf">surf</span>
+      <span class="pill-categoria" data-cat="favela">favela</span>
+      <span class="pill-categoria" data-cat="gamer">gamer</span>
+      <span class="pill-categoria" data-cat="anime">anime</span>
+      <span class="pill-categoria" data-cat="futebol">futebol</span>
+      <span class="pill-categoria" data-cat="festa">festa</span>
+      <span class="pill-categoria" data-cat="apelidos amigos">apelidos amigos</span>
+      <span class="pill-categoria" data-cat="apelidos romanticos">apelidos românticos</span>
+      <span class="pill-categoria" data-cat="animais">animais</span>
+      <span class="pill-categoria" data-cat="comida">comida</span>
+      <span class="pill-categoria" data-cat="roupas">roupas</span>
     </div>
     <div class="girias-grid" id="girias-grid">
       <div class="vazio">Busque uma palavra para ver as gírias que rimam</div>
     </div>
   </div>
 
-  <div class="secao" id="secao-palavras">
+  <div class="secao">
     <div class="secao-header">
       <span class="secao-titulo">📖 Palavras</span>
       <span class="secao-count" id="count-palavras"></span>
       <div class="secao-divider"></div>
     </div>
     <div class="filtro-silabas">
-      <span style="font-size:0.75rem;color:rgba(224,232,255,0.4);align-self:center;">sílabas:</span>
+      <span class="filtro-sil-label">sílabas:</span>
       <button class="btn-sil ativo" data-sil="todas">todas</button>
       <button class="btn-sil" data-sil="1">1</button>
       <button class="btn-sil" data-sil="2">2</button>
@@ -185,10 +174,10 @@
     </div>
   </div>
 
-  <div class="secao" id="secao-pop">
+  <div class="secao">
     <button class="pop-toggle" id="pop-toggle">
       <span class="pop-toggle-titulo">🎮 Cultura Pop</span>
-      <span class="pop-toggle-icone" id="pop-icone">▼</span>
+      <span class="pop-toggle-icone">▼</span>
     </button>
     <div class="pop-conteudo" id="pop-conteudo">
       <div class="pop-abas">
@@ -212,9 +201,7 @@
     </div>
     <p class="ia-desc">Descreva a vibe da sua letra e a IA vai usar os resultados acima pra criar versos e sugestões criativas.</p>
     <textarea class="ia-campo" id="ia-contexto" placeholder="Ex: letra de trap sobre superação na favela, vibe pesada e introspectiva..."></textarea>
-    <div>
-      <button id="btn-ia-compostor"><span>⚡</span> Ativar IA Compositora</button>
-    </div>
+    <button id="btn-ia-compostor"><span>⚡</span> Ativar IA Compositora</button>
     <div class="ia-resultado" id="ia-resultado">
       <div class="ia-resultado-titulo">VERSOS GERADOS</div>
       <div id="ia-versos"></div>
@@ -223,27 +210,67 @@
 </section>
 
 <script>
-const sb = window._supabase;
-let palavraAtual = '';
-let chaveAtual = '';
-let todasGirias = [];
-let todasPalavras = [];
-let todosPopItens = [];
-let catsSelecionadas = new Set();
-let silSelecionada = 'todas';
-let popTipoSelecionado = 'todos';
-let iaLastCall = 0;
-const IA_COOLDOWN = 30000;
+var sb = window._supabase;
+var palavraAtual = '';
+var chavesAtuais = [];
+var todasGirias = [];
+var todasPalavras = [];
+var todosPopItens = [];
+var catsSelecionadas = new Set();
+var silSelecionada = 'todas';
+var popTipoSelecionado = 'todos';
+var iaLastCall = 0;
+var IA_COOLDOWN = 30000;
+
+// ── VARIAÇÕES INGLÊS (mesmo sistema do script de população) ──
+function variacoesIngles(palavra) {
+  var v = [];
+  var w = palavra.toLowerCase().replace(/\s/g,'');
+  if (/ick$|ik$/.test(w))        { v.push('ique','ick','ic'); }
+  if (/ic$/.test(w) && !/ick$/.test(w)) { v.push('ique','ic'); }
+  if (/ck$/.test(w) && !/ick$/.test(w)) { v.push('ék','ak','ack'); }
+  if (/tion$|sion$/.test(w))     { v.push('ção','são'); }
+  if (/ad$|at$|ab$/.test(w))     { v.push('éde','ad'); }
+  if (/ake$|eak$/.test(w))       { v.push('êique','eik'); }
+  if (/ing$/.test(w))            { v.push('ingue','ing'); }
+  if (/ight$|ite$/.test(w))      { v.push('aite','aight'); }
+  if (/ool$|ule$/.test(w))       { v.push('ul','ool'); }
+  if (/ey$|ay$/.test(w))         { v.push('ei','ey'); }
+  if (/ee$|ea$/.test(w))         { v.push('i','ii'); }
+  if (/oo$/.test(w))             { v.push('u','oo'); }
+  if (/ack$|act$/.test(w))       { v.push('ak','ack'); }
+  if (/unk$|ong$/.test(w))       { v.push('unk','ong'); }
+  if (/man$|men$/.test(w))       { v.push('mên','man'); }
+  if (/all$/.test(w))            { v.push('ol'); }
+  if (/[^aeiou]y$/.test(w))      { v.push('i'); }
+  return v;
+}
+
+function temPadraoIngles(palavra) {
+  var w = palavra.toLowerCase();
+  return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ster$|ness$|less$|ove$|ool$|ake$|ash$/.test(w)
+    || !/[áéíóúâêîôûãõàç]/.test(w);
+}
+
+// Chaves para a palavra buscada
+function chavesParaBusca(palavra) {
+  var chaves = new Set();
+  var w = palavra.toLowerCase().trim();
+  if (w.length >= 2) chaves.add(w.slice(-2));
+  if (w.length >= 3) chaves.add(w.slice(-3));
+  if (w.length >= 4) chaves.add(w.slice(-4));
+  if (temPadraoIngles(w)) {
+    variacoesIngles(w).forEach(function(v) { chaves.add(v); });
+  }
+  return Array.from(chaves);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
   var params = new URLSearchParams(window.location.search);
   var p = match ? decodeURIComponent(match[1]) : params.get('p');
-  if (p) {
-    document.getElementById('input-busca').value = p;
-    buscar(p);
-  }
+  if (p) { document.getElementById('input-busca').value = p; buscar(p); }
   setupEventListeners();
 });
 
@@ -252,59 +279,35 @@ function setupEventListeners() {
     var v = document.getElementById('input-busca').value.trim();
     if (v) buscar(v);
   });
-
   document.getElementById('input-busca').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      var v = e.target.value.trim();
-      if (v) { buscar(v); fecharAutocomplete(); }
-    }
+    if (e.key === 'Enter') { var v = e.target.value.trim(); if (v) { buscar(v); fecharAuto(); } }
   });
-
-  document.getElementById('input-busca').addEventListener('input', function(e) {
-    autocomplete(e.target.value.trim());
-  });
-
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.busca-wrapper')) fecharAutocomplete();
-  });
-
+  document.getElementById('input-busca').addEventListener('input', function(e) { autocomplete(e.target.value.trim()); });
+  document.addEventListener('click', function(e) { if (!e.target.closest('.busca-wrapper')) fecharAuto(); });
   document.querySelectorAll('.pill-categoria').forEach(function(pill) {
     pill.addEventListener('click', function() {
       var cat = pill.dataset.cat;
-      if (catsSelecionadas.has(cat)) {
-        catsSelecionadas.delete(cat);
-        pill.classList.remove('ativa');
-      } else {
-        catsSelecionadas.add(cat);
-        pill.classList.add('ativa');
-      }
+      if (catsSelecionadas.has(cat)) { catsSelecionadas.delete(cat); pill.classList.remove('ativa'); }
+      else { catsSelecionadas.add(cat); pill.classList.add('ativa'); }
       renderGirias();
     });
   });
-
   document.querySelectorAll('.btn-sil').forEach(function(btn) {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.btn-sil').forEach(function(b) { b.classList.remove('ativo'); });
-      btn.classList.add('ativo');
-      silSelecionada = btn.dataset.sil;
-      renderPalavras();
+      btn.classList.add('ativo'); silSelecionada = btn.dataset.sil; renderPalavras();
     });
   });
-
   document.getElementById('pop-toggle').addEventListener('click', function() {
-    document.getElementById('pop-toggle').classList.toggle('aberto');
+    this.classList.toggle('aberto');
     document.getElementById('pop-conteudo').classList.toggle('aberto');
   });
-
   document.querySelectorAll('.pop-aba').forEach(function(aba) {
     aba.addEventListener('click', function() {
       document.querySelectorAll('.pop-aba').forEach(function(a) { a.classList.remove('ativa'); });
-      aba.classList.add('ativa');
-      popTipoSelecionado = aba.dataset.tipo;
-      renderPop();
+      aba.classList.add('ativa'); popTipoSelecionado = aba.dataset.tipo; renderPop();
     });
   });
-
   document.getElementById('btn-ia-compostor').addEventListener('click', ativarIA);
 }
 
@@ -318,36 +321,68 @@ async function buscar(palavra) {
   document.getElementById('girias-grid').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('palavras-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
+  document.getElementById('chaves-usadas').innerHTML = '';
 
-  var refData = await sb.from('rimas_palavras').select('chave_fonetica').eq('palavra', palavraAtual).limit(1);
+  // 1. Buscar chaves da palavra em rimas_variacoes
+  var refRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraAtual).eq('ativo', true);
+  var chavesBanco = (refRes.data || []).map(function(r) { return r.chave; });
 
-  if (refData.data && refData.data.length > 0) {
-    chaveAtual = refData.data[0].chave_fonetica;
-  } else {
-    var terminacao = palavraAtual.slice(-3);
-    var fbData = await sb.from('rimas_palavras').select('chave_fonetica').ilike('chave_ortografica', '%' + terminacao).limit(1);
-    chaveAtual = (fbData.data && fbData.data.length > 0) ? fbData.data[0].chave_fonetica : '';
+  // 2. Gerar chaves locais (terminação ortográfica + inglês)
+  var chavesLocais = chavesParaBusca(palavraAtual);
+
+  // 3. Unir todas as chaves
+  var todasChaves = Array.from(new Set(chavesBanco.concat(chavesLocais)));
+  chavesAtuais = todasChaves;
+
+  // Mostrar chaves usadas na busca
+  if (todasChaves.length > 0) {
+    document.getElementById('chaves-usadas').innerHTML = todasChaves.map(function(c) {
+      return '<span class="chave-badge">rima com ' + c + '</span>';
+    }).join('');
   }
 
-  if (chaveAtual) {
-    await Promise.all([buscarPorChave(chaveAtual), buscarPop(chaveAtual)]);
-  } else {
-    document.getElementById('girias-grid').innerHTML = '<div class="vazio">Nenhuma rima encontrada. Tente outra palavra!</div>';
+  if (todasChaves.length === 0) {
+    document.getElementById('girias-grid').innerHTML = '<div class="vazio">Palavra não encontrada. Tente outra!</div>';
     document.getElementById('palavras-lista').innerHTML = '';
-    document.getElementById('pop-lista').innerHTML = '<div class="vazio">Nenhum resultado</div>';
     document.getElementById('res-count').textContent = '0 rimas encontradas';
+    return;
   }
 
-  registrarBusca(palavraAtual, chaveAtual);
+  await Promise.all([buscarResultados(todasChaves), buscarPop(todasChaves)]);
+  registrarBusca(palavraAtual, todasChaves.join(','));
 }
 
-async function buscarPorChave(chave) {
-  var gRes = await sb.from('rimas_palavras').select('palavra, giria_id, chave_fonetica').eq('chave_fonetica', chave).eq('eh_giria', true).neq('palavra', palavraAtual).limit(100);
-  var giriasBruto = gRes.data || [];
+async function buscarResultados(chaves) {
+  // Buscar palavras que compartilham chaves via rimas_variacoes
+  var varRes = await sb.from('rimas_variacoes')
+    .select('palavra, tipo, ref_id, chave')
+    .in('chave', chaves)
+    .neq('palavra', palavraAtual)
+    .eq('ativo', true)
+    .limit(500);
 
-  var giriasComSlug = giriasBruto;
-  if (giriasBruto.length > 0) {
-    var ids = giriasBruto.map(function(g) { return g.giria_id; }).filter(Boolean);
+  var varData = varRes.data || [];
+
+  // Agrupar por palavra (uma palavra pode ter múltiplas chaves)
+  var palavrasMap = {};
+  varData.forEach(function(v) {
+    var key = v.palavra + '|' + v.tipo;
+    if (!palavrasMap[key]) {
+      palavrasMap[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id, chaves: new Set() };
+    }
+    palavrasMap[key].chaves.add(v.chave);
+  });
+
+  var girias = [];
+  var palavrasDic = [];
+  Object.values(palavrasMap).forEach(function(item) {
+    if (item.tipo === 'giria') girias.push(item);
+    else if (item.tipo === 'dicionario') palavrasDic.push(item);
+  });
+
+  // Buscar slugs e categorias das gírias
+  if (girias.length > 0) {
+    var ids = girias.map(function(g) { return g.ref_id; }).filter(Boolean);
     if (ids.length > 0) {
       var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', ids);
       var slugMap = {};
@@ -360,17 +395,28 @@ async function buscarPorChave(chave) {
         if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
       });
 
-      giriasComSlug = giriasBruto.map(function(g) {
-        return Object.assign({}, g, { slug: slugMap[g.giria_id] || g.palavra, categorias: catsMap[g.giria_id] || [] });
+      girias = girias.map(function(g) {
+        return Object.assign({}, g, { slug: slugMap[g.ref_id] || g.palavra, categorias: catsMap[g.ref_id] || [] });
       });
     }
   }
 
-  var pRes = await sb.from('rimas_palavras').select('palavra, num_silabas').eq('chave_fonetica', chave).eq('eh_giria', false).neq('palavra', palavraAtual).order('num_silabas').limit(200);
+  // Buscar num_silabas das palavras do dicionário
+  if (palavrasDic.length > 0) {
+    var ids2 = palavrasDic.map(function(p) { return p.ref_id; }).filter(Boolean);
+    if (ids2.length > 0) {
+      var silRes = await sb.from('rimas_palavras').select('id, num_silabas').in('id', ids2);
+      var silMap = {};
+      (silRes.data || []).forEach(function(r) { silMap[r.id] = r.num_silabas; });
+      palavrasDic = palavrasDic.map(function(p) {
+        return Object.assign({}, p, { num_silabas: silMap[p.ref_id] });
+      });
+    }
+  }
 
-  todasGirias = giriasComSlug;
-  todasPalavras = pRes.data || [];
-  document.getElementById('res-count').textContent = (todasGirias.length + todasPalavras.length) + ' rimas encontradas';
+  todasGirias = girias;
+  todasPalavras = palavrasDic;
+  document.getElementById('res-count').textContent = (girias.length + palavrasDic.length) + ' rimas encontradas';
   renderGirias();
   renderPalavras();
 }
@@ -378,7 +424,6 @@ async function buscarPorChave(chave) {
 function renderGirias() {
   var grid = document.getElementById('girias-grid');
   var lista = todasGirias.slice();
-
   if (catsSelecionadas.size > 0) {
     lista = lista.filter(function(g) {
       return g.categorias && g.categorias.some(function(c) {
@@ -386,77 +431,53 @@ function renderGirias() {
       });
     });
   }
-
   document.getElementById('count-girias').textContent = '(' + lista.length + ')';
-
   if (lista.length === 0) {
     grid.innerHTML = catsSelecionadas.size > 0
-      ? '<div class="vazio">Nenhuma gíria dessa categoria com essa rima. Tente outro tema!</div>'
+      ? '<div class="vazio">Nenhuma gíria dessa categoria com essa rima.</div>'
       : '<div class="vazio">Nenhuma gíria encontrada com essa rima</div>';
     return;
   }
-
   grid.innerHTML = lista.map(function(g) {
-    var cats = '';
-    if (g.categorias && g.categorias.length > 0) {
-      cats = '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
-        return '<span class="cat-mini">' + c + '</span>';
-      }).join('') + '</div>';
-    }
-    return '<a class="card-giria" href="/palavra.html?slug=' + encodeURIComponent(g.slug) + '">' +
-      '<div class="card-giria-nome">' + g.palavra + '</div>' +
-      '<div class="card-giria-rima">rima: ' + g.chave_fonetica + '</div>' +
-      cats + '</a>';
+    var cats = g.categorias && g.categorias.length > 0
+      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) { return '<span class="cat-mini">'+c+'</span>'; }).join('') + '</div>'
+      : '';
+    return '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug || g.palavra)+'">' +
+      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats + '</a>';
   }).join('');
 }
 
 function renderPalavras() {
   var lista = document.getElementById('palavras-lista');
   var palavras = todasPalavras.slice();
-
   if (silSelecionada !== 'todas') {
-    if (silSelecionada === '4+') {
-      palavras = palavras.filter(function(p) { return p.num_silabas >= 4; });
-    } else {
-      var n = parseInt(silSelecionada);
-      palavras = palavras.filter(function(p) { return p.num_silabas === n; });
-    }
+    if (silSelecionada === '4+') palavras = palavras.filter(function(p) { return p.num_silabas >= 4; });
+    else { var n = parseInt(silSelecionada); palavras = palavras.filter(function(p) { return p.num_silabas === n; }); }
   }
-
   document.getElementById('count-palavras').textContent = '(' + palavras.length + ')';
-
-  if (palavras.length === 0) {
-    lista.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>';
-    return;
-  }
-
+  if (palavras.length === 0) { lista.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>'; return; }
   lista.innerHTML = palavras.map(function(p) {
-    return '<span class="tag-palavra">' + p.palavra +
-      (p.num_silabas ? '<span class="sil">' + p.num_silabas + 'sil</span>' : '') +
-      '</span>';
+    return '<span class="tag-palavra">' + p.palavra + (p.num_silabas ? '<span class="sil">'+p.num_silabas+'sil</span>' : '') + '</span>';
   }).join('');
 }
 
-async function buscarPop(chave) {
-  var res = await sb.from('rimas_cultura_pop').select('nome, tipo, subtipo').eq('chave_fonetica', chave).limit(100);
-  todosPopItens = res.data || [];
+async function buscarPop(chaves) {
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id, chave').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', palavraAtual).eq('ativo', true).limit(100);
+  var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
+  if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
+  var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
+  todosPopItens = popRes.data || [];
   renderPop();
 }
 
 function renderPop() {
   var lista = document.getElementById('pop-lista');
   var itens = todosPopItens.slice();
-  if (popTipoSelecionado !== 'todos') {
-    itens = itens.filter(function(i) { return i.tipo === popTipoSelecionado; });
-  }
-  if (itens.length === 0) {
-    lista.innerHTML = '<span class="vazio">Nenhum item de cultura pop com essa rima</span>';
-    return;
-  }
-  var icones = { personagem: '🎭', titulo: '🎬', famoso: '⭐', time: '⚽', marca: '🏷️' };
+  if (popTipoSelecionado !== 'todos') itens = itens.filter(function(i) { return i.tipo === popTipoSelecionado; });
+  if (itens.length === 0) { lista.innerHTML = '<span class="vazio">Nenhum item de cultura pop com essa rima</span>'; return; }
+  var icones = { personagem:'🎭', titulo:'🎬', famoso:'⭐', time:'⚽', marca:'🏷️' };
   lista.innerHTML = itens.map(function(i) {
-    return '<span class="tag-pop">' + (icones[i.tipo] || '✦') + ' ' + i.nome +
-      '<span class="pop-sub">' + (i.subtipo || i.tipo) + '</span></span>';
+    return '<span class="tag-pop">'+(icones[i.tipo]||'✦')+' '+i.nome+'<span class="pop-sub">'+(i.subtipo||i.tipo)+'</span></span>';
   }).join('');
 }
 
@@ -466,82 +487,60 @@ async function autocomplete(valor) {
   var box = document.getElementById('autocomplete-box');
   if (valor.length < 2) { box.classList.remove('ativo'); return; }
   autoTimer = setTimeout(async function() {
-    var res = await sb.from('rimas_palavras').select('palavra, eh_giria').ilike('palavra', valor + '%').order('eh_giria', { ascending: false }).limit(6);
+    var res = await sb.from('rimas_variacoes').select('palavra, tipo').ilike('palavra', valor+'%').order('tipo').limit(8);
     if (!res.data || res.data.length === 0) { box.classList.remove('ativo'); return; }
-    box.innerHTML = res.data.map(function(d) {
-      return '<div class="autocomplete-item" onclick="selecionarAutocomplete(\'' + d.palavra + '\')">' +
-        d.palavra + (d.eh_giria ? '<span class="badge-giria">gíria</span>' : '') + '</div>';
+    var unicos = {};
+    (res.data || []).forEach(function(d) { if (!unicos[d.palavra]) unicos[d.palavra] = d.tipo; });
+    box.innerHTML = Object.entries(unicos).map(function(entry) {
+      return '<div class="autocomplete-item" onclick="selecionarAuto(\''+entry[0]+'\')">' + entry[0] +
+        (entry[1]==='giria' ? '<span class="badge-giria">gíria</span>' : '') + '</div>';
     }).join('');
     box.classList.add('ativo');
   }, 200);
 }
 
-function selecionarAutocomplete(palavra) {
-  document.getElementById('input-busca').value = palavra;
-  fecharAutocomplete();
-  buscar(palavra);
-}
-
-function fecharAutocomplete() {
-  document.getElementById('autocomplete-box').classList.remove('ativo');
-}
+function selecionarAuto(palavra) { document.getElementById('input-busca').value = palavra; fecharAuto(); buscar(palavra); }
+function fecharAuto() { document.getElementById('autocomplete-box').classList.remove('ativo'); }
 
 async function ativarIA() {
   var agora = Date.now();
-  if (agora - iaLastCall < IA_COOLDOWN) {
-    alert('Aguarde ' + Math.ceil((IA_COOLDOWN - (agora - iaLastCall)) / 1000) + 's para gerar novamente.');
-    return;
-  }
+  if (agora - iaLastCall < IA_COOLDOWN) { alert('Aguarde '+Math.ceil((IA_COOLDOWN-(agora-iaLastCall))/1000)+'s'); return; }
   if (!palavraAtual) { alert('Busque uma palavra primeiro!'); return; }
-
   var contexto = document.getElementById('ia-contexto').value.trim();
   var btn = document.getElementById('btn-ia-compostor');
   var resultado = document.getElementById('ia-resultado');
   var versos = document.getElementById('ia-versos');
-
-  btn.disabled = true;
-  btn.innerHTML = '<span>⏳</span> Gerando...';
+  btn.disabled = true; btn.innerHTML = '<span>⏳</span> Gerando...';
   resultado.classList.add('ativo');
-  versos.innerHTML = '<div style="color:rgba(224,232,255,0.5)">IA pensando...</div>';
-
+  versos.innerHTML = '<div style="color:rgba(224,232,255,.5)">IA pensando...</div>';
   try {
     var giriasLista = todasGirias.slice(0,15).map(function(g){return g.palavra;}).join(', ');
     var palavrasLista = todasPalavras.slice(0,10).map(function(p){return p.palavra;}).join(', ');
     var popLista = todosPopItens.slice(0,10).map(function(p){return p.nome;}).join(', ');
-
     var prompt = 'Você é um compositor especialista em funk, trap e rap brasileiro.\n' +
       'O usuário buscou rimas com a palavra "' + palavraAtual + '".\n' +
       (contexto ? 'Contexto da letra: "' + contexto + '"\n' : '') +
-      '\nResultados encontrados:\n' +
-      '- Gírias: ' + (giriasLista || 'nenhuma') + '\n' +
-      '- Palavras: ' + (palavrasLista || 'nenhuma') + '\n' +
-      '- Cultura pop: ' + (popLista || 'nenhuma') + '\n\n' +
-      'Crie 2 barras (versos rimados) usando os materiais acima. Use gírias e referências de cultura pop quando fizer sentido.\n' +
-      'Responda APENAS com os versos, sem explicação, sem numeração, separados por linha em branco.';
-
+      '\nResultados encontrados:\n- Gírias: ' + (giriasLista||'nenhuma') +
+      '\n- Palavras: ' + (palavrasLista||'nenhuma') +
+      '\n- Cultura pop: ' + (popLista||'nenhuma') +
+      '\n\nCrie 2 barras (versos rimados) usando os materiais acima. Use gírias e referências de cultura pop quando fizer sentido.\nResponda APENAS com os versos, sem explicação, sem numeração, separados por linha em branco.';
     var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, messages:[{role:'user',content:prompt}] })
     });
-
     var data = await response.json();
     var texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'Não foi possível gerar versos.';
     versos.innerHTML = texto.split('\n\n').map(function(v) {
-      return v.trim() ? '<div class="ia-verso">' + v.trim() + '</div>' : '';
+      return v.trim() ? '<div class="ia-verso">'+v.trim()+'</div>' : '';
     }).join('');
     iaLastCall = Date.now();
-  } catch(e) {
-    versos.innerHTML = '<div class="vazio">Erro ao conectar com a IA. Tente novamente.</div>';
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<span>⚡</span> Ativar IA Compositora';
+  } catch(e) { versos.innerHTML = '<div class="vazio">Erro ao conectar com a IA.</div>'; }
+  btn.disabled = false; btn.innerHTML = '<span>⚡</span> Ativar IA Compositora';
 }
 
 async function registrarBusca(palavra, chave) {
   try {
-    await sb.from('rimas_buscas').upsert({ palavra_buscada: palavra, chave_fonetica: chave, total_resultados: todasGirias.length + todasPalavras.length, total_girias: todasGirias.length, ultima_busca: new Date().toISOString() }, { onConflict: 'palavra_buscada' });
+    await sb.from('rimas_buscas').upsert({ palavra_buscada:palavra, chave_fonetica:chave, total_resultados:todasGirias.length+todasPalavras.length, total_girias:todasGirias.length, ultima_busca:new Date().toISOString() }, { onConflict:'palavra_buscada' });
   } catch(e) {}
 }
 </script>
