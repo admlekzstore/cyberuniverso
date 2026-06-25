@@ -163,6 +163,7 @@
       <span class="nav-item-icon">🗂️</span> Categorias
     </a>
     <a class="nav-item" onclick="irPara('contribuicoes')"><span class="nav-item-icon">✍️</span> Contribuições<span class="nav-badge" id="badge-contribuicoes">0</span></a>
+    <a class="nav-item" onclick="irPara('rimas')"><span class="nav-item-icon">🎵</span> Rimas</a>
     <div class="nav-section">Comunidade</div>
     <a class="nav-item" onclick="irPara('usuarios')">
       <span class="nav-item-icon">👥</span> Usuários
@@ -300,6 +301,49 @@
           <table>
             <thead><tr><th>Palavra</th><th>Enviado por</th><th>Prévia</th><th>Data</th><th>Ações</th></tr></thead>
             <tbody id="tbody-contribuicoes"><tr><td colspan="5" class="vazio-msg">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="secao" id="sec-rimas">
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">➕ ADICIONAR VARIAÇÃO DE RIMA</div>
+        </div>
+        <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+          <div>
+            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">PALAVRA</label>
+            <input id="rv-palavra" class="busca-tabela" style="width:100%;" placeholder="ex: bad, Patrick..." />
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">CHAVE DE RIMA</label>
+            <input id="rv-chave" class="busca-tabela" style="width:100%;" placeholder="ex: éde, ique, ick..." />
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">TIPO</label>
+            <select id="rv-tipo" class="busca-tabela" style="width:100%;">
+              <option value="dicionario">Dicionário</option>
+              <option value="giria">Gíria</option>
+              <option value="cultura_pop">Cultura Pop</option>
+            </select>
+          </div>
+          <button class="btn-mini btn-aprovar" style="padding:8px 16px;font-size:14px;" onclick="adicionarVariacaoRima()">➕ Adicionar</button>
+        </div>
+        <div id="rv-msg" style="padding:0 20px 16px;font-size:13px;font-weight:700;"></div>
+      </div>
+      <div class="tabela-wrap">
+        <div class="tabela-header">
+          <div class="tabela-titulo">🔍 VARIAÇÕES CADASTRADAS</div>
+          <div style="display:flex;gap:8px;">
+            <input id="rv-busca" class="busca-tabela" placeholder="buscar palavra ou chave..." />
+            <button class="btn-mini btn-editar" onclick="buscarVariacoesRima()">Buscar</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Palavra</th><th>Chave de Rima</th><th>Tipo</th><th>Origem</th><th>Ação</th></tr></thead>
+            <tbody id="tbody-rimas"><tr><td colspan="5" class="vazio-msg">Digite algo para buscar variações</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1110,7 +1154,8 @@ async function rejeitarContribuicao(id, btn) {
 const titulos = {
   dashboard:'📊 DASHBOARD', pendentes:'⏳ PENDENTES',
   palavras:'📖 TODAS AS PALAVRAS', categorias:'🗂️ CATEGORIAS',
-  usuarios:'👥 USUÁRIOS', comentarios:'💬 COMENTÁRIOS', contribuicoes:'✍️ CONTRIBUIÇÕES',
+  usuarios:'👥 USUÁRIOS', comentarios:'💬 COMENTÁRIOS',
+  contribuicoes:'✍️ CONTRIBUIÇÕES', rimas:'🎵 RIMAS',
 }
 
 function irPara(secao) {
@@ -1185,6 +1230,60 @@ async function editarSubcat(id) {
   document.getElementById('es-nome').value = s.nome || ''
   document.getElementById('es-desc').value = s.descricao || ''
   document.getElementById('modal-editar-subcat').classList.add('aberto')
+}
+
+// ── RIMAS — VARIAÇÕES ──
+async function adicionarVariacaoRima() {
+  const palavra = document.getElementById('rv-palavra').value.trim().toLowerCase()
+  const chave   = document.getElementById('rv-chave').value.trim().toLowerCase()
+  const tipo    = document.getElementById('rv-tipo').value
+  const msg     = document.getElementById('rv-msg')
+  if (!palavra || !chave) { msg.style.color = 'var(--vermelho)'; msg.textContent = '⚠️ Preencha a palavra e a chave de rima.'; return }
+  const { error } = await sb.from('rimas_variacoes').upsert(
+    { palavra, chave, tipo, criado_por: 'manual', ativo: true },
+    { onConflict: 'chave,palavra,tipo' }
+  )
+  if (error) {
+    msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro: ' + error.message
+  } else {
+    msg.style.color = 'var(--verde)'; msg.textContent = '✅ Adicionado: "' + palavra + '" rima com "' + chave + '"'
+    document.getElementById('rv-palavra').value = ''
+    document.getElementById('rv-chave').value = ''
+    mostrarToast('✅ Variação adicionada!', 'sucesso')
+  }
+}
+
+async function buscarVariacoesRima() {
+  const termo = document.getElementById('rv-busca').value.trim().toLowerCase()
+  const tbody = document.getElementById('tbody-rimas')
+  if (!termo) { tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Digite algo para buscar</td></tr>'; return }
+  const { data, error } = await sb.from('rimas_variacoes')
+    .select('id, palavra, chave, tipo, criado_por, ativo')
+    .or('palavra.ilike.%' + termo + '%,chave.ilike.%' + termo + '%')
+    .order('palavra').limit(100)
+  if (error || !data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhum resultado encontrado</td></tr>'; return
+  }
+  tbody.innerHTML = data.map(r => `
+    <tr id="row-rv-${r.id}">
+      <td><strong>${r.palavra}</strong></td>
+      <td style="color:var(--ciano);font-family:'Fredoka One',cursive;">${r.chave}</td>
+      <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : 'badge-rejeitado'}">${r.tipo}</span></td>
+      <td style="color:#4a6fa5">${r.criado_por}</td>
+      <td><div class="acoes-cell">
+        ${r.ativo
+          ? `<button class="btn-mini btn-excluir" onclick="removerVariacaoRima('${r.id}')">🗑️ Remover</button>`
+          : `<span style="color:#4a6fa5;font-size:12px">inativo</span>`}
+      </div></td>
+    </tr>`).join('')
+}
+
+async function removerVariacaoRima(id) {
+  if (!confirm('Remover esta variação de rima?')) return
+  const { error } = await sb.from('rimas_variacoes').update({ ativo: false }).eq('id', id)
+  if (error) { mostrarToast('Erro ao remover', 'erro'); return }
+  mostrarToast('🗑️ Variação removida!', 'sucesso')
+  document.getElementById('row-rv-' + id)?.remove()
 }
 
 async function salvarEdicaoSubcat() {
