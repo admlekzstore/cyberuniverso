@@ -4,708 +4,146 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title id="page-title">Rimas — CyberUniverso</title>
-  <meta name="description" id="page-desc" content="Encontre rimas para qualquer palavra. Gírias, palavras comuns e cultura pop organizados por vibe. Feito para compositores de funk, trap e rap." />
+  <meta name="description" id="page-desc" content="Encontre rimas para qualquer palavra. Gírias, palavras comuns e cultura pop para compositores de funk, trap e rap." />
   <link rel="canonical" id="page-canonical" href="https://cyberuniverso.com/rimas" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase.js"></script>
   <script src="./header.js"></script>
-
   <style>
-    /* ─── RESET & BASE ─── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --azul:    #1a6ef5;
-      --amarelo: #f5e800;
-      --ciano:   #00eaff;
-      --roxo:    #9b4dff;
-      --card:    #0a1628;
-      --borda:   #1a3a6e;
-      --bg:      #000000;
-      --texto:   #e0e8ff;
+      --azul: #1a6ef5; --amarelo: #f5e800; --ciano: #00eaff;
+      --roxo: #9b4dff; --card: #0a1628; --borda: #1a3a6e;
+      --bg: #000000; --texto: #e0e8ff;
     }
-
     html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--texto);
-      font-family: 'Nunito', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* scanlines overlay */
+    body { background: var(--bg); color: var(--texto); font-family: 'Nunito', sans-serif; min-height: 100vh; overflow-x: hidden; }
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.08) 2px,
-        rgba(0,0,0,0.08) 4px
-      );
-      pointer-events: none;
-      z-index: 9999;
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none; z-index: 9999;
     }
-
-    /* ─── HERO ─── */
-    .hero {
-      padding: 80px 20px 40px;
-      text-align: center;
-      position: relative;
-    }
-
-    .hero-eyebrow {
-      font-family: 'Fredoka One', sans-serif;
-      color: var(--ciano);
-      font-size: 0.85rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-      opacity: 0.8;
-    }
-
-    .hero h1 {
-      font-family: 'Bangers', sans-serif;
-      font-size: clamp(2.8rem, 8vw, 5.5rem);
-      line-height: 1;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
-
-    .hero h1 .palavra-destaque {
-      color: var(--amarelo);
-      text-shadow: 0 0 30px rgba(245,232,0,0.5);
-    }
-
-    .hero-sub {
-      color: rgba(224,232,255,0.55);
-      font-size: 1rem;
-      margin-bottom: 40px;
-    }
-
-    /* ─── CAIXA DE BUSCA ─── */
-    .busca-wrapper {
-      max-width: 640px;
-      margin: 0 auto;
-      position: relative;
-    }
-
+    .hero { padding: 80px 20px 40px; text-align: center; }
+    .hero-eyebrow { font-family: 'Fredoka One', sans-serif; color: var(--ciano); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; opacity: 0.8; }
+    .hero h1 { font-family: 'Bangers', sans-serif; font-size: clamp(2.8rem, 8vw, 5.5rem); line-height: 1; letter-spacing: 2px; margin-bottom: 8px; }
+    .hero h1 .palavra-destaque { color: var(--amarelo); text-shadow: 0 0 30px rgba(245,232,0,0.5); }
+    .hero-sub { color: rgba(224,232,255,0.55); font-size: 1rem; margin-bottom: 40px; }
+    .busca-wrapper { max-width: 640px; margin: 0 auto; position: relative; }
     .busca-container {
-      display: flex;
-      align-items: center;
-      background: var(--card);
-      border: 2px solid var(--ciano);
-      border-radius: 12px;
-      padding: 6px 6px 6px 20px;
-      box-shadow: 0 0 30px rgba(0,234,255,0.15), 0 0 60px rgba(0,234,255,0.05);
-      transition: box-shadow 0.3s;
+      display: flex; align-items: center; background: var(--card);
+      border: 2px solid var(--ciano); border-radius: 12px; padding: 6px 6px 6px 20px;
+      box-shadow: 0 0 30px rgba(0,234,255,0.15); transition: box-shadow 0.3s;
     }
-
-    .busca-container:focus-within {
-      box-shadow: 0 0 40px rgba(0,234,255,0.3), 0 0 80px rgba(0,234,255,0.1);
-    }
-
-    .busca-prefix {
-      font-family: 'Fredoka One', sans-serif;
-      color: rgba(224,232,255,0.4);
-      font-size: 1rem;
-      white-space: nowrap;
-      margin-right: 8px;
-    }
-
-    #input-busca {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      caret-color: var(--ciano);
-    }
-
+    .busca-container:focus-within { box-shadow: 0 0 40px rgba(0,234,255,0.3); }
+    .busca-prefix { font-family: 'Fredoka One', sans-serif; color: rgba(224,232,255,0.4); font-size: 1rem; white-space: nowrap; margin-right: 8px; }
+    #input-busca { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-family: 'Nunito', sans-serif; font-size: 1.2rem; font-weight: 700; caret-color: var(--ciano); }
     #input-busca::placeholder { color: rgba(255,255,255,0.25); }
-
-    #btn-buscar {
-      background: var(--ciano);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 24px;
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
-
+    #btn-buscar { background: var(--ciano); color: #000; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Fredoka One', sans-serif; font-size: 1rem; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
     #btn-buscar:hover { background: #fff; }
     #btn-buscar:active { transform: scale(0.97); }
-
-    /* Autocomplete */
-    .autocomplete-box {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0; right: 0;
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      overflow: hidden;
-      z-index: 100;
-      display: none;
-    }
-
+    .autocomplete-box { position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; z-index: 100; display: none; }
     .autocomplete-box.ativo { display: block; }
-
-    .autocomplete-item {
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .autocomplete-item { padding: 10px 20px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; display: flex; align-items: center; gap: 8px; }
     .autocomplete-item:hover { background: rgba(0,234,255,0.08); }
-
-    .autocomplete-item .badge-giria {
-      font-size: 0.65rem;
-      background: rgba(0,234,255,0.15);
-      color: var(--ciano);
-      border: 1px solid rgba(0,234,255,0.3);
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-family: 'Fredoka One', sans-serif;
-    }
-
-    /* ─── ÁREA DE RESULTADOS ─── */
-    #resultados {
-      max-width: 900px;
-      margin: 48px auto 0;
-      padding: 0 20px 80px;
-      display: none;
-    }
-
+    .badge-giria { font-size: 0.65rem; background: rgba(0,234,255,0.15); color: var(--ciano); border: 1px solid rgba(0,234,255,0.3); border-radius: 4px; padding: 1px 5px; font-family: 'Fredoka One', sans-serif; }
+    #resultados { max-width: 900px; margin: 48px auto 0; padding: 0 20px 80px; display: none; }
     #resultados.ativo { display: block; }
-
-    .resultado-header {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 32px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--borda);
-    }
-
-    .resultado-titulo {
-      font-family: 'Bangers', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 1px;
-    }
-
+    .resultado-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--borda); }
+    .resultado-titulo { font-family: 'Bangers', sans-serif; font-size: 2rem; letter-spacing: 1px; }
     .resultado-titulo span { color: var(--amarelo); }
-
-    .resultado-count {
-      font-size: 0.85rem;
-      color: rgba(224,232,255,0.45);
-    }
-
-    /* ─── SEÇÃO GÍRIAS ─── */
-    .secao {
-      margin-bottom: 48px;
-    }
-
-    .secao-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .secao-titulo {
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 1.1rem;
-      color: var(--ciano);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .secao-count {
-      font-size: 0.8rem;
-      color: rgba(224,232,255,0.4);
-    }
-
-    .secao-divider {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, var(--borda), transparent);
-    }
-
-    /* ─── FILTRO CATEGORIAS ─── */
-    .filtro-categorias {
-      margin-bottom: 20px;
-    }
-
-    .filtro-label {
-      font-size: 0.75rem;
-      color: rgba(224,232,255,0.4);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .categorias-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill-categoria {
-      background: rgba(26,110,245,0.1);
-      border: 1px solid rgba(26,110,245,0.3);
-      color: rgba(224,232,255,0.7);
-      border-radius: 20px;
-      padding: 5px 14px;
-      font-size: 0.82rem;
-      font-family: 'Fredoka One', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .pill-categoria:hover {
-      border-color: var(--azul);
-      color: #fff;
-    }
-
-    .pill-categoria.ativa {
-      background: var(--azul);
-      border-color: var(--azul);
-      color: #fff;
-      box-shadow: 0 0 12px rgba(26,110,245,0.4);
-    }
-
-    /* ─── CARDS DE GÍRIA ─── */
-    .girias-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 12px;
-    }
-
-    .card-giria {
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 12px;
-      padding: 16px;
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-      text-decoration: none;
-      display: block;
-    }
-
-    .card-giria:hover {
-      border-color: var(--ciano);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,234,255,0.1);
-    }
-
-    .card-giria-nome {
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 1.2rem;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .card-giria-rima {
-      font-size: 0.75rem;
-      color: var(--ciano);
-      opacity: 0.7;
-    }
-
-    .card-giria-cats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 10px;
-    }
-
-    .cat-mini {
-      font-size: 0.65rem;
-      background: rgba(155,77,255,0.15);
-      color: #b380ff;
-      border: 1px solid rgba(155,77,255,0.25);
-      border-radius: 4px;
-      padding: 1px 6px;
-      font-family: 'Fredoka One', sans-serif;
-    }
-
-    /* ─── PALAVRAS DO DICIONÁRIO ─── */
-    .palavras-lista {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag-palavra {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 0.9rem;
-      color: rgba(224,232,255,0.75);
-      transition: all 0.15s;
-      cursor: default;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .tag-palavra:hover {
-      border-color: rgba(255,255,255,0.25);
-      color: #fff;
-    }
-
-    .tag-palavra .sil {
-      font-size: 0.65rem;
-      color: rgba(224,232,255,0.3);
-    }
-
-    /* filtro de sílabas */
-    .filtro-silabas {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .btn-sil {
-      background: transparent;
-      border: 1px solid var(--borda);
-      color: rgba(224,232,255,0.5);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 0.8rem;
-      font-family: 'Fredoka One', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .btn-sil:hover, .btn-sil.ativo {
-      border-color: var(--azul);
-      color: #fff;
-      background: rgba(26,110,245,0.15);
-    }
-
-    /* ─── CULTURA POP ─── */
-    .pop-toggle {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: border-color 0.2s;
-      color: var(--texto);
-    }
-
+    .resultado-count { font-size: 0.85rem; color: rgba(224,232,255,0.45); }
+    .secao { margin-bottom: 48px; }
+    .secao-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .secao-titulo { font-family: 'Fredoka One', sans-serif; font-size: 1.1rem; color: var(--ciano); text-transform: uppercase; letter-spacing: 2px; }
+    .secao-count { font-size: 0.8rem; color: rgba(224,232,255,0.4); }
+    .secao-divider { flex: 1; height: 1px; background: linear-gradient(to right, var(--borda), transparent); }
+    .filtro-categorias { margin-bottom: 20px; }
+    .filtro-label { font-size: 0.75rem; color: rgba(224,232,255,0.4); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
+    .categorias-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill-categoria { background: rgba(26,110,245,0.1); border: 1px solid rgba(26,110,245,0.3); color: rgba(224,232,255,0.7); border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
+    .pill-categoria:hover { border-color: var(--azul); color: #fff; }
+    .pill-categoria.ativa { background: var(--azul); border-color: var(--azul); color: #fff; box-shadow: 0 0 12px rgba(26,110,245,0.4); }
+    .girias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .card-giria { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; text-decoration: none; display: block; }
+    .card-giria:hover { border-color: var(--ciano); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,234,255,0.1); }
+    .card-giria-nome { font-family: 'Fredoka One', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 4px; }
+    .card-giria-rima { font-size: 0.75rem; color: var(--ciano); opacity: 0.7; }
+    .card-giria-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+    .cat-mini { font-size: 0.65rem; background: rgba(155,77,255,0.15); color: #b380ff; border: 1px solid rgba(155,77,255,0.25); border-radius: 4px; padding: 1px 6px; font-family: 'Fredoka One', sans-serif; }
+    .palavras-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-palavra { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 14px; font-size: 0.9rem; color: rgba(224,232,255,0.75); transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+    .tag-palavra:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+    .tag-palavra .sil { font-size: 0.65rem; color: rgba(224,232,255,0.3); }
+    .filtro-silabas { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .btn-sil { background: transparent; border: 1px solid var(--borda); color: rgba(224,232,255,0.5); border-radius: 6px; padding: 4px 12px; font-size: 0.8rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.15s; }
+    .btn-sil:hover, .btn-sil.ativo { border-color: var(--azul); color: #fff; background: rgba(26,110,245,0.15); }
+    .pop-toggle { width: 100%; background: transparent; border: 1px solid var(--borda); border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; color: var(--texto); }
     .pop-toggle:hover { border-color: var(--roxo); }
-
-    .pop-toggle-titulo {
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 1rem;
-      color: #b380ff;
-      letter-spacing: 1px;
-    }
-
-    .pop-toggle-icone {
-      color: rgba(224,232,255,0.4);
-      font-size: 0.9rem;
-      transition: transform 0.3s;
-    }
-
+    .pop-toggle-titulo { font-family: 'Fredoka One', sans-serif; font-size: 1rem; color: #b380ff; letter-spacing: 1px; }
+    .pop-toggle-icone { color: rgba(224,232,255,0.4); transition: transform 0.3s; }
     .pop-toggle.aberto .pop-toggle-icone { transform: rotate(180deg); }
-
-    .pop-conteudo {
-      display: none;
-      padding: 20px 0 0;
-    }
-
+    .pop-conteudo { display: none; padding: 20px 0 0; }
     .pop-conteudo.aberto { display: block; }
-
-    .pop-abas {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .pop-aba {
-      background: transparent;
-      border: 1px solid var(--borda);
-      color: rgba(224,232,255,0.5);
-      border-radius: 8px;
-      padding: 5px 14px;
-      font-size: 0.82rem;
-      font-family: 'Fredoka One', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .pop-aba:hover, .pop-aba.ativa {
-      border-color: var(--roxo);
-      color: #b380ff;
-      background: rgba(155,77,255,0.1);
-    }
-
-    .pop-lista {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag-pop {
-      background: rgba(155,77,255,0.08);
-      border: 1px solid rgba(155,77,255,0.2);
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 0.88rem;
-      color: #c49dff;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .tag-pop .pop-sub {
-      font-size: 0.65rem;
-      color: rgba(196,157,255,0.5);
-    }
-
-    /* ─── SEÇÃO IA ─── */
-    .ia-secao {
-      background: linear-gradient(135deg, rgba(155,77,255,0.08), rgba(0,234,255,0.05));
-      border: 1px solid rgba(155,77,255,0.25);
-      border-radius: 16px;
-      padding: 28px;
-      margin-top: 48px;
-    }
-
-    .ia-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .ia-icone {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--roxo), var(--ciano));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    .ia-titulo {
-      font-family: 'Bangers', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 1px;
-      color: #b380ff;
-    }
-
-    .ia-desc {
-      font-size: 0.88rem;
-      color: rgba(224,232,255,0.5);
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .ia-campo {
-      width: 100%;
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(155,77,255,0.3);
-      border-radius: 10px;
-      padding: 14px 16px;
-      color: var(--texto);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      resize: vertical;
-      min-height: 80px;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 12px;
-    }
-
+    .pop-abas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .pop-aba { background: transparent; border: 1px solid var(--borda); color: rgba(224,232,255,0.5); border-radius: 8px; padding: 5px 14px; font-size: 0.82rem; font-family: 'Fredoka One', sans-serif; cursor: pointer; transition: all 0.15s; }
+    .pop-aba:hover, .pop-aba.ativa { border-color: var(--roxo); color: #b380ff; background: rgba(155,77,255,0.1); }
+    .pop-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-pop { background: rgba(155,77,255,0.08); border: 1px solid rgba(155,77,255,0.2); border-radius: 8px; padding: 6px 14px; font-size: 0.88rem; color: #c49dff; display: flex; align-items: center; gap: 6px; }
+    .tag-pop .pop-sub { font-size: 0.65rem; color: rgba(196,157,255,0.5); }
+    .ia-secao { background: linear-gradient(135deg, rgba(155,77,255,0.08), rgba(0,234,255,0.05)); border: 1px solid rgba(155,77,255,0.25); border-radius: 16px; padding: 28px; margin-top: 48px; }
+    .ia-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .ia-icone { width: 36px; height: 36px; background: linear-gradient(135deg, var(--roxo), var(--ciano)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .ia-titulo { font-family: 'Bangers', sans-serif; font-size: 1.6rem; letter-spacing: 1px; color: #b380ff; }
+    .ia-desc { font-size: 0.88rem; color: rgba(224,232,255,0.5); margin-bottom: 20px; line-height: 1.6; }
+    .ia-campo { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(155,77,255,0.3); border-radius: 10px; padding: 14px 16px; color: var(--texto); font-family: 'Nunito', sans-serif; font-size: 0.95rem; resize: vertical; min-height: 80px; outline: none; transition: border-color 0.2s; margin-bottom: 12px; }
     .ia-campo:focus { border-color: var(--roxo); }
     .ia-campo::placeholder { color: rgba(224,232,255,0.25); }
-
-    .ia-acoes {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    #btn-ia-compostor {
-      background: linear-gradient(135deg, var(--roxo), #6b2fff);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    #btn-ia-compostor { background: linear-gradient(135deg, var(--roxo), #6b2fff); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'Fredoka One', sans-serif; font-size: 1rem; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; }
     #btn-ia-compostor:hover { opacity: 0.85; }
-    #btn-ia-compostor:active { transform: scale(0.97); }
     #btn-ia-compostor:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .ia-resultado {
-      margin-top: 20px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(155,77,255,0.2);
-      border-radius: 10px;
-      padding: 20px;
-      display: none;
-    }
-
+    .ia-resultado { margin-top: 20px; background: rgba(0,0,0,0.3); border: 1px solid rgba(155,77,255,0.2); border-radius: 10px; padding: 20px; display: none; }
     .ia-resultado.ativo { display: block; }
-
-    .ia-resultado-titulo {
-      font-family: 'Fredoka One', sans-serif;
-      font-size: 0.85rem;
-      color: #b380ff;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .ia-verso {
-      background: rgba(155,77,255,0.08);
-      border-left: 3px solid var(--roxo);
-      border-radius: 0 8px 8px 0;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .ia-loading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: rgba(224,232,255,0.5);
-      font-size: 0.9rem;
-    }
-
-    .ia-loading-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--roxo);
-      animation: pulse-dot 1.2s ease-in-out infinite;
-    }
-
-    .ia-loading-dot:nth-child(2) { animation-delay: 0.2s; }
-    .ia-loading-dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes pulse-dot {
-      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1); }
-    }
-
-    /* ─── ESTADOS VAZIOS ─── */
-    .vazio {
-      text-align: center;
-      padding: 32px;
-      color: rgba(224,232,255,0.3);
-      font-size: 0.9rem;
-    }
-
-    /* ─── NEON PULSE HERO ─── */
-    @keyframes neon-pulse {
-      0%, 100% { text-shadow: 0 0 20px rgba(0,234,255,0.4); }
-      50% { text-shadow: 0 0 40px rgba(0,234,255,0.8), 0 0 80px rgba(0,234,255,0.3); }
-    }
-
+    .ia-resultado-titulo { font-family: 'Fredoka One', sans-serif; font-size: 0.85rem; color: #b380ff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .ia-verso { background: rgba(155,77,255,0.08); border-left: 3px solid var(--roxo); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 10px; font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; }
+    .vazio { text-align: center; padding: 32px; color: rgba(224,232,255,0.3); font-size: 0.9rem; width: 100%; }
+    @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(0,234,255,0.4)} 50%{text-shadow:0 0 40px rgba(0,234,255,0.8),0 0 80px rgba(0,234,255,0.3)} }
     .ciano-neon { animation: neon-pulse 3s ease-in-out infinite; color: var(--ciano); }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 600px) {
-      .hero { padding: 60px 16px 32px; }
-      .girias-grid { grid-template-columns: 1fr 1fr; }
-      .ia-acoes { flex-direction: column; }
-      #btn-ia-compostor { width: 100%; justify-content: center; }
-    }
+    @media(max-width:600px) { .hero{padding:60px 16px 32px} .girias-grid{grid-template-columns:1fr 1fr} }
   </style>
 </head>
 <body>
 
-<!-- nav e footer injetados pelo header.js -->
-
-<!-- ─── HERO ─── -->
 <section class="hero">
   <p class="hero-eyebrow">⚡ CyberUniverso</p>
   <h1>O que rima com<br><span class="palavra-destaque ciano-neon" id="hero-palavra">qualquer coisa?</span></h1>
   <p class="hero-sub">Gírias, cultura pop e palavras pra quem faz letra</p>
-
   <div class="busca-wrapper">
     <div class="busca-container">
       <span class="busca-prefix">rima com</span>
-      <input
-        type="text"
-        id="input-busca"
-        placeholder="digita uma palavra..."
-        autocomplete="off"
-        spellcheck="false"
-      />
+      <input type="text" id="input-busca" placeholder="digita uma palavra..." autocomplete="off" spellcheck="false" />
       <button id="btn-buscar">BUSCAR</button>
     </div>
     <div class="autocomplete-box" id="autocomplete-box"></div>
   </div>
 </section>
 
-<!-- ─── RESULTADOS ─── -->
 <section id="resultados">
-
   <div class="resultado-header">
     <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
     <span class="resultado-count" id="res-count"></span>
   </div>
 
-  <!-- SEÇÃO 1: GÍRIAS -->
   <div class="secao" id="secao-girias">
     <div class="secao-header">
       <span class="secao-titulo">⚡ Gírias</span>
       <span class="secao-count" id="count-girias"></span>
       <div class="secao-divider"></div>
     </div>
-
-    <!-- Filtro categorias -->
     <div class="filtro-categorias">
-      <span class="filtro-label">Categorias & Temas</span>
+      <span class="filtro-label">Categorias &amp; Temas</span>
       <div class="categorias-pills" id="pills-categorias">
         <span class="pill-categoria" data-cat="trap">trap</span>
         <span class="pill-categoria" data-cat="funk">funk</span>
@@ -716,27 +154,24 @@
         <span class="pill-categoria" data-cat="anime">anime</span>
         <span class="pill-categoria" data-cat="futebol">futebol</span>
         <span class="pill-categoria" data-cat="festa">festa</span>
-        <span class="pill-categoria" data-cat="apelidos pra amigos">apelidos amigos</span>
-        <span class="pill-categoria" data-cat="apelidos românticos">apelidos românticos</span>
+        <span class="pill-categoria" data-cat="apelidos amigos">apelidos amigos</span>
+        <span class="pill-categoria" data-cat="apelidos romanticos">apelidos românticos</span>
         <span class="pill-categoria" data-cat="animais">animais</span>
         <span class="pill-categoria" data-cat="comida">comida</span>
         <span class="pill-categoria" data-cat="roupas">roupas</span>
       </div>
     </div>
-
     <div class="girias-grid" id="girias-grid">
       <div class="vazio">Busque uma palavra para ver as gírias que rimam</div>
     </div>
   </div>
 
-  <!-- SEÇÃO 2: PALAVRAS DO DICIONÁRIO -->
   <div class="secao" id="secao-palavras">
     <div class="secao-header">
       <span class="secao-titulo">📖 Palavras</span>
       <span class="secao-count" id="count-palavras"></span>
       <div class="secao-divider"></div>
     </div>
-
     <div class="filtro-silabas">
       <span style="font-size:0.75rem;color:rgba(224,232,255,0.4);align-self:center;">sílabas:</span>
       <button class="btn-sil ativo" data-sil="todas">todas</button>
@@ -745,20 +180,18 @@
       <button class="btn-sil" data-sil="3">3</button>
       <button class="btn-sil" data-sil="4+">4+</button>
     </div>
-
     <div class="palavras-lista" id="palavras-lista">
       <span class="vazio">Busque uma palavra para ver as rimas</span>
     </div>
   </div>
 
-  <!-- SEÇÃO 3: CULTURA POP -->
   <div class="secao" id="secao-pop">
     <button class="pop-toggle" id="pop-toggle">
       <span class="pop-toggle-titulo">🎮 Cultura Pop</span>
       <span class="pop-toggle-icone" id="pop-icone">▼</span>
     </button>
     <div class="pop-conteudo" id="pop-conteudo">
-      <div class="pop-abas" id="pop-abas">
+      <div class="pop-abas">
         <button class="pop-aba ativa" data-tipo="todos">todos</button>
         <button class="pop-aba" data-tipo="personagem">personagens</button>
         <button class="pop-aba" data-tipo="titulo">títulos</button>
@@ -772,42 +205,28 @@
     </div>
   </div>
 
-  <!-- SEÇÃO 4: IA COMPOSITORA -->
-  <div class="ia-secao" id="ia-secao">
+  <div class="ia-secao">
     <div class="ia-header">
       <div class="ia-icone">🤖</div>
       <h3 class="ia-titulo">IA Compositora</h3>
     </div>
-    <p class="ia-desc">
-      Descreva a vibe da sua letra e a IA vai usar os resultados acima
-      pra criar versos e sugerir combinações criativas.
-    </p>
-    <textarea
-      class="ia-campo"
-      id="ia-contexto"
-      placeholder="Ex: letra de trap sobre superação na favela, vibe pesada e introspectiva..."
-    ></textarea>
-    <div class="ia-acoes">
-      <button id="btn-ia-compostor">
-        <span>⚡</span> Ativar IA Compositora
-      </button>
+    <p class="ia-desc">Descreva a vibe da sua letra e a IA vai usar os resultados acima pra criar versos e sugestões criativas.</p>
+    <textarea class="ia-campo" id="ia-contexto" placeholder="Ex: letra de trap sobre superação na favela, vibe pesada e introspectiva..."></textarea>
+    <div>
+      <button id="btn-ia-compostor"><span>⚡</span> Ativar IA Compositora</button>
     </div>
     <div class="ia-resultado" id="ia-resultado">
       <div class="ia-resultado-titulo">VERSOS GERADOS</div>
       <div id="ia-versos"></div>
     </div>
   </div>
-
 </section>
 
 <script>
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
 const sb = window._supabase;
 let palavraAtual = '';
 let chaveAtual = '';
-let todasGirias = [];    // [{palavra, slug, chave_fonetica, categorias:[]}]
+let todasGirias = [];
 let todasPalavras = [];
 let todosPopItens = [];
 let catsSelecionadas = new Set();
@@ -816,14 +235,11 @@ let popTipoSelecionado = 'todos';
 let iaLastCall = 0;
 const IA_COOLDOWN = 30000;
 
-// ─────────────────────────────────────────────
-// INICIALIZAÇÃO
-// ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const path = window.location.pathname;
-  const match = path.match(/\/rimas\/(.+)/);
-  const params = new URLSearchParams(window.location.search);
-  const p = match ? decodeURIComponent(match[1]) : params.get('p');
+document.addEventListener('DOMContentLoaded', function() {
+  var path = window.location.pathname;
+  var match = path.match(/\/rimas\/(.+)/);
+  var params = new URLSearchParams(window.location.search);
+  var p = match ? decodeURIComponent(match[1]) : params.get('p');
   if (p) {
     document.getElementById('input-busca').value = p;
     buscar(p);
@@ -832,30 +248,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  document.getElementById('btn-buscar').addEventListener('click', () => {
-    const v = document.getElementById('input-busca').value.trim();
+  document.getElementById('btn-buscar').addEventListener('click', function() {
+    var v = document.getElementById('input-busca').value.trim();
     if (v) buscar(v);
   });
 
-  document.getElementById('input-busca').addEventListener('keydown', e => {
+  document.getElementById('input-busca').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
-      const v = e.target.value.trim();
+      var v = e.target.value.trim();
       if (v) { buscar(v); fecharAutocomplete(); }
     }
   });
 
-  document.getElementById('input-busca').addEventListener('input', e => {
+  document.getElementById('input-busca').addEventListener('input', function(e) {
     autocomplete(e.target.value.trim());
   });
 
-  document.addEventListener('click', e => {
+  document.addEventListener('click', function(e) {
     if (!e.target.closest('.busca-wrapper')) fecharAutocomplete();
   });
 
-  // Filtro categorias
-  document.querySelectorAll('.pill-categoria').forEach(pill => {
-    pill.addEventListener('click', () => {
-      const cat = pill.dataset.cat;
+  document.querySelectorAll('.pill-categoria').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var cat = pill.dataset.cat;
       if (catsSelecionadas.has(cat)) {
         catsSelecionadas.delete(cat);
         pill.classList.remove('ativa');
@@ -867,26 +282,23 @@ function setupEventListeners() {
     });
   });
 
-  // Filtro sílabas
-  document.querySelectorAll('.btn-sil').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.btn-sil').forEach(b => b.classList.remove('ativo'));
+  document.querySelectorAll('.btn-sil').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.btn-sil').forEach(function(b) { b.classList.remove('ativo'); });
       btn.classList.add('ativo');
       silSelecionada = btn.dataset.sil;
       renderPalavras();
     });
   });
 
-  // Cultura pop toggle
-  document.getElementById('pop-toggle').addEventListener('click', () => {
+  document.getElementById('pop-toggle').addEventListener('click', function() {
     document.getElementById('pop-toggle').classList.toggle('aberto');
     document.getElementById('pop-conteudo').classList.toggle('aberto');
   });
 
-  // Pop abas
-  document.querySelectorAll('.pop-aba').forEach(aba => {
-    aba.addEventListener('click', () => {
-      document.querySelectorAll('.pop-aba').forEach(a => a.classList.remove('ativa'));
+  document.querySelectorAll('.pop-aba').forEach(function(aba) {
+    aba.addEventListener('click', function() {
+      document.querySelectorAll('.pop-aba').forEach(function(a) { a.classList.remove('ativa'); });
       aba.classList.add('ativa');
       popTipoSelecionado = aba.dataset.tipo;
       renderPop();
@@ -896,15 +308,10 @@ function setupEventListeners() {
   document.getElementById('btn-ia-compostor').addEventListener('click', ativarIA);
 }
 
-// ─────────────────────────────────────────────
-// BUSCA PRINCIPAL
-// ─────────────────────────────────────────────
 async function buscar(palavra) {
   palavraAtual = palavra.toLowerCase().trim();
-
-  window.history.pushState({}, '', `/rimas/${encodeURIComponent(palavraAtual)}`);
-  document.getElementById('page-title').textContent = `O que rima com ${palavraAtual}? — CyberUniverso`;
-  document.getElementById('page-desc').setAttribute('content', `Veja gírias, palavras e cultura pop que rimam com ${palavraAtual}.`);
+  window.history.pushState({}, '', '/rimas/' + encodeURIComponent(palavraAtual));
+  document.getElementById('page-title').textContent = 'O que rima com ' + palavraAtual + '? — CyberUniverso';
   document.getElementById('hero-palavra').textContent = palavraAtual + '?';
   document.getElementById('resultados').classList.add('ativo');
   document.getElementById('res-palavra').textContent = palavraAtual;
@@ -912,31 +319,18 @@ async function buscar(palavra) {
   document.getElementById('palavras-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
 
-  // Buscar chave fonética da palavra no banco
-  const { data: refData } = await sb
-    .from('rimas_palavras')
-    .select('chave_fonetica')
-    .eq('palavra', palavraAtual)
-    .limit(1);
+  var refData = await sb.from('rimas_palavras').select('chave_fonetica').eq('palavra', palavraAtual).limit(1);
 
-  if (refData && refData.length > 0) {
-    chaveAtual = refData[0].chave_fonetica;
+  if (refData.data && refData.data.length > 0) {
+    chaveAtual = refData.data[0].chave_fonetica;
   } else {
-    // Fallback: tentar encontrar pela terminação da palavra (últimas 3 letras)
-    const terminacao = palavraAtual.slice(-3);
-    const { data: fbData } = await sb
-      .from('rimas_palavras')
-      .select('chave_fonetica')
-      .ilike('chave_ortografica', `%${terminacao}`)
-      .limit(1);
-    chaveAtual = fbData?.[0]?.chave_fonetica || '';
+    var terminacao = palavraAtual.slice(-3);
+    var fbData = await sb.from('rimas_palavras').select('chave_fonetica').ilike('chave_ortografica', '%' + terminacao).limit(1);
+    chaveAtual = (fbData.data && fbData.data.length > 0) ? fbData.data[0].chave_fonetica : '';
   }
 
   if (chaveAtual) {
-    await Promise.all([
-      buscarPorChave(chaveAtual),
-      buscarPop(chaveAtual)
-    ]);
+    await Promise.all([buscarPorChave(chaveAtual), buscarPop(chaveAtual)]);
   } else {
     document.getElementById('girias-grid').innerHTML = '<div class="vazio">Nenhuma rima encontrada. Tente outra palavra!</div>';
     document.getElementById('palavras-lista').innerHTML = '';
@@ -948,85 +342,52 @@ async function buscar(palavra) {
 }
 
 async function buscarPorChave(chave) {
-  // Buscar gírias — inclui join com palavras pra pegar o slug
-  const { data: giriasBruto } = await sb
-    .from('rimas_palavras')
-    .select('palavra, giria_id, chave_fonetica')
-    .eq('chave_fonetica', chave)
-    .eq('eh_giria', true)
-    .neq('palavra', palavraAtual)
-    .limit(100);
+  var gRes = await sb.from('rimas_palavras').select('palavra, giria_id, chave_fonetica').eq('chave_fonetica', chave).eq('eh_giria', true).neq('palavra', palavraAtual).limit(100);
+  var giriasBruto = gRes.data || [];
 
-  // Buscar slugs das gírias na tabela palavras
-  let giriasComSlug = giriasBruto || [];
-  if (giriasComSlug.length > 0) {
-    const ids = giriasComSlug.map(g => g.giria_id).filter(Boolean);
+  var giriasComSlug = giriasBruto;
+  if (giriasBruto.length > 0) {
+    var ids = giriasBruto.map(function(g) { return g.giria_id; }).filter(Boolean);
     if (ids.length > 0) {
-      const { data: slugData } = await sb
-        .from('palavras')
-        .select('id, slug, termo')
-        .in('id', ids);
+      var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', ids);
+      var slugMap = {};
+      (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
 
-      const slugMap = {};
-      (slugData || []).forEach(p => { slugMap[p.id] = p.slug || p.termo; });
-
-      // Buscar categorias das gírias
-      const { data: catsData } = await sb
-        .from('palavras_categorias')
-        .select('palavra_id, categorias(nome)')
-        .in('palavra_id', ids);
-
-      const catsMap = {};
-      (catsData || []).forEach(pc => {
+      var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome)').in('palavra_id', ids);
+      var catsMap = {};
+      (catsRes.data || []).forEach(function(pc) {
         if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
-        if (pc.categorias?.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
+        if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
       });
 
-      giriasComSlug = giriasComSlug.map(g => ({
-        ...g,
-        slug: slugMap[g.giria_id] || g.palavra,
-        categorias: catsMap[g.giria_id] || []
-      }));
+      giriasComSlug = giriasBruto.map(function(g) {
+        return Object.assign({}, g, { slug: slugMap[g.giria_id] || g.palavra, categorias: catsMap[g.giria_id] || [] });
+      });
     }
   }
 
-  // Buscar palavras comuns
-  const { data: palavras } = await sb
-    .from('rimas_palavras')
-    .select('palavra, num_silabas, chave_fonetica')
-    .eq('chave_fonetica', chave)
-    .eq('eh_giria', false)
-    .neq('palavra', palavraAtual)
-    .order('num_silabas')
-    .limit(200);
+  var pRes = await sb.from('rimas_palavras').select('palavra, num_silabas').eq('chave_fonetica', chave).eq('eh_giria', false).neq('palavra', palavraAtual).order('num_silabas').limit(200);
 
   todasGirias = giriasComSlug;
-  todasPalavras = palavras || [];
-
-  const total = todasGirias.length + todasPalavras.length;
-  document.getElementById('res-count').textContent = `${total} rimas encontradas`;
-
+  todasPalavras = pRes.data || [];
+  document.getElementById('res-count').textContent = (todasGirias.length + todasPalavras.length) + ' rimas encontradas';
   renderGirias();
   renderPalavras();
 }
 
-// ─────────────────────────────────────────────
-// RENDER GÍRIAS
-// ─────────────────────────────────────────────
 function renderGirias() {
-  const grid = document.getElementById('girias-grid');
-  let lista = [...todasGirias];
+  var grid = document.getElementById('girias-grid');
+  var lista = todasGirias.slice();
 
-  // Filtrar por categorias selecionadas (lógica OR)
   if (catsSelecionadas.size > 0) {
-    lista = lista.filter(g =>
-      g.categorias && g.categorias.some(c =>
-        [...catsSelecionadas].some(sel => c.includes(sel.toLowerCase()))
-      )
-    );
+    lista = lista.filter(function(g) {
+      return g.categorias && g.categorias.some(function(c) {
+        return Array.from(catsSelecionadas).some(function(sel) { return c.includes(sel.toLowerCase()); });
+      });
+    });
   }
 
-  document.getElementById('count-girias').textContent = `(${lista.length})`;
+  document.getElementById('count-girias').textContent = '(' + lista.length + ')';
 
   if (lista.length === 0) {
     grid.innerHTML = catsSelecionadas.size > 0
@@ -1035,114 +396,82 @@ function renderGirias() {
     return;
   }
 
-  grid.innerHTML = lista.map(g => `
-    <a class="card-giria" href="/palavra.html?slug=${encodeURIComponent(g.slug)}">
-      <div class="card-giria-nome">${g.palavra}</div>
-      <div class="card-giria-rima">rima: ${g.chave_fonetica}</div>
-      ${g.categorias && g.categorias.length > 0 ? `
-        <div class="card-giria-cats">
-          ${g.categorias.slice(0,3).map(c => `<span class="cat-mini">${c}</span>`).join('')}
-        </div>` : ''}
-    </a>
-  `).join('');
+  grid.innerHTML = lista.map(function(g) {
+    var cats = '';
+    if (g.categorias && g.categorias.length > 0) {
+      cats = '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
+        return '<span class="cat-mini">' + c + '</span>';
+      }).join('') + '</div>';
+    }
+    return '<a class="card-giria" href="/palavra.html?slug=' + encodeURIComponent(g.slug) + '">' +
+      '<div class="card-giria-nome">' + g.palavra + '</div>' +
+      '<div class="card-giria-rima">rima: ' + g.chave_fonetica + '</div>' +
+      cats + '</a>';
+  }).join('');
 }
 
-// ─────────────────────────────────────────────
-// RENDER PALAVRAS
-// ─────────────────────────────────────────────
 function renderPalavras() {
-  const lista = document.getElementById('palavras-lista');
-  let palavras = [...todasPalavras];
+  var lista = document.getElementById('palavras-lista');
+  var palavras = todasPalavras.slice();
 
   if (silSelecionada !== 'todas') {
     if (silSelecionada === '4+') {
-      palavras = palavras.filter(p => p.num_silabas >= 4);
+      palavras = palavras.filter(function(p) { return p.num_silabas >= 4; });
     } else {
-      const n = parseInt(silSelecionada);
-      palavras = palavras.filter(p => p.num_silabas === n);
+      var n = parseInt(silSelecionada);
+      palavras = palavras.filter(function(p) { return p.num_silabas === n; });
     }
   }
 
-  document.getElementById('count-palavras').textContent = `(${palavras.length})`;
+  document.getElementById('count-palavras').textContent = '(' + palavras.length + ')';
 
   if (palavras.length === 0) {
     lista.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>';
     return;
   }
 
-  lista.innerHTML = palavras.map(p => `
-    <span class="tag-palavra">
-      ${p.palavra}
-      ${p.num_silabas ? `<span class="sil">${p.num_silabas}sil</span>` : ''}
-    </span>
-  `).join('');
+  lista.innerHTML = palavras.map(function(p) {
+    return '<span class="tag-palavra">' + p.palavra +
+      (p.num_silabas ? '<span class="sil">' + p.num_silabas + 'sil</span>' : '') +
+      '</span>';
+  }).join('');
 }
 
-// ─────────────────────────────────────────────
-// CULTURA POP
-// ─────────────────────────────────────────────
 async function buscarPop(chave) {
-  const { data } = await sb
-    .from('rimas_cultura_pop')
-    .select('nome, tipo, subtipo')
-    .eq('chave_fonetica', chave)
-    .limit(100);
-
-  todosPopItens = data || [];
+  var res = await sb.from('rimas_cultura_pop').select('nome, tipo, subtipo').eq('chave_fonetica', chave).limit(100);
+  todosPopItens = res.data || [];
   renderPop();
 }
 
 function renderPop() {
-  const lista = document.getElementById('pop-lista');
-  let itens = [...todosPopItens];
-
+  var lista = document.getElementById('pop-lista');
+  var itens = todosPopItens.slice();
   if (popTipoSelecionado !== 'todos') {
-    itens = itens.filter(i => i.tipo === popTipoSelecionado);
+    itens = itens.filter(function(i) { return i.tipo === popTipoSelecionado; });
   }
-
   if (itens.length === 0) {
     lista.innerHTML = '<span class="vazio">Nenhum item de cultura pop com essa rima</span>';
     return;
   }
-
-  const icones = {
-    personagem: '🎭', titulo: '🎬', famoso: '⭐',
-    time: '⚽', marca: '🏷️'
-  };
-
-  lista.innerHTML = itens.map(i => `
-    <span class="tag-pop">
-      ${icones[i.tipo] || '✦'} ${i.nome}
-      <span class="pop-sub">${i.subtipo || i.tipo}</span>
-    </span>
-  `).join('');
+  var icones = { personagem: '🎭', titulo: '🎬', famoso: '⭐', time: '⚽', marca: '🏷️' };
+  lista.innerHTML = itens.map(function(i) {
+    return '<span class="tag-pop">' + (icones[i.tipo] || '✦') + ' ' + i.nome +
+      '<span class="pop-sub">' + (i.subtipo || i.tipo) + '</span></span>';
+  }).join('');
 }
 
-// ─────────────────────────────────────────────
-// AUTOCOMPLETE
-// ─────────────────────────────────────────────
-let autoTimer;
+var autoTimer;
 async function autocomplete(valor) {
   clearTimeout(autoTimer);
-  const box = document.getElementById('autocomplete-box');
+  var box = document.getElementById('autocomplete-box');
   if (valor.length < 2) { box.classList.remove('ativo'); return; }
-
-  autoTimer = setTimeout(async () => {
-    const { data } = await sb
-      .from('rimas_palavras')
-      .select('palavra, eh_giria')
-      .ilike('palavra', `${valor}%`)
-      .order('eh_giria', { ascending: false })
-      .limit(6);
-
-    if (!data || data.length === 0) { box.classList.remove('ativo'); return; }
-
-    box.innerHTML = data.map(d => `
-      <div class="autocomplete-item" onclick="selecionarAutocomplete('${d.palavra}')">
-        ${d.palavra}
-        ${d.eh_giria ? '<span class="badge-giria">gíria</span>' : ''}
-      </div>
-    `).join('');
+  autoTimer = setTimeout(async function() {
+    var res = await sb.from('rimas_palavras').select('palavra, eh_giria').ilike('palavra', valor + '%').order('eh_giria', { ascending: false }).limit(6);
+    if (!res.data || res.data.length === 0) { box.classList.remove('ativo'); return; }
+    box.innerHTML = res.data.map(function(d) {
+      return '<div class="autocomplete-item" onclick="selecionarAutocomplete(\'' + d.palavra + '\')">' +
+        d.palavra + (d.eh_giria ? '<span class="badge-giria">gíria</span>' : '') + '</div>';
+    }).join('');
     box.classList.add('ativo');
   }, 200);
 }
@@ -1157,66 +486,52 @@ function fecharAutocomplete() {
   document.getElementById('autocomplete-box').classList.remove('ativo');
 }
 
-// ─────────────────────────────────────────────
-// IA COMPOSITORA
-// ─────────────────────────────────────────────
 async function ativarIA() {
-  const agora = Date.now();
+  var agora = Date.now();
   if (agora - iaLastCall < IA_COOLDOWN) {
-    const restante = Math.ceil((IA_COOLDOWN - (agora - iaLastCall)) / 1000);
-    alert(`Aguarde ${restante}s para gerar novamente.`);
+    alert('Aguarde ' + Math.ceil((IA_COOLDOWN - (agora - iaLastCall)) / 1000) + 's para gerar novamente.');
     return;
   }
   if (!palavraAtual) { alert('Busque uma palavra primeiro!'); return; }
 
-  const contexto = document.getElementById('ia-contexto').value.trim();
-  const btn = document.getElementById('btn-ia-compostor');
-  const resultado = document.getElementById('ia-resultado');
-  const versos = document.getElementById('ia-versos');
+  var contexto = document.getElementById('ia-contexto').value.trim();
+  var btn = document.getElementById('btn-ia-compostor');
+  var resultado = document.getElementById('ia-resultado');
+  var versos = document.getElementById('ia-versos');
 
   btn.disabled = true;
   btn.innerHTML = '<span>⏳</span> Gerando...';
   resultado.classList.add('ativo');
-  versos.innerHTML = '<div class="ia-loading"><span class="ia-loading-dot"></span><span class="ia-loading-dot"></span><span class="ia-loading-dot"></span> <span>IA pensando...</span></div>';
+  versos.innerHTML = '<div style="color:rgba(224,232,255,0.5)">IA pensando...</div>';
 
   try {
-    const giriasLista = todasGirias.slice(0, 15).map(g => g.palavra).join(', ');
-    const palavrasLista = todasPalavras.slice(0, 10).map(p => p.palavra).join(', ');
-    const popLista = todosPopItens.slice(0, 10).map(p => p.nome).join(', ');
+    var giriasLista = todasGirias.slice(0,15).map(function(g){return g.palavra;}).join(', ');
+    var palavrasLista = todasPalavras.slice(0,10).map(function(p){return p.palavra;}).join(', ');
+    var popLista = todosPopItens.slice(0,10).map(function(p){return p.nome;}).join(', ');
 
-    const prompt = `Você é um compositor especialista em funk, trap e rap brasileiro.
-O usuário buscou rimas com a palavra "${palavraAtual}".
-${contexto ? `Contexto da letra: "${contexto}"` : ''}
+    var prompt = 'Você é um compositor especialista em funk, trap e rap brasileiro.\n' +
+      'O usuário buscou rimas com a palavra "' + palavraAtual + '".\n' +
+      (contexto ? 'Contexto da letra: "' + contexto + '"\n' : '') +
+      '\nResultados encontrados:\n' +
+      '- Gírias: ' + (giriasLista || 'nenhuma') + '\n' +
+      '- Palavras: ' + (palavrasLista || 'nenhuma') + '\n' +
+      '- Cultura pop: ' + (popLista || 'nenhuma') + '\n\n' +
+      'Crie 2 barras (versos rimados) usando os materiais acima. Use gírias e referências de cultura pop quando fizer sentido.\n' +
+      'Responda APENAS com os versos, sem explicação, sem numeração, separados por linha em branco.';
 
-Resultados encontrados:
-- Gírias: ${giriasLista || 'nenhuma'}
-- Palavras: ${palavrasLista || 'nenhuma'}
-- Cultura pop: ${popLista || 'nenhuma'}
-
-Crie 2 barras (versos rimados) usando os materiais acima. Use gírias e referências de cultura pop quando fizer sentido. Seja criativo e autêntico no estilo brasileiro.
-Responda APENAS com os versos, sem explicação, sem numeração, separados por linha em branco.`;
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
     });
 
-    const data = await response.json();
-    const texto = data.content?.[0]?.text || 'Não foi possível gerar versos.';
-
-    versos.innerHTML = texto.split('
-
-').map(v =>
-      v.trim() ? `<div class="ia-verso">${v.trim()}</div>` : ''
-    ).join('');
-
+    var data = await response.json();
+    var texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'Não foi possível gerar versos.';
+    versos.innerHTML = texto.split('\n\n').map(function(v) {
+      return v.trim() ? '<div class="ia-verso">' + v.trim() + '</div>' : '';
+    }).join('');
     iaLastCall = Date.now();
-  } catch (e) {
+  } catch(e) {
     versos.innerHTML = '<div class="vazio">Erro ao conectar com a IA. Tente novamente.</div>';
   }
 
@@ -1224,22 +539,11 @@ Responda APENAS com os versos, sem explicação, sem numeração, separados por 
   btn.innerHTML = '<span>⚡</span> Ativar IA Compositora';
 }
 
-// ─────────────────────────────────────────────
-// LOG DE BUSCAS
-// ─────────────────────────────────────────────
 async function registrarBusca(palavra, chave) {
   try {
-    await sb.from('rimas_buscas').upsert({
-      palavra_buscada: palavra,
-      chave_fonetica: chave,
-      total_resultados: todasGirias.length + todasPalavras.length,
-      total_girias: todasGirias.length,
-      ultima_busca: new Date().toISOString()
-    }, { onConflict: 'palavra_buscada' });
-  } catch(e) { /* silencioso */ }
+    await sb.from('rimas_buscas').upsert({ palavra_buscada: palavra, chave_fonetica: chave, total_resultados: todasGirias.length + todasPalavras.length, total_girias: todasGirias.length, ultima_busca: new Date().toISOString() }, { onConflict: 'palavra_buscada' });
+  } catch(e) {}
 }
-
 </script>
-
 </body>
 </html>
