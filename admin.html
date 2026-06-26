@@ -309,26 +309,69 @@
     <div class="secao" id="sec-rimas">
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
-          <div class="tabela-titulo">➕ ADICIONAR VARIAÇÃO DE RIMA</div>
+          <div class="tabela-titulo">➕ ADICIONAR PALAVRA / VARIAÇÃO DE RIMA</div>
         </div>
-        <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
-          <div>
-            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">PALAVRA</label>
-            <input id="rv-palavra" class="busca-tabela" style="width:100%;" placeholder="ex: bad, Patrick..." />
+        <div style="padding:20px;">
+
+          <!-- Linha 1: palavra, chave, tipo -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">PALAVRA / NOME</label>
+              <input id="rv-palavra" class="busca-tabela" style="width:100%;" placeholder="ex: bad, Patrick, Corinthians..." />
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">CHAVE DE RIMA</label>
+              <input id="rv-chave" class="busca-tabela" style="width:100%;" placeholder="ex: éde, ique, ick, ânios..." />
+              <div style="font-size:11px;color:#4a6fa5;margin-top:4px;">Pode adicionar mais de uma separando por vírgula: <em>éde, ad</em></div>
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">TIPO</label>
+              <select id="rv-tipo" class="busca-tabela" style="width:100%;" onchange="toggleSubtipo()">
+                <option value="dicionario">Dicionário</option>
+                <option value="giria">Gíria</option>
+                <option value="cultura_pop">Cultura Pop</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">CHAVE DE RIMA</label>
-            <input id="rv-chave" class="busca-tabela" style="width:100%;" placeholder="ex: éde, ique, ick..." />
+
+          <!-- Linha 2: subtipo (só aparece quando Cultura Pop) -->
+          <div id="rv-subtipo-wrap" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(155,77,255,0.08);border:1px solid rgba(155,77,255,0.25);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end;">
+              <div>
+                <label style="display:block;font-size:11px;font-weight:800;color:#b380ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">CATEGORIA</label>
+                <select id="rv-subtipo-tipo" class="busca-tabela" style="width:100%;">
+                  <option value="personagem">Personagem</option>
+                  <option value="titulo">Título (filme/série/game/anime)</option>
+                  <option value="famoso">Famoso / Celebridade</option>
+                  <option value="time">Time</option>
+                  <option value="marca">Marca</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:11px;font-weight:800;color:#b380ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">SUBCATEGORIA</label>
+                <select id="rv-subtipo-sub" class="busca-tabela" style="width:100%;">
+                  <option value="anime">Anime</option>
+                  <option value="game">Game</option>
+                  <option value="filme">Filme</option>
+                  <option value="serie">Série</option>
+                  <option value="desenho">Desenho</option>
+                  <option value="futebol">Futebol</option>
+                  <option value="musica">Música</option>
+                  <option value="tv">TV</option>
+                  <option value="roupa">Roupa / Moda</option>
+                  <option value="tech">Tecnologia</option>
+                  <option value="carro">Carro</option>
+                  <option value="luxo">Luxo</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+              <div style="font-size:12px;color:#b380ff;line-height:1.5;padding-top:20px;">
+                ✦ Cultura Pop cria o item automaticamente na tabela <em>rimas_cultura_pop</em> se ainda não existir.
+              </div>
+            </div>
           </div>
-          <div>
-            <label style="display:block;font-size:11px;font-weight:800;color:#4a8aff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">TIPO</label>
-            <select id="rv-tipo" class="busca-tabela" style="width:100%;">
-              <option value="dicionario">Dicionário</option>
-              <option value="giria">Gíria</option>
-              <option value="cultura_pop">Cultura Pop</option>
-            </select>
-          </div>
-          <button class="btn-mini btn-aprovar" style="padding:8px 16px;font-size:14px;" onclick="adicionarVariacaoRima()">➕ Adicionar</button>
+
+          <button class="btn-mini btn-aprovar" style="padding:10px 24px;font-size:14px;" onclick="adicionarVariacaoRima()">➕ Adicionar</button>
         </div>
         <div id="rv-msg" style="padding:0 20px 16px;font-size:13px;font-weight:700;"></div>
       </div>
