@@ -1276,20 +1276,74 @@ async function editarSubcat(id) {
 }
 
 // ── RIMAS — VARIAÇÕES ──
+function toggleSubtipo() {
+  const tipo = document.getElementById('rv-tipo').value
+  document.getElementById('rv-subtipo-wrap').style.display = tipo === 'cultura_pop' ? 'block' : 'none'
+}
+
 async function adicionarVariacaoRima() {
-  const palavra = document.getElementById('rv-palavra').value.trim().toLowerCase()
-  const chave   = document.getElementById('rv-chave').value.trim().toLowerCase()
-  const tipo    = document.getElementById('rv-tipo').value
-  const msg     = document.getElementById('rv-msg')
-  if (!palavra || !chave) { msg.style.color = 'var(--vermelho)'; msg.textContent = '⚠️ Preencha a palavra e a chave de rima.'; return }
-  const { error } = await sb.from('rimas_variacoes').upsert(
-    { palavra, chave, tipo, criado_por: 'manual', ativo: true },
-    { onConflict: 'chave,palavra,tipo' }
-  )
+  const palavra  = document.getElementById('rv-palavra').value.trim()
+  const chaveRaw = document.getElementById('rv-chave').value.trim()
+  const tipo     = document.getElementById('rv-tipo').value
+  const msg      = document.getElementById('rv-msg')
+
+  if (!palavra || !chaveRaw) {
+    msg.style.color = 'var(--vermelho)'; msg.textContent = '⚠️ Preencha a palavra e a chave de rima.'; return
+  }
+
+  // Suporta múltiplas chaves separadas por vírgula: "éde, ad"
+  const chaves = chaveRaw.split(',').map(c => c.trim().toLowerCase()).filter(Boolean)
+  const palavraLower = palavra.toLowerCase().trim()
+
+  // Se for cultura_pop, criar/atualizar em rimas_cultura_pop primeiro
+  let popId = null
+  if (tipo === 'cultura_pop') {
+    const subTipo = document.getElementById('rv-subtipo-tipo').value
+    const subCat  = document.getElementById('rv-subtipo-sub').value
+
+    const { data: popExist } = await sb.from('rimas_cultura_pop')
+      .select('id').ilike('nome', palavra).limit(1)
+
+    if (popExist && popExist.length > 0) {
+      popId = popExist[0].id
+      mostrarToast('✦ Item já existe na Cultura Pop, adicionando variação...', 'info')
+    } else {
+      const { data: popNew, error: popErr } = await sb.from('rimas_cultura_pop').insert({
+        nome: palavra,
+        tipo: subTipo,
+        subtipo: subCat,
+        chave_fonetica: chaves[0] || '',
+        chave_ortografica: palavraLower.slice(-4),
+        fonte: 'manual',
+        ativo: true
+      }).select('id').single()
+
+      if (popErr) {
+        msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro ao criar em Cultura Pop: ' + popErr.message; return
+      }
+      popId = popNew.id
+    }
+  }
+
+  // Inserir todas as chaves em rimas_variacoes
+  const registros = chaves.map(chave => ({
+    palavra: palavraLower,
+    chave,
+    tipo,
+    ref_id: popId || null,
+    criado_por: 'manual',
+    ativo: true
+  }))
+
+  const { error } = await sb.from('rimas_variacoes')
+    .upsert(registros, { onConflict: 'chave,palavra,tipo', ignoreDuplicates: true })
+
   if (error) {
     msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro: ' + error.message
   } else {
-    msg.style.color = 'var(--verde)'; msg.textContent = '✅ Adicionado: "' + palavra + '" rima com "' + chave + '"'
+    const chavesStr = chaves.map(c => '"' + c + '"').join(', ')
+    msg.style.color = 'var(--verde)'
+    msg.textContent = '✅ "' + palavra + '" adicionado com chave(s): ' + chavesStr
     document.getElementById('rv-palavra').value = ''
     document.getElementById('rv-chave').value = ''
     mostrarToast('✅ Variação adicionada!', 'sucesso')
