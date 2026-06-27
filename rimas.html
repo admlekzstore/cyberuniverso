@@ -54,20 +54,36 @@
     .pill-categoria:hover { border-color:var(--azul); color:#fff; }
     .pill-categoria.ativa { background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 12px rgba(26,110,245,.4); }
     .girias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
-    .card-giria { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .2s,transform .2s,box-shadow .2s; text-decoration:none; display:block; }
+    .card-giria { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .2s,transform .2s,box-shadow .2s; text-decoration:none; display:block; position:relative; }
     .card-giria:hover { border-color:var(--ciano); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,234,255,.1); }
-    .card-giria-nome { font-family:'Fredoka One',sans-serif; font-size:1.2rem; color:#fff; margin-bottom:4px; }
-    .card-giria-rima { font-size:.75rem; color:var(--ciano); opacity:.7; }
+    .card-giria-nome { font-family:'Fredoka One',sans-serif; font-size:1.2rem; color:#fff; margin-bottom:4px; padding-right:32px; }
     .card-giria-cats { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
     .cat-mini { font-size:.65rem; background:rgba(155,77,255,.15); color:#b380ff; border:1px solid rgba(155,77,255,.25); border-radius:4px; padding:1px 6px; font-family:'Fredoka One',sans-serif; }
+    /* VOTOS */
+    .btn-voto { position:absolute; top:12px; right:12px; background:transparent; border:none; cursor:pointer; font-size:1rem; opacity:.4; transition:all .2s; padding:4px; border-radius:6px; line-height:1; }
+    .btn-voto:hover { opacity:1; transform:scale(1.2); }
+    .btn-voto.votado { opacity:1; filter:drop-shadow(0 0 6px #f5e800); }
+    .btn-voto .voto-count { font-size:.6rem; display:block; color:rgba(224,232,255,.5); font-family:'Nunito',sans-serif; text-align:center; margin-top:1px; }
+    /* PALAVRAS DICIONÁRIO */
     .palavras-lista { display:flex; flex-wrap:wrap; gap:8px; }
-    .tag-palavra { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:6px 14px; font-size:.9rem; color:rgba(224,232,255,.75); transition:all .15s; display:flex; align-items:center; gap:6px; }
+    .tag-palavra { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:6px 14px; font-size:.9rem; color:rgba(224,232,255,.75); transition:all .15s; display:flex; align-items:center; gap:6px; position:relative; }
     .tag-palavra:hover { border-color:rgba(255,255,255,.25); color:#fff; }
     .tag-palavra .sil { font-size:.65rem; color:rgba(224,232,255,.3); }
+    .tag-palavra .btn-voto-dic { background:transparent; border:none; cursor:pointer; font-size:.8rem; opacity:.3; transition:all .2s; padding:0; line-height:1; }
+    .tag-palavra .btn-voto-dic:hover { opacity:1; }
+    .tag-palavra .btn-voto-dic.votado { opacity:1; }
     .filtro-silabas { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
     .filtro-sil-label { font-size:.75rem; color:rgba(224,232,255,.4); }
     .btn-sil { background:transparent; border:1px solid var(--borda); color:rgba(224,232,255,.5); border-radius:6px; padding:4px 12px; font-size:.8rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .15s; }
     .btn-sil:hover,.btn-sil.ativo { border-color:var(--azul); color:#fff; background:rgba(26,110,245,.15); }
+    /* GÍRIAS NC */
+    .nc-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag-nc { background:rgba(245,232,0,.05); border:1px solid rgba(245,232,0,.15); border-radius:8px; padding:6px 14px; font-size:.9rem; color:rgba(245,232,0,.7); display:flex; align-items:center; gap:8px; transition:all .15s; }
+    .tag-nc:hover { border-color:rgba(245,232,0,.35); color:var(--amarelo); }
+    .btn-pedir-sig { background:transparent; border:1px solid rgba(245,232,0,.25); color:rgba(245,232,0,.6); border-radius:6px; padding:2px 8px; font-size:.65rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .btn-pedir-sig:hover { background:rgba(245,232,0,.1); color:var(--amarelo); }
+    .btn-pedir-sig.pedido { border-color:rgba(245,232,0,.5); color:var(--amarelo); cursor:default; }
+    /* CULTURA POP */
     .pop-toggle { width:100%; background:transparent; border:1px solid var(--borda); border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:border-color .2s; color:var(--texto); }
     .pop-toggle:hover { border-color:var(--roxo); }
     .pop-toggle-titulo { font-family:'Fredoka One',sans-serif; font-size:1rem; color:#b380ff; letter-spacing:1px; }
@@ -81,6 +97,7 @@
     .pop-lista { display:flex; flex-wrap:wrap; gap:8px; }
     .tag-pop { background:rgba(155,77,255,.08); border:1px solid rgba(155,77,255,.2); border-radius:8px; padding:6px 14px; font-size:.88rem; color:#c49dff; display:flex; align-items:center; gap:6px; }
     .tag-pop .pop-sub { font-size:.65rem; color:rgba(196,157,255,.5); }
+    /* IA */
     .ia-secao { background:linear-gradient(135deg,rgba(155,77,255,.08),rgba(0,234,255,.05)); border:1px solid rgba(155,77,255,.25); border-radius:16px; padding:28px; margin-top:48px; }
     .ia-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
     .ia-icone { width:36px; height:36px; background:linear-gradient(135deg,var(--roxo),var(--ciano)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
@@ -127,6 +144,7 @@
     <span class="resultado-count" id="res-count"></span>
   </div>
 
+  <!-- GÍRIAS CATALOGADAS -->
   <div class="secao">
     <div class="secao-header">
       <span class="secao-titulo">⚡ Gírias</span>
@@ -155,6 +173,7 @@
     </div>
   </div>
 
+  <!-- PALAVRAS DICIONÁRIO -->
   <div class="secao">
     <div class="secao-header">
       <span class="secao-titulo">📖 Palavras</span>
@@ -174,6 +193,20 @@
     </div>
   </div>
 
+  <!-- GÍRIAS NC -->
+  <div class="secao" id="secao-nc">
+    <div class="secao-header">
+      <span class="secao-titulo" style="color:var(--amarelo)">✦ Gírias NC</span>
+      <span class="secao-count" id="count-nc"></span>
+      <div class="secao-divider"></div>
+    </div>
+    <p style="font-size:.8rem;color:rgba(224,232,255,.35);margin-bottom:16px;">Gírias não catalogadas ainda — rimam mas ainda não têm significado no site</p>
+    <div class="nc-grid" id="nc-grid">
+      <span class="vazio">Nenhuma gíria NC encontrada</span>
+    </div>
+  </div>
+
+  <!-- CULTURA POP -->
   <div class="secao">
     <button class="pop-toggle" id="pop-toggle">
       <span class="pop-toggle-titulo">🎮 Cultura Pop</span>
@@ -194,6 +227,7 @@
     </div>
   </div>
 
+  <!-- IA COMPOSITORA -->
   <div class="ia-secao">
     <div class="ia-header">
       <div class="ia-icone">🤖</div>
@@ -215,57 +249,67 @@ var palavraAtual = '';
 var chavesAtuais = [];
 var todasGirias = [];
 var todasPalavras = [];
+var todosNC = [];
 var todosPopItens = [];
 var catsSelecionadas = new Set();
 var silSelecionada = 'todas';
 var popTipoSelecionado = 'todos';
 var iaLastCall = 0;
 var IA_COOLDOWN = 30000;
+var votosFeitos = JSON.parse(localStorage.getItem('cy_rimas_votos') || '{}');
+var pedidosFeitos = JSON.parse(localStorage.getItem('cy_rimas_pedidos') || '{}');
+var isAdmin = false;
 
-// ── VARIAÇÕES INGLÊS (mesmo sistema do script de população) ──
+// Hash simples do IP (usamos timestamp + random como identificador de sessão)
+var sessionId = localStorage.getItem('cy_session_id');
+if (!sessionId) {
+  sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+  localStorage.setItem('cy_session_id', sessionId);
+}
+
 function variacoesIngles(palavra) {
-  var v = [];
-  var w = palavra.toLowerCase().replace(/\s/g,'');
-  if (/ick$|ik$/.test(w))        { v.push('ique','ick','ic'); }
+  var v = []; var w = palavra.toLowerCase().replace(/\s/g,'');
+  if (/ick$|ik$/.test(w)) { v.push('ique','ick','ic'); }
   if (/ic$/.test(w) && !/ick$/.test(w)) { v.push('ique','ic'); }
   if (/ck$/.test(w) && !/ick$/.test(w)) { v.push('ék','ak','ack'); }
-  if (/tion$|sion$/.test(w))     { v.push('ção','são'); }
-  if (/ad$|at$|ab$/.test(w))     { v.push('éde','ad'); }
-  if (/ake$|eak$/.test(w))       { v.push('êique','eik'); }
-  if (/ing$/.test(w))            { v.push('ingue','ing'); }
-  if (/ight$|ite$/.test(w))      { v.push('aite','aight'); }
-  if (/ool$|ule$/.test(w))       { v.push('ul','ool'); }
-  if (/ey$|ay$/.test(w))         { v.push('ei','ey'); }
-  if (/ee$|ea$/.test(w))         { v.push('i','ii'); }
-  if (/oo$/.test(w))             { v.push('u','oo'); }
-  if (/ack$|act$/.test(w))       { v.push('ak','ack'); }
-  if (/unk$|ong$/.test(w))       { v.push('unk','ong'); }
-  if (/man$|men$/.test(w))       { v.push('mên','man'); }
-  if (/all$/.test(w))            { v.push('ol'); }
-  if (/[^aeiou]y$/.test(w))      { v.push('i'); }
+  if (/tion$|sion$/.test(w)) { v.push('ção','são'); }
+  if (/ad$|at$|ab$/.test(w)) { v.push('éde','ad'); }
+  if (/ake$|eak$/.test(w)) { v.push('êique','eik'); }
+  if (/ing$/.test(w)) { v.push('ingue','ing'); }
+  if (/ight$|ite$/.test(w)) { v.push('aite','aight'); }
+  if (/ool$|ule$/.test(w)) { v.push('ul','ool'); }
+  if (/ey$|ay$/.test(w)) { v.push('ei','ey'); }
+  if (/ee$|ea$/.test(w)) { v.push('i','ii'); }
+  if (/oo$/.test(w)) { v.push('u','oo'); }
+  if (/ack$|act$/.test(w)) { v.push('ak','ack'); }
+  if (/man$|men$/.test(w)) { v.push('mên','man'); }
+  if (/all$/.test(w)) { v.push('ol'); }
+  if (/[^aeiou]y$/.test(w)) { v.push('i'); }
   return v;
 }
 
-function temPadraoIngles(palavra) {
-  var w = palavra.toLowerCase();
-  return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ster$|ness$|less$|ove$|ool$|ake$|ash$/.test(w)
-    || !/[áéíóúâêîôûãõàç]/.test(w);
+function temPadraoIngles(w) {
+  return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ness$|ool$|ake$/.test(w) || !/[áéíóúâêîôûãõàç]/.test(w);
 }
 
-// Chaves para a palavra buscada
 function chavesParaBusca(palavra) {
-  var chaves = new Set();
-  var w = palavra.toLowerCase().trim();
+  var chaves = new Set(); var w = palavra.toLowerCase().trim();
   if (w.length >= 2) chaves.add(w.slice(-2));
   if (w.length >= 3) chaves.add(w.slice(-3));
   if (w.length >= 4) chaves.add(w.slice(-4));
-  if (temPadraoIngles(w)) {
-    variacoesIngles(w).forEach(function(v) { chaves.add(v); });
-  }
+  if (temPadraoIngles(w)) variacoesIngles(w).forEach(function(v) { chaves.add(v); });
   return Array.from(chaves);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Verificar se é admin
+  var session = await sb.auth.getSession();
+  if (session.data && session.data.session) {
+    var uid = session.data.session.user.id;
+    var perfil = await sb.from('perfis').select('is_admin').eq('id', uid).single();
+    isAdmin = perfil.data && perfil.data.is_admin;
+  }
+
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
   var params = new URLSearchParams(window.location.search);
@@ -276,8 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupEventListeners() {
   document.getElementById('btn-buscar').addEventListener('click', function() {
-    var v = document.getElementById('input-busca').value.trim();
-    if (v) buscar(v);
+    var v = document.getElementById('input-busca').value.trim(); if (v) buscar(v);
   });
   document.getElementById('input-busca').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') { var v = e.target.value.trim(); if (v) { buscar(v); fecharAuto(); } }
@@ -320,21 +363,16 @@ async function buscar(palavra) {
   document.getElementById('res-palavra').textContent = palavraAtual;
   document.getElementById('girias-grid').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('palavras-lista').innerHTML = '<div class="vazio">Buscando...</div>';
+  document.getElementById('nc-grid').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('chaves-usadas').innerHTML = '';
 
-  // 1. Buscar chaves da palavra em rimas_variacoes
   var refRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraAtual).eq('ativo', true);
   var chavesBanco = (refRes.data || []).map(function(r) { return r.chave; });
-
-  // 2. Gerar chaves locais (terminação ortográfica + inglês)
   var chavesLocais = chavesParaBusca(palavraAtual);
-
-  // 3. Unir todas as chaves
   var todasChaves = Array.from(new Set(chavesBanco.concat(chavesLocais)));
   chavesAtuais = todasChaves;
 
-  // Mostrar chaves usadas na busca
   if (todasChaves.length > 0) {
     document.getElementById('chaves-usadas').innerHTML = todasChaves.map(function(c) {
       return '<span class="chave-badge">rima com ' + c + '</span>';
@@ -342,8 +380,9 @@ async function buscar(palavra) {
   }
 
   if (todasChaves.length === 0) {
-    document.getElementById('girias-grid').innerHTML = '<div class="vazio">Palavra não encontrada. Tente outra!</div>';
+    document.getElementById('girias-grid').innerHTML = '<div class="vazio">Nenhuma rima encontrada!</div>';
     document.getElementById('palavras-lista').innerHTML = '';
+    document.getElementById('nc-grid').innerHTML = '';
     document.getElementById('res-count').textContent = '0 rimas encontradas';
     return;
   }
@@ -353,31 +392,32 @@ async function buscar(palavra) {
 }
 
 async function buscarResultados(chaves) {
-  // Buscar palavras que compartilham chaves via rimas_variacoes
   var varRes = await sb.from('rimas_variacoes')
-    .select('palavra, tipo, ref_id, chave')
+    .select('palavra, tipo, ref_id, chave, relevancia, votos_total')
     .in('chave', chaves)
     .neq('palavra', palavraAtual)
     .eq('ativo', true)
+    .order('relevancia', { ascending: false })
+    .order('votos_total', { ascending: false })
     .limit(500);
 
   var varData = varRes.data || [];
 
-  // Agrupar por palavra (uma palavra pode ter múltiplas chaves)
-  var palavrasMap = {};
+  // Agrupar por palavra+tipo, mantendo maior relevância
+  var map = {};
   varData.forEach(function(v) {
     var key = v.palavra + '|' + v.tipo;
-    if (!palavrasMap[key]) {
-      palavrasMap[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id, chaves: new Set() };
+    if (!map[key] || v.relevancia > map[key].relevancia) {
+      map[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id,
+        relevancia: v.relevancia || 50, votos: v.votos_total || 0 };
     }
-    palavrasMap[key].chaves.add(v.chave);
   });
 
-  var girias = [];
-  var palavrasDic = [];
-  Object.values(palavrasMap).forEach(function(item) {
+  var girias = [], palavrasDic = [], nc = [];
+  Object.values(map).forEach(function(item) {
     if (item.tipo === 'giria') girias.push(item);
     else if (item.tipo === 'dicionario') palavrasDic.push(item);
+    else if (item.tipo === 'giria_nao_catalogada') nc.push(item);
   });
 
   // Buscar slugs e categorias das gírias
@@ -387,21 +427,19 @@ async function buscarResultados(chaves) {
       var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', ids);
       var slugMap = {};
       (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
-
       var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome)').in('palavra_id', ids);
       var catsMap = {};
       (catsRes.data || []).forEach(function(pc) {
         if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
         if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
       });
-
       girias = girias.map(function(g) {
         return Object.assign({}, g, { slug: slugMap[g.ref_id] || g.palavra, categorias: catsMap[g.ref_id] || [] });
       });
     }
   }
 
-  // Buscar num_silabas das palavras do dicionário
+  // Buscar num_silabas das palavras
   if (palavrasDic.length > 0) {
     var ids2 = palavrasDic.map(function(p) { return p.ref_id; }).filter(Boolean);
     if (ids2.length > 0) {
@@ -416,9 +454,11 @@ async function buscarResultados(chaves) {
 
   todasGirias = girias;
   todasPalavras = palavrasDic;
-  document.getElementById('res-count').textContent = (girias.length + palavrasDic.length) + ' rimas encontradas';
-  renderGirias();
-  renderPalavras();
+  todosNC = nc;
+
+  var total = girias.length + palavrasDic.length + nc.length;
+  document.getElementById('res-count').textContent = total + ' rimas encontradas';
+  renderGirias(); renderPalavras(); renderNC();
 }
 
 function renderGirias() {
@@ -439,11 +479,33 @@ function renderGirias() {
     return;
   }
   grid.innerHTML = lista.map(function(g) {
+    var votoKey = g.palavra + '|giria';
+    var jaVotou = votosFeitos[votoKey];
     var cats = g.categorias && g.categorias.length > 0
-      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) { return '<span class="cat-mini">'+c+'</span>'; }).join('') + '</div>'
-      : '';
-    return '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug || g.palavra)+'">' +
-      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats + '</a>';
+      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
+          return '<span class="cat-mini">'+c+'</span>';
+        }).join('') + '</div>' : '';
+    return '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug||g.palavra)+'">' +
+      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats +
+      '</a>' +
+      '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>';
+  }).join('').replace(/<\/a><button/g, function(m) {
+    // Wrap em div pra posicionar o botão corretamente
+    return '</a><button';
+  });
+  // Reescrever com wrapper
+  grid.innerHTML = lista.map(function(g) {
+    var votoKey = g.palavra + '|giria';
+    var jaVotou = votosFeitos[votoKey];
+    var cats = g.categorias && g.categorias.length > 0
+      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
+          return '<span class="cat-mini">'+c+'</span>';
+        }).join('') + '</div>' : '';
+    return '<div style="position:relative">' +
+      '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug||g.palavra)+'">' +
+      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats + '</a>' +
+      '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>' +
+      '</div>';
   }).join('');
 }
 
@@ -457,13 +519,34 @@ function renderPalavras() {
   document.getElementById('count-palavras').textContent = '(' + palavras.length + ')';
   if (palavras.length === 0) { lista.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>'; return; }
   lista.innerHTML = palavras.map(function(p) {
-    return '<span class="tag-palavra">' + p.palavra + (p.num_silabas ? '<span class="sil">'+p.num_silabas+'sil</span>' : '') + '</span>';
+    var votoKey = p.palavra + '|dicionario';
+    var jaVotou = votosFeitos[votoKey];
+    return '<span class="tag-palavra">' + p.palavra +
+      (p.num_silabas ? '<span class="sil">'+p.num_silabas+'sil</span>' : '') +
+      '<button class="btn-voto-dic'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+p.palavra+'\',\'dicionario\',\''+p.ref_id+'\')" title="Bombar">⚡</button>' +
+      '</span>';
+  }).join('');
+}
+
+function renderNC() {
+  var grid = document.getElementById('nc-grid');
+  document.getElementById('count-nc').textContent = '(' + todosNC.length + ')';
+  if (todosNC.length === 0) {
+    document.getElementById('secao-nc').style.display = 'none'; return;
+  }
+  document.getElementById('secao-nc').style.display = 'block';
+  grid.innerHTML = todosNC.map(function(item) {
+    var pedidoKey = item.palavra;
+    var jaPediu = pedidosFeitos[pedidoKey];
+    return '<span class="tag-nc">' + item.palavra +
+      '<button class="btn-pedir-sig'+(jaPediu?' pedido':'')+'" onclick="pedirSignificado(\''+item.palavra+'\',\''+item.ref_id+'\')">' +
+      (jaPediu ? '✓ pedido' : '+ significado') + '</button></span>';
   }).join('');
 }
 
 async function buscarPop(chaves) {
-  var res = await sb.from('rimas_variacoes').select('palavra, ref_id, chave').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', palavraAtual).eq('ativo', true).limit(100);
-  var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', palavraAtual).eq('ativo', true).limit(100);
+  var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
   if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
   var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
   todosPopItens = popRes.data || [];
@@ -481,19 +564,85 @@ function renderPop() {
   }).join('');
 }
 
+// ── SISTEMA DE VOTOS ──
+async function votar(e, palavra, tipo, refId) {
+  e.preventDefault(); e.stopPropagation();
+  var votoKey = palavra + '|' + tipo;
+  var hoje = new Date().toDateString();
+
+  // Verificar se já votou hoje
+  if (votosFeitos[votoKey] === hoje) {
+    mostrarToastRima('Você já votou nessa palavra hoje!'); return;
+  }
+
+  var peso = isAdmin ? 10 : 1;
+
+  // Registrar voto no banco
+  var ipHash = sessionId + '_' + hoje;
+  var { error: errVoto } = await sb.from('rimas_votos').insert({
+    chave: chavesAtuais[0] || '',
+    palavra: palavra,
+    ip_hash: ipHash,
+    peso: peso
+  });
+
+  if (errVoto && errVoto.code === '23505') {
+    mostrarToastRima('Você já votou nessa palavra hoje!'); return;
+  }
+
+  // Atualizar relevância em rimas_variacoes
+  await sb.rpc('incrementar_relevancia_rima', {
+    p_palavra: palavra,
+    p_tipo: tipo,
+    p_incremento: peso
+  });
+
+  // Salvar localmente
+  votosFeitos[votoKey] = hoje;
+  localStorage.setItem('cy_rimas_votos', JSON.stringify(votosFeitos));
+
+  // Atualizar visual
+  var btn = e.currentTarget;
+  btn.classList.add('votado');
+  var countEl = btn.querySelector('.voto-count');
+  if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + peso;
+  mostrarToastRima(isAdmin ? '⚡ +10 relevância (admin)!' : '⚡ Votado!');
+}
+
+async function pedirSignificado(palavra, refId) {
+  var pedidoKey = palavra;
+  if (pedidosFeitos[pedidoKey]) { mostrarToastRima('Você já pediu o significado de "' + palavra + '"!'); return; }
+
+  var ipHash = sessionId;
+  await sb.from('rimas_pedidos_nc').upsert({ palavra, ip_hash: ipHash }, { onConflict: 'palavra,ip_hash' });
+
+  pedidosFeitos[pedidoKey] = true;
+  localStorage.setItem('cy_rimas_pedidos', JSON.stringify(pedidosFeitos));
+  renderNC();
+  mostrarToastRima('✓ Pedido registrado! Vamos catalogar "' + palavra + '" em breve.');
+}
+
+function mostrarToastRima(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0a1628;border:1px solid #1a6ef5;color:#e0e8ff;padding:10px 20px;border-radius:10px;font-family:Nunito,sans-serif;font-size:.9rem;z-index:9998;animation:fadeIn .3s;';
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3000);
+}
+
 var autoTimer;
 async function autocomplete(valor) {
   clearTimeout(autoTimer);
   var box = document.getElementById('autocomplete-box');
   if (valor.length < 2) { box.classList.remove('ativo'); return; }
   autoTimer = setTimeout(async function() {
-    var res = await sb.from('rimas_variacoes').select('palavra, tipo').ilike('palavra', valor+'%').order('tipo').limit(8);
+    var res = await sb.from('rimas_variacoes').select('palavra, tipo').ilike('palavra', valor+'%').order('relevancia', { ascending:false }).limit(8);
     if (!res.data || res.data.length === 0) { box.classList.remove('ativo'); return; }
     var unicos = {};
-    (res.data || []).forEach(function(d) { if (!unicos[d.palavra]) unicos[d.palavra] = d.tipo; });
+    (res.data||[]).forEach(function(d) { if (!unicos[d.palavra]) unicos[d.palavra] = d.tipo; });
     box.innerHTML = Object.entries(unicos).map(function(entry) {
       return '<div class="autocomplete-item" onclick="selecionarAuto(\''+entry[0]+'\')">' + entry[0] +
-        (entry[1]==='giria' ? '<span class="badge-giria">gíria</span>' : '') + '</div>';
+        (entry[1]==='giria'?'<span class="badge-giria">gíria</span>':entry[1]==='giria_nao_catalogada'?'<span class="badge-giria" style="background:rgba(245,232,0,.15);color:var(--amarelo);border-color:rgba(245,232,0,.3)">NC</span>':'') + '</div>';
     }).join('');
     box.classList.add('ativo');
   }, 200);
@@ -504,8 +653,8 @@ function fecharAuto() { document.getElementById('autocomplete-box').classList.re
 
 async function ativarIA() {
   var agora = Date.now();
-  if (agora - iaLastCall < IA_COOLDOWN) { alert('Aguarde '+Math.ceil((IA_COOLDOWN-(agora-iaLastCall))/1000)+'s'); return; }
-  if (!palavraAtual) { alert('Busque uma palavra primeiro!'); return; }
+  if (agora - iaLastCall < IA_COOLDOWN) { mostrarToastRima('Aguarde '+Math.ceil((IA_COOLDOWN-(agora-iaLastCall))/1000)+'s'); return; }
+  if (!palavraAtual) { mostrarToastRima('Busque uma palavra primeiro!'); return; }
   var contexto = document.getElementById('ia-contexto').value.trim();
   var btn = document.getElementById('btn-ia-compostor');
   var resultado = document.getElementById('ia-resultado');
@@ -520,16 +669,16 @@ async function ativarIA() {
     var prompt = 'Você é um compositor especialista em funk, trap e rap brasileiro.\n' +
       'O usuário buscou rimas com a palavra "' + palavraAtual + '".\n' +
       (contexto ? 'Contexto da letra: "' + contexto + '"\n' : '') +
-      '\nResultados encontrados:\n- Gírias: ' + (giriasLista||'nenhuma') +
+      '\nResultados:\n- Gírias: ' + (giriasLista||'nenhuma') +
       '\n- Palavras: ' + (palavrasLista||'nenhuma') +
       '\n- Cultura pop: ' + (popLista||'nenhuma') +
-      '\n\nCrie 2 barras (versos rimados) usando os materiais acima. Use gírias e referências de cultura pop quando fizer sentido.\nResponda APENAS com os versos, sem explicação, sem numeração, separados por linha em branco.';
+      '\n\nCrie 2 barras rimadas usando os materiais acima. Responda APENAS com os versos, separados por linha em branco.';
     var response = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, messages:[{role:'user',content:prompt}] })
     });
     var data = await response.json();
-    var texto = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : 'Não foi possível gerar versos.';
+    var texto = (data.content&&data.content[0]&&data.content[0].text) ? data.content[0].text : 'Não foi possível gerar versos.';
     versos.innerHTML = texto.split('\n\n').map(function(v) {
       return v.trim() ? '<div class="ia-verso">'+v.trim()+'</div>' : '';
     }).join('');
@@ -540,7 +689,9 @@ async function ativarIA() {
 
 async function registrarBusca(palavra, chave) {
   try {
-    await sb.from('rimas_buscas').upsert({ palavra_buscada:palavra, chave_fonetica:chave, total_resultados:todasGirias.length+todasPalavras.length, total_girias:todasGirias.length, ultima_busca:new Date().toISOString() }, { onConflict:'palavra_buscada' });
+    await sb.from('rimas_buscas').upsert({ palavra_buscada:palavra, chave_fonetica:chave,
+      total_resultados:todasGirias.length+todasPalavras.length, total_girias:todasGirias.length,
+      ultima_busca:new Date().toISOString() }, { onConflict:'palavra_buscada' });
   } catch(e) {}
 }
 </script>
