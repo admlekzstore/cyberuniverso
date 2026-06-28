@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase.js"></script>
-  <script src="./header.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --azul:#1a6ef5; --amarelo:#f5e800; --ciano:#00eaff; --roxo:#9b4dff; --card:#0a1628; --borda:#1a3a6e; --bg:#000; --texto:#e0e8ff; }
@@ -422,19 +421,36 @@ async function buscarResultados(chaves) {
 
   // Buscar slugs e categorias das gírias
   if (girias.length > 0) {
-    var ids = girias.map(function(g) { return g.ref_id; }).filter(Boolean);
-    if (ids.length > 0) {
-      var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', ids);
-      var slugMap = {};
-      (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
-      var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome)').in('palavra_id', ids);
-      var catsMap = {};
-      (catsRes.data || []).forEach(function(pc) {
-        if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
-        if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
+    var refIds = girias.map(function(g) { return g.ref_id; }).filter(Boolean);
+    if (refIds.length > 0) {
+      // Buscar giria_id (bigint) em rimas_palavras usando o ref_id (uuid)
+      var rpRes = await sb.from('rimas_palavras').select('id, giria_id').in('id', refIds).eq('eh_giria', true);
+      var giria_id_map = {};
+      (rpRes.data || []).forEach(function(r) {
+        if (r.giria_id) giria_id_map[r.id] = r.giria_id;
       });
+
+      var bigintIds = Object.values(giria_id_map).filter(Boolean);
+      var slugMap = {};
+      var catsMap = {};
+
+      if (bigintIds.length > 0) {
+        var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', bigintIds);
+        (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
+
+        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome)').in('palavra_id', bigintIds);
+        (catsRes.data || []).forEach(function(pc) {
+          if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
+          if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
+        });
+      }
+
       girias = girias.map(function(g) {
-        return Object.assign({}, g, { slug: slugMap[g.ref_id] || g.palavra, categorias: catsMap[g.ref_id] || [] });
+        var gid = giria_id_map[g.ref_id];
+        return Object.assign({}, g, {
+          slug: gid ? (slugMap[gid] || g.palavra) : g.palavra,
+          categorias: gid ? (catsMap[gid] || []) : []
+        });
       });
     }
   }
@@ -695,5 +711,6 @@ async function registrarBusca(palavra, chave) {
   } catch(e) {}
 }
 </script>
+  <script src="./header.js"></script>
 </body>
 </html>

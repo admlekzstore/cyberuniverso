@@ -267,7 +267,7 @@
       <a href="/todas.html">Todas</a>
       <a href="/categorias.html">Categorias</a>
       <a href="/enviar.html">Enviar</a>
-      <a href="/em-construcao.html">Rimas</a>
+      <a href="/rimas.html">Rimas</a>
       <a href="/em-construcao.html">Tarot</a>
       <a href="/sobre.html">Sobre</a>
       <a href="/cadastro.html">Entrar</a>
@@ -288,7 +288,7 @@
     <a href="/index.html">🏠 Início</a>
     <a href="/todas.html">📖 Todas as Palavras</a>
     <a href="/categorias.html">🗂️ Categorias</a>
-    <a href="/em-construcao.html">🎵 Rimas</a>
+    <a href="/rimas.html">🎵 Rimas</a>
     <a href="/em-construcao.html">🃏 Tarot de Gírias</a>
     <a href="/enviar.html">➕ Enviar Palavra</a>
     <a href="/sobre.html">🌐 Sobre Nós</a>
