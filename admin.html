@@ -309,6 +309,16 @@
     <div class="secao" id="sec-rimas">
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
+          <div class="tabela-titulo">✦ CATEGORIAS — GÍRIAS NC</div>
+          <button class="btn-mini btn-editar" onclick="document.getElementById('modal-nova-nc-cat').classList.add('aberto')">➕ Nova Categoria</button>
+        </div>
+        <div id="nc-cats-lista" style="padding:16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
           <div class="tabela-titulo">➕ ADICIONAR PALAVRA / VARIAÇÃO DE RIMA</div>
         </div>
         <div style="padding:20px;">
@@ -330,7 +340,18 @@
                 <option value="dicionario">Dicionário</option>
                 <option value="giria">Gíria</option>
                 <option value="cultura_pop">Cultura Pop</option>
+                <option value="giria_nao_catalogada">✦ Gíria NC (não catalogada)</option>
               </select>
+            </div>
+          </div>
+
+          <!-- Linha 2b: categoria NC (só aparece quando Gíria NC) -->
+          <div id="rv-nc-wrap" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(245,232,0,0.06);border:1px solid rgba(245,232,0,0.2);border-radius:10px;padding:16px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#f5e800;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">CATEGORIAS <span style="color:#4a6fa5;font-size:10px;">(pode marcar mais de uma)</span></label>
+              <div id="rv-nc-cats" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;">
+                <span style="color:#4a6fa5;font-size:12px;">Carregando categorias...</span>
+              </div>
             </div>
           </div>
 
@@ -385,7 +406,7 @@
         </div>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Palavra</th><th>Chave de Rima</th><th>Tipo</th><th>Origem</th><th>Ação</th></tr></thead>
+            <thead><tr><th>Palavra</th><th>Chave de Rima</th><th>Tipo</th><th>Categoria</th><th>Origem</th><th>Ação</th></tr></thead>
             <tbody id="tbody-rimas"><tr><td colspan="5" class="vazio-msg">Digite algo para buscar variações</td></tr></tbody>
           </table>
         </div>
@@ -502,6 +523,7 @@ async function carregarTudo() {
     carregarUsuarios(),
     carregarComentarios(),
     carregarContribuicoes(),
+    carregarNcCategorias(),
   ])
 }
 
@@ -1276,9 +1298,93 @@ async function editarSubcat(id) {
 }
 
 // ── RIMAS — VARIAÇÕES ──
+let ncCategoriasSelecionadas = []
+let ncCategoriasCache = []
+
 function toggleSubtipo() {
   const tipo = document.getElementById('rv-tipo').value
   document.getElementById('rv-subtipo-wrap').style.display = tipo === 'cultura_pop' ? 'block' : 'none'
+  document.getElementById('rv-nc-wrap').style.display = tipo === 'giria_nao_catalogada' ? 'block' : 'none'
+  if (tipo === 'giria_nao_catalogada') renderNcCatsPills()
+}
+
+function renderNcCatsPills() {
+  const container = document.getElementById('rv-nc-cats')
+  if (!ncCategoriasCache.length) {
+    carregarNcCategorias().then(renderNcCatsPills)
+    return
+  }
+  container.innerHTML = ncCategoriasCache.map(c => `
+    <button type="button"
+      class="pill-nc-admin ${ncCategoriasSelecionadas.includes(c.slug) ? 'ativa' : ''}"
+      style="background:${ncCategoriasSelecionadas.includes(c.slug) ? 'rgba(245,232,0,0.2)' : 'rgba(245,232,0,0.05)'};border:1px solid ${ncCategoriasSelecionadas.includes(c.slug) ? 'rgba(245,232,0,0.6)' : 'rgba(245,232,0,0.2)'};color:${ncCategoriasSelecionadas.includes(c.slug) ? '#f5e800' : 'rgba(245,232,0,0.6)'};border-radius:20px;padding:5px 14px;font-size:13px;font-family:'Fredoka One',cursive;cursor:pointer;transition:all .2s;"
+      onclick="toggleNcCat('${c.slug}', this)">
+      ${c.emoji || '🏷️'} ${c.nome}
+    </button>`).join('')
+}
+
+function toggleNcCat(slug, btn) {
+  const idx = ncCategoriasSelecionadas.indexOf(slug)
+  if (idx === -1) {
+    ncCategoriasSelecionadas.push(slug)
+    btn.style.background = 'rgba(245,232,0,0.2)'
+    btn.style.borderColor = 'rgba(245,232,0,0.6)'
+    btn.style.color = '#f5e800'
+  } else {
+    ncCategoriasSelecionadas.splice(idx, 1)
+    btn.style.background = 'rgba(245,232,0,0.05)'
+    btn.style.borderColor = 'rgba(245,232,0,0.2)'
+    btn.style.color = 'rgba(245,232,0,0.6)'
+  }
+}
+
+async function carregarNcCategorias() {
+  const { data } = await sb.from('rimas_nc_categorias').select('*').eq('ativo', true).order('nome')
+  ncCategoriasCache = data || []
+  renderNcCatsLista()
+  return data
+}
+
+function renderNcCatsLista() {
+  const el = document.getElementById('nc-cats-lista')
+  if (!el) return
+  if (!ncCategoriasCache.length) {
+    el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhuma categoria ainda.</span>'
+    return
+  }
+  el.innerHTML = ncCategoriasCache.map(c => `
+    <div style="background:rgba(245,232,0,0.06);border:1px solid rgba(245,232,0,0.2);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">${c.emoji || '🏷️'}</span>
+      <span style="font-family:'Fredoka One',cursive;color:#f5e800;">${c.nome}</span>
+      <span style="font-size:11px;color:#4a6fa5;">${c.slug}</span>
+      <button class="btn-mini btn-excluir" style="margin-left:auto;" onclick="removerNcCategoria('${c.id}','${c.nome}')">🗑️</button>
+    </div>`).join('')
+}
+
+async function salvarNcCategoria() {
+  const nome  = document.getElementById('nc-cat-nome').value.trim()
+  const slug  = document.getElementById('nc-cat-slug').value.trim().toLowerCase().replace(/\s+/g,'-')
+  const emoji = document.getElementById('nc-cat-emoji').value.trim()
+  const desc  = document.getElementById('nc-cat-desc').value.trim()
+  if (!nome || !slug) { mostrarToast('⚠️ Nome e slug são obrigatórios', 'erro'); return }
+  const { error } = await sb.from('rimas_nc_categorias').insert({ nome, slug, emoji, descricao: desc, ativo: true })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Categoria criada!', 'sucesso')
+  document.getElementById('modal-nova-nc-cat').classList.remove('aberto')
+  document.getElementById('nc-cat-nome').value = ''
+  document.getElementById('nc-cat-slug').value = ''
+  document.getElementById('nc-cat-emoji').value = ''
+  document.getElementById('nc-cat-desc').value = ''
+  await carregarNcCategorias()
+}
+
+async function removerNcCategoria(id, nome) {
+  if (!confirm(`Remover categoria "${nome}"?`)) return
+  const { error } = await sb.from('rimas_nc_categorias').update({ ativo: false }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('🗑️ Categoria removida', 'sucesso')
+  ncCategoriasCache = ncCategoriasCache.filter(c => c.id !== id)
+  renderNcCatsLista()
 }
 
 async function adicionarVariacaoRima() {
@@ -1294,6 +1400,11 @@ async function adicionarVariacaoRima() {
   // Suporta múltiplas chaves separadas por vírgula: "éde, ad"
   const chaves = chaveRaw.split(',').map(c => c.trim().toLowerCase()).filter(Boolean)
   const palavraLower = palavra.toLowerCase().trim()
+
+  // Categoria NC
+  const categoriaNC = tipo === 'giria_nao_catalogada' && ncCategoriasSelecionadas.length
+    ? ncCategoriasSelecionadas.join(',')
+    : null
 
   // Se for cultura_pop, criar/atualizar em rimas_cultura_pop primeiro
   let popId = null
@@ -1332,6 +1443,7 @@ async function adicionarVariacaoRima() {
     tipo,
     ref_id: popId || null,
     criado_por: 'manual',
+    categoria: categoriaNC,
     ativo: true
   }))
 
@@ -1346,6 +1458,8 @@ async function adicionarVariacaoRima() {
     msg.textContent = '✅ "' + palavra + '" adicionado com chave(s): ' + chavesStr
     document.getElementById('rv-palavra').value = ''
     document.getElementById('rv-chave').value = ''
+    ncCategoriasSelecionadas = []
+    renderNcCatsPills()
     mostrarToast('✅ Variação adicionada!', 'sucesso')
   }
 }
@@ -1353,19 +1467,20 @@ async function adicionarVariacaoRima() {
 async function buscarVariacoesRima() {
   const termo = document.getElementById('rv-busca').value.trim().toLowerCase()
   const tbody = document.getElementById('tbody-rimas')
-  if (!termo) { tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Digite algo para buscar</td></tr>'; return }
+  if (!termo) { tbody.innerHTML = '<tr><td colspan="6" class="vazio-msg">Digite algo para buscar</td></tr>'; return }
   const { data, error } = await sb.from('rimas_variacoes')
-    .select('id, palavra, chave, tipo, criado_por, ativo')
+    .select('id, palavra, chave, tipo, criado_por, ativo, categoria')
     .or('palavra.ilike.%' + termo + '%,chave.ilike.%' + termo + '%')
     .order('palavra').limit(100)
   if (error || !data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="vazio-msg">Nenhum resultado encontrado</td></tr>'; return
+    tbody.innerHTML = '<tr><td colspan="6" class="vazio-msg">Nenhum resultado encontrado</td></tr>'; return
   }
   tbody.innerHTML = data.map(r => `
     <tr id="row-rv-${r.id}">
       <td><strong>${r.palavra}</strong></td>
       <td style="color:var(--ciano);font-family:'Fredoka One',cursive;">${r.chave}</td>
-      <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : 'badge-rejeitado'}">${r.tipo}</span></td>
+      <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : r.tipo === 'giria_nao_catalogada' ? '' : 'badge-rejeitado'}" style="${r.tipo === 'giria_nao_catalogada' ? 'background:rgba(245,232,0,0.1);color:#f5e800;border:1px solid rgba(245,232,0,0.3);' : ''}">${r.tipo === 'giria_nao_catalogada' ? '✦ NC' : r.tipo}</span></td>
+      <td style="color:#4a6fa5;font-size:12px;">${r.categoria ? r.categoria.split(',').map(c => `<span style="background:rgba(245,232,0,0.08);border:1px solid rgba(245,232,0,0.2);border-radius:4px;padding:1px 6px;margin:1px;display:inline-block;">${c}</span>`).join('') : '—'}</td>
       <td style="color:#4a6fa5">${r.criado_por}</td>
       <td><div class="acoes-cell">
         ${r.ativo
@@ -1470,5 +1585,24 @@ init()
     <div class="modal-footer" id="mc-btns" style="gap:8px;flex-wrap:wrap;"></div>
   </div>
 </div>
+<div class="modal-overlay" id="modal-nova-nc-cat">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">✦ NOVA CATEGORIA NC</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-nc-cat').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-campo"><label>Emoji</label><input type="text" id="nc-cat-emoji" placeholder="ex: 🛹" maxlength="2"></div>
+      <div class="modal-campo"><label>Nome</label><input type="text" id="nc-cat-nome" placeholder="ex: Skate"></div>
+      <div class="modal-campo"><label>Slug (identificador único, sem espaços)</label><input type="text" id="nc-cat-slug" placeholder="ex: skate"></div>
+      <div class="modal-campo"><label>Descrição (opcional)</label><input type="text" id="nc-cat-desc" placeholder="ex: Manobras e gírias do skate"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-nc-cat').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarNcCategoria()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
