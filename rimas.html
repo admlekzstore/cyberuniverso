@@ -583,6 +583,7 @@ function renderPop() {
 // ── SISTEMA DE VOTOS ──
 async function votar(e, palavra, tipo, refId) {
   e.preventDefault(); e.stopPropagation();
+  var btn = e.currentTarget; // capturar ANTES do async
   var votoKey = palavra + '|' + tipo;
   var hoje = new Date().toDateString();
 
@@ -624,7 +625,6 @@ async function votar(e, palavra, tipo, refId) {
   }
 
   // Atualizar visual
-  var btn = e.currentTarget;
   btn.classList.add('votado');
   var countEl = btn.querySelector('.voto-count');
   if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + peso;
