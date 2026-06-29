@@ -586,15 +586,19 @@ async function votar(e, palavra, tipo, refId) {
   var votoKey = palavra + '|' + tipo;
   var hoje = new Date().toDateString();
 
-  // Verificar se já votou hoje
-  if (votosFeitos[votoKey] === hoje) {
+  // Admin pode votar ilimitado, usuário normal só 1x por dia
+  if (!isAdmin && votosFeitos[votoKey] === hoje) {
     mostrarToastRima('Você já votou nessa palavra hoje!'); return;
   }
 
   var peso = isAdmin ? 10 : 1;
 
   // Registrar voto no banco
-  var ipHash = sessionId + '_' + hoje;
+  // Admin usa ip_hash com timestamp único pra nunca dar conflito de unique
+  var ipHash = isAdmin
+    ? sessionId + '_admin_' + Date.now()
+    : sessionId + '_' + hoje;
+
   var { error: errVoto } = await sb.from('rimas_votos').insert({
     chave: chavesAtuais[0] || '',
     palavra: palavra,
@@ -602,7 +606,7 @@ async function votar(e, palavra, tipo, refId) {
     peso: peso
   });
 
-  if (errVoto && errVoto.code === '23505') {
+  if (errVoto && errVoto.code === '23505' && !isAdmin) {
     mostrarToastRima('Você já votou nessa palavra hoje!'); return;
   }
 
@@ -613,9 +617,11 @@ async function votar(e, palavra, tipo, refId) {
     p_incremento: peso
   });
 
-  // Salvar localmente
-  votosFeitos[votoKey] = hoje;
-  localStorage.setItem('cy_rimas_votos', JSON.stringify(votosFeitos));
+  // Salvar localmente (só pro usuário normal)
+  if (!isAdmin) {
+    votosFeitos[votoKey] = hoje;
+    localStorage.setItem('cy_rimas_votos', JSON.stringify(votosFeitos));
+  }
 
   // Atualizar visual
   var btn = e.currentTarget;
