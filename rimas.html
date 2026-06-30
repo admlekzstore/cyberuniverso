@@ -77,6 +77,9 @@
     .btn-sil:hover,.btn-sil.ativo { border-color:var(--azul); color:#fff; background:rgba(26,110,245,.15); }
     /* GÍRIAS NC */
     .nc-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .pill-nc { background:rgba(245,232,0,.05); border:1px solid rgba(245,232,0,.2); color:rgba(245,232,0,.6); border-radius:20px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; user-select:none; }
+    .pill-nc:hover { border-color:rgba(245,232,0,.5); color:var(--amarelo); }
+    .pill-nc.ativa { background:rgba(245,232,0,.15); border-color:var(--amarelo); color:var(--amarelo); box-shadow:0 0 10px rgba(245,232,0,.2); }
     .tag-nc { background:rgba(245,232,0,.05); border:1px solid rgba(245,232,0,.15); border-radius:8px; padding:6px 14px; font-size:.9rem; color:rgba(245,232,0,.7); display:flex; align-items:center; gap:8px; transition:all .15s; }
     .tag-nc:hover { border-color:rgba(245,232,0,.35); color:var(--amarelo); }
     .btn-pedir-sig { background:transparent; border:1px solid rgba(245,232,0,.25); color:rgba(245,232,0,.6); border-radius:6px; padding:2px 8px; font-size:.65rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; white-space:nowrap; }
@@ -214,7 +217,10 @@
       <span class="secao-count" id="count-nc"></span>
       <div class="secao-divider"></div>
     </div>
-    <p style="font-size:.8rem;color:rgba(224,232,255,.35);margin-bottom:16px;">Gírias não catalogadas ainda — rimam mas ainda não têm significado no site</p>
+    <p style="font-size:.8rem;color:rgba(224,232,255,.35);margin-bottom:12px;">Gírias não catalogadas ainda — rimam mas ainda não têm significado no site</p>
+    <div class="categorias-pills" id="nc-cats-pills" style="margin-bottom:16px;display:none;">
+      <!-- carregado dinamicamente -->
+    </div>
     <div class="nc-grid" id="nc-grid">
       <span class="vazio">Nenhuma gíria NC encontrada</span>
     </div>
@@ -280,6 +286,8 @@ var chavesAtuais = [];
 var todasGirias = [];
 var todasPalavras = [];
 var todosNC = [];
+var ncCatsSelecionadas = new Set();
+var ncCategoriasCache = [];
 var todosPopItens = [];
 var todosUnivItens = [];
 var univSubSelecionado = 'todos';
@@ -350,6 +358,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Carregar subtipos de universo dinamicamente
   carregarUnivSubtipos();
+  carregarNcCats();
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -434,7 +443,7 @@ async function buscar(palavra) {
 
 async function buscarResultados(chaves) {
   var varRes = await sb.from('rimas_variacoes')
-    .select('palavra, tipo, ref_id, chave, relevancia, votos_total')
+    .select('palavra, tipo, ref_id, chave, relevancia, votos_total, categoria')
     .in('chave', chaves)
     .neq('palavra', palavraAtual)
     .eq('ativo', true)
@@ -450,7 +459,7 @@ async function buscarResultados(chaves) {
     var key = v.palavra + '|' + v.tipo;
     if (!map[key] || v.relevancia > map[key].relevancia) {
       map[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id,
-        relevancia: v.relevancia || 50, votos: v.votos_total || 0 };
+        relevancia: v.relevancia || 50, votos: v.votos_total || 0, categoria: v.categoria || null };
     }
   });
 
@@ -586,6 +595,36 @@ function renderPalavras() {
   }).join('');
 }
 
+async function carregarNcCats() {
+  var res = await sb.from('rimas_nc_categorias').select('slug, nome, emoji').eq('ativo', true).order('nome');
+  ncCategoriasCache = res.data || [];
+}
+
+function renderNcPills() {
+  var pillsEl = document.getElementById('nc-cats-pills');
+  if (!pillsEl) return;
+  // Descobrir quais categorias existem nos resultados atuais
+  var catsPresentes = new Set();
+  todosNC.forEach(function(item) {
+    if (item.categoria) item.categoria.split(',').forEach(function(c) { catsPresentes.add(c.trim()); });
+  });
+  var cats = ncCategoriasCache.filter(function(c) { return catsPresentes.has(c.slug); });
+  if (cats.length === 0) { pillsEl.style.display = 'none'; return; }
+  pillsEl.style.display = 'flex';
+  pillsEl.innerHTML = cats.map(function(c) {
+    var ativa = ncCatsSelecionadas.has(c.slug) ? ' ativa' : '';
+    return '<span class="pill-nc' + ativa + '" data-cat="' + c.slug + '">' + (c.emoji || '') + ' ' + c.nome + '</span>';
+  }).join('');
+  pillsEl.querySelectorAll('.pill-nc').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var cat = pill.dataset.cat;
+      if (ncCatsSelecionadas.has(cat)) { ncCatsSelecionadas.delete(cat); pill.classList.remove('ativa'); }
+      else { ncCatsSelecionadas.add(cat); pill.classList.add('ativa'); }
+      renderNC();
+    });
+  });
+}
+
 function renderNC() {
   var grid = document.getElementById('nc-grid');
   document.getElementById('count-nc').textContent = '(' + todosNC.length + ')';
@@ -593,11 +632,36 @@ function renderNC() {
     document.getElementById('secao-nc').style.display = 'none'; return;
   }
   document.getElementById('secao-nc').style.display = 'block';
-  grid.innerHTML = todosNC.map(function(item) {
+  renderNcPills();
+
+  var lista = todosNC.slice();
+  if (ncCatsSelecionadas.size > 0) {
+    lista = lista.filter(function(item) {
+      if (!item.categoria) return false;
+      var cats = item.categoria.split(',').map(function(c) { return c.trim(); });
+      return Array.from(ncCatsSelecionadas).some(function(sel) { return cats.includes(sel); });
+    });
+  }
+
+  if (lista.length === 0) {
+    grid.innerHTML = '<span class="vazio">Nenhuma gíria NC nessa categoria com essa rima.</span>'; return;
+  }
+
+  grid.innerHTML = lista.map(function(item) {
     var pedidoKey = item.palavra;
     var jaPediu = pedidosFeitos[pedidoKey];
-    return '<span class="tag-nc">' + item.palavra +
-      '<button class="btn-pedir-sig'+(jaPediu?' pedido':'')+'" onclick="pedirSignificado(\''+item.palavra+'\',\''+item.ref_id+'\')">' +
+    // Mostrar categorias como mini badges
+    var catBadges = '';
+    if (item.categoria) {
+      var slugs = item.categoria.split(',').map(function(c) { return c.trim(); });
+      var nomes = slugs.map(function(slug) {
+        var found = ncCategoriasCache.find(function(c) { return c.slug === slug; });
+        return found ? (found.emoji || '') + ' ' + found.nome : slug;
+      });
+      catBadges = '<span style="font-size:.65rem;color:rgba(245,232,0,.45);margin-left:4px;">' + nomes.join(' · ') + '</span>';
+    }
+    return '<span class="tag-nc">' + item.palavra + catBadges +
+      '<button class="btn-pedir-sig' + (jaPediu ? ' pedido' : '') + '" onclick="pedirSignificado(\'' + item.palavra + '\',\'' + item.ref_id + '\')">' +
       (jaPediu ? '✓ pedido' : '+ significado') + '</button></span>';
   }).join('');
 }
