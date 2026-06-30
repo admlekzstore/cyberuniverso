@@ -82,6 +82,21 @@
     .btn-pedir-sig { background:transparent; border:1px solid rgba(245,232,0,.25); color:rgba(245,232,0,.6); border-radius:6px; padding:2px 8px; font-size:.65rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; white-space:nowrap; }
     .btn-pedir-sig:hover { background:rgba(245,232,0,.1); color:var(--amarelo); }
     .btn-pedir-sig.pedido { border-color:rgba(245,232,0,.5); color:var(--amarelo); cursor:default; }
+    /* UNIVERSOS */
+    .univ-toggle { width:100%; background:transparent; border:1px solid var(--borda); border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:border-color .2s; color:var(--texto); }
+    .univ-toggle:hover { border-color:var(--ciano); }
+    .univ-toggle-titulo { font-family:'Fredoka One',sans-serif; font-size:1rem; color:var(--ciano); letter-spacing:1px; }
+    .univ-toggle-icone { color:rgba(224,232,255,.4); transition:transform .3s; }
+    .univ-toggle.aberto .univ-toggle-icone { transform:rotate(180deg); }
+    .univ-conteudo { display:none; padding:20px 0 0; }
+    .univ-conteudo.aberto { display:block; }
+    .univ-abas { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .univ-aba { background:transparent; border:1px solid var(--borda); color:rgba(224,232,255,.5); border-radius:8px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .15s; }
+    .univ-aba:hover,.univ-aba.ativa { border-color:var(--ciano); color:var(--ciano); background:rgba(0,234,255,.08); }
+    .univ-lista { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag-univ { background:rgba(0,234,255,.06); border:1px solid rgba(0,234,255,.18); border-radius:8px; padding:6px 14px; font-size:.88rem; color:#7de8f5; display:flex; align-items:center; gap:6px; transition:all .15s; }
+    .tag-univ:hover { border-color:var(--ciano); color:var(--ciano); }
+    .tag-univ .univ-sub { font-size:.65rem; color:rgba(0,234,255,.4); }
     /* CULTURA POP */
     .pop-toggle { width:100%; background:transparent; border:1px solid var(--borda); border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:border-color .2s; color:var(--texto); }
     .pop-toggle:hover { border-color:var(--roxo); }
@@ -205,6 +220,22 @@
     </div>
   </div>
 
+  <!-- UNIVERSOS -->
+  <div class="secao">
+    <button class="univ-toggle" id="univ-toggle">
+      <span class="univ-toggle-titulo">🌌 Universos</span>
+      <span class="univ-toggle-icone">▼</span>
+    </button>
+    <div class="univ-conteudo" id="univ-conteudo">
+      <div class="univ-abas" id="univ-abas">
+        <button class="univ-aba ativa" data-sub="todos">todos</button>
+      </div>
+      <div class="univ-lista" id="univ-lista">
+        <span class="vazio">Nenhum resultado de universos</span>
+      </div>
+    </div>
+  </div>
+
   <!-- CULTURA POP -->
   <div class="secao">
     <button class="pop-toggle" id="pop-toggle">
@@ -250,6 +281,9 @@ var todasGirias = [];
 var todasPalavras = [];
 var todosNC = [];
 var todosPopItens = [];
+var todosUnivItens = [];
+var univSubSelecionado = 'todos';
+var univSubtiposCache = [];
 var catsSelecionadas = new Set();
 var silSelecionada = 'todas';
 var popTipoSelecionado = 'todos';
@@ -308,6 +342,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     var perfil = await sb.from('perfis').select('is_admin').eq('id', uid).single();
     isAdmin = perfil.data && perfil.data.is_admin;
   }
+
+  document.getElementById('univ-toggle').addEventListener('click', function() {
+    this.classList.toggle('aberto');
+    document.getElementById('univ-conteudo').classList.toggle('aberto');
+  });
+
+  // Carregar subtipos de universo dinamicamente
+  carregarUnivSubtipos();
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -386,7 +428,7 @@ async function buscar(palavra) {
     return;
   }
 
-  await Promise.all([buscarResultados(todasChaves), buscarPop(todasChaves)]);
+  await Promise.all([buscarResultados(todasChaves), buscarPop(todasChaves), buscarUniversos(todasChaves)]);
   registrarBusca(palavraAtual, todasChaves.join(','));
 }
 
@@ -557,6 +599,55 @@ function renderNC() {
     return '<span class="tag-nc">' + item.palavra +
       '<button class="btn-pedir-sig'+(jaPediu?' pedido':'')+'" onclick="pedirSignificado(\''+item.palavra+'\',\''+item.ref_id+'\')">' +
       (jaPediu ? '✓ pedido' : '+ significado') + '</button></span>';
+  }).join('');
+}
+
+async function carregarUnivSubtipos() {
+  var res = await sb.from('rimas_univ_subtipos').select('slug, nome, emoji').eq('ativo', true).order('nome');
+  univSubtiposCache = res.data || [];
+  var abas = document.getElementById('univ-abas');
+  if (!abas) return;
+  abas.innerHTML = '<button class="univ-aba ativa" data-sub="todos">todos</button>' +
+    univSubtiposCache.map(function(s) {
+      return '<button class="univ-aba" data-sub="' + s.slug + '">' + (s.emoji || '') + ' ' + s.nome + '</button>';
+    }).join('');
+  abas.querySelectorAll('.univ-aba').forEach(function(aba) {
+    aba.addEventListener('click', function() {
+      abas.querySelectorAll('.univ-aba').forEach(function(a) { a.classList.remove('ativa'); });
+      aba.classList.add('ativa');
+      univSubSelecionado = aba.dataset.sub;
+      renderUniversos();
+    });
+  });
+}
+
+async function buscarUniversos(chaves) {
+  var res = await sb.from('rimas_variacoes')
+    .select('palavra, ref_id')
+    .in('chave', chaves)
+    .eq('tipo', 'universo')
+    .neq('palavra', palavraAtual)
+    .eq('ativo', true)
+    .limit(100);
+  var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
+  if (refIds.length === 0) { todosUnivItens = []; renderUniversos(); return; }
+  var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
+  todosUnivItens = popRes.data || [];
+  renderUniversos();
+}
+
+function renderUniversos() {
+  var lista = document.getElementById('univ-lista');
+  var itens = todosUnivItens.slice();
+  if (univSubSelecionado !== 'todos') itens = itens.filter(function(i) { return i.subtipo === univSubSelecionado; });
+  if (itens.length === 0) {
+    lista.innerHTML = '<span class="vazio">Nenhum resultado de universos com essa rima</span>'; return;
+  }
+  var emojis = { espaco:'🌌', lendas:'🧜', natureza:'🌿', parque:'🎡', locais:'📍' };
+  lista.innerHTML = itens.map(function(i) {
+    var emoji = emojis[i.subtipo] || '✦';
+    return '<span class="tag-univ">' + emoji + ' ' + i.nome +
+      '<span class="univ-sub">' + (i.subtipo || '') + '</span></span>';
   }).join('');
 }
 
