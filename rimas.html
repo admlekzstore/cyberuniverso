@@ -52,6 +52,15 @@
     .pill-categoria { background:rgba(26,110,245,.1); border:1px solid rgba(26,110,245,.3); color:rgba(224,232,255,.7); border-radius:20px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .2s; user-select:none; }
     .pill-categoria:hover { border-color:var(--azul); color:#fff; }
     .pill-categoria.ativa { background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 12px rgba(26,110,245,.4); }
+    .btn-procurar-cat { background:transparent; border:1px dashed rgba(224,232,255,.25); color:rgba(224,232,255,.5); border-radius:20px; padding:6px 16px; font-size:.8rem; font-family:'Nunito',sans-serif; font-weight:700; cursor:pointer; margin-bottom:16px; transition:all .2s; }
+    .btn-procurar-cat:hover { border-color:var(--ciano); color:var(--ciano); }
+    .painel-procurar-cat { background:rgba(10,22,40,.6); border:1px solid var(--borda); border-radius:12px; padding:16px; margin-bottom:20px; }
+    .input-busca-cat { width:100%; background:var(--fundo); border:1px solid var(--borda); border-radius:8px; padding:9px 14px; color:var(--texto); font-size:.88rem; margin-bottom:14px; font-family:'Nunito',sans-serif; }
+    .input-busca-cat:focus { outline:none; border-color:var(--ciano); }
+    .procurar-cat-col { margin-bottom:14px; }
+    .procurar-cat-col:last-child { margin-bottom:0; }
+    .procurar-cat-titulo { font-size:.72rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#4a6fa5; margin-bottom:8px; }
+    .procurar-cat-lista { display:flex; flex-wrap:wrap; gap:6px; max-height:160px; overflow-y:auto; }
     .girias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
     .card-giria { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .2s,transform .2s,box-shadow .2s; text-decoration:none; display:block; position:relative; }
     .card-giria:hover { border-color:var(--ciano); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,234,255,.1); }
@@ -169,21 +178,34 @@
       <div class="secao-divider"></div>
     </div>
     <span class="filtro-label">Categorias &amp; Temas</span>
-    <div class="categorias-pills">
-      <span class="pill-categoria" data-cat="trap">trap</span>
-      <span class="pill-categoria" data-cat="funk">funk</span>
-      <span class="pill-categoria" data-cat="skate">skate</span>
-      <span class="pill-categoria" data-cat="surf">surf</span>
-      <span class="pill-categoria" data-cat="favela">favela</span>
-      <span class="pill-categoria" data-cat="gamer">gamer</span>
-      <span class="pill-categoria" data-cat="anime">anime</span>
-      <span class="pill-categoria" data-cat="futebol">futebol</span>
-      <span class="pill-categoria" data-cat="festa">festa</span>
-      <span class="pill-categoria" data-cat="apelidos amigos">apelidos amigos</span>
-      <span class="pill-categoria" data-cat="apelidos romanticos">apelidos românticos</span>
-      <span class="pill-categoria" data-cat="animais">animais</span>
-      <span class="pill-categoria" data-cat="comida">comida</span>
-      <span class="pill-categoria" data-cat="roupas">roupas</span>
+    <div class="categorias-pills" id="cats-principais-pills">
+      <span class="pill-categoria" data-tipo="sub" data-id="97">trap</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="100">funk</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="41">skate</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="10">surf</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="148">favela</span>
+      <span class="pill-categoria" data-tipo="cat" data-id="8">games e jogos</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="216">anime</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="42">futebol</span>
+      <span class="pill-categoria" data-tipo="cat" data-id="30">festa</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="13">apelidos amigos</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="14">apelidos crush</span>
+      <span class="pill-categoria" data-tipo="sub" data-id="38">gírias de amor</span>
+      <span class="pill-categoria" data-tipo="cat" data-id="9">animais</span>
+      <span class="pill-categoria" data-tipo="cat" data-id="19">comida</span>
+      <span class="pill-categoria" data-tipo="cat" data-id="26">roupa</span>
+    </div>
+    <button class="btn-procurar-cat" id="btn-procurar-cat" type="button">🔍 procurar outra categoria</button>
+    <div class="painel-procurar-cat" id="painel-procurar-cat" style="display:none;">
+      <input type="text" id="busca-cat-input" class="input-busca-cat" placeholder="Digite para filtrar categorias...">
+      <div class="procurar-cat-col">
+        <div class="procurar-cat-titulo">Categorias</div>
+        <div class="procurar-cat-lista" id="lista-todas-categorias"></div>
+      </div>
+      <div class="procurar-cat-col">
+        <div class="procurar-cat-titulo">Subcategorias</div>
+        <div class="procurar-cat-lista" id="lista-todas-subcategorias"></div>
+      </div>
     </div>
     <div class="girias-grid" id="girias-grid">
       <div class="vazio">Busque uma palavra para ver as gírias que rimam</div>
@@ -293,6 +315,8 @@ var todosUnivItens = [];
 var univSubSelecionado = 'todos';
 var univSubtiposCache = [];
 var catsSelecionadas = new Set();
+var todasCategoriasCache = [];
+var todasSubcategoriasCache = [];
 var silSelecionada = 'todas';
 var popTipoSelecionado = 'todos';
 var iaLastCall = 0;
@@ -385,11 +409,23 @@ function setupEventListeners() {
   document.addEventListener('click', function(e) { if (!e.target.closest('.busca-wrapper')) fecharAuto(); });
   document.querySelectorAll('.pill-categoria').forEach(function(pill) {
     pill.addEventListener('click', function() {
-      var cat = pill.dataset.cat;
-      if (catsSelecionadas.has(cat)) { catsSelecionadas.delete(cat); pill.classList.remove('ativa'); }
-      else { catsSelecionadas.add(cat); pill.classList.add('ativa'); }
+      var key = pill.dataset.tipo + ':' + pill.dataset.id;
+      if (catsSelecionadas.has(key)) { catsSelecionadas.delete(key); pill.classList.remove('ativa'); }
+      else { catsSelecionadas.add(key); pill.classList.add('ativa'); }
       renderGirias();
     });
+  });
+
+  document.getElementById('btn-procurar-cat').addEventListener('click', function() {
+    var painel = document.getElementById('painel-procurar-cat');
+    var aberto = painel.style.display !== 'none';
+    painel.style.display = aberto ? 'none' : 'block';
+    this.textContent = aberto ? '🔍 procurar outra categoria' : '✕ fechar busca';
+    if (!aberto && todasCategoriasCache.length === 0) carregarTodasCategorias();
+  });
+
+  document.getElementById('busca-cat-input').addEventListener('input', function(e) {
+    renderListaTodasCategorias(e.target.value.trim().toLowerCase());
   });
   document.querySelectorAll('.btn-sil').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -495,19 +531,21 @@ async function buscarResultados(chaves) {
         var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', bigintIds);
         (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
 
-        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome), subcategorias(nome)').in('palavra_id', bigintIds);
+        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categoria_id, subcategoria_id').in('palavra_id', bigintIds);
         (catsRes.data || []).forEach(function(pc) {
-          if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
-          if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
-          if (pc.subcategorias && pc.subcategorias.nome) catsMap[pc.palavra_id].push(pc.subcategorias.nome.toLowerCase());
+          if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = { catIds: [], subIds: [] };
+          if (pc.categoria_id) catsMap[pc.palavra_id].catIds.push(pc.categoria_id);
+          if (pc.subcategoria_id) catsMap[pc.palavra_id].subIds.push(pc.subcategoria_id);
         });
       }
 
       girias = girias.map(function(g) {
         var gid = giria_id_map[g.ref_id];
+        var c = gid ? (catsMap[gid] || { catIds: [], subIds: [] }) : { catIds: [], subIds: [] };
         return Object.assign({}, g, {
           slug: gid ? (slugMap[gid] || g.palavra) : g.palavra,
-          categorias: gid ? (catsMap[gid] || []) : []
+          catIds: c.catIds,
+          subIds: c.subIds
         });
       });
     }
@@ -535,13 +573,58 @@ async function buscarResultados(chaves) {
   renderGirias(); renderPalavras(); renderNC();
 }
 
+async function carregarTodasCategorias() {
+  var [catRes, subRes] = await Promise.all([
+    sb.from('categorias').select('id, nome').order('nome'),
+    sb.from('subcategorias').select('id, nome, categoria_id').order('nome')
+  ]);
+  todasCategoriasCache = catRes.data || [];
+  todasSubcategoriasCache = subRes.data || [];
+  renderListaTodasCategorias('');
+}
+
+function renderListaTodasCategorias(filtro) {
+  var elCat = document.getElementById('lista-todas-categorias');
+  var elSub = document.getElementById('lista-todas-subcategorias');
+
+  var cats = todasCategoriasCache.filter(function(c) { return !filtro || c.nome.toLowerCase().includes(filtro); });
+  var subs = todasSubcategoriasCache.filter(function(s) { return !filtro || s.nome.toLowerCase().includes(filtro); });
+
+  elCat.innerHTML = cats.length ? cats.map(function(c) {
+    var key = 'cat:' + c.id;
+    var ativa = catsSelecionadas.has(key) ? ' ativa' : '';
+    return '<span class="pill-categoria' + ativa + '" data-tipo="cat" data-id="' + c.id + '">' + c.nome + '</span>';
+  }).join('') : '<span style="color:#4a6fa5;font-size:.8rem;">nenhuma categoria encontrada</span>';
+
+  elSub.innerHTML = subs.length ? subs.map(function(s) {
+    var key = 'sub:' + s.id;
+    var ativa = catsSelecionadas.has(key) ? ' ativa' : '';
+    return '<span class="pill-categoria' + ativa + '" data-tipo="sub" data-id="' + s.id + '">' + s.nome + '</span>';
+  }).join('') : '<span style="color:#4a6fa5;font-size:.8rem;">nenhuma subcategoria encontrada</span>';
+
+  elCat.querySelectorAll('.pill-categoria').forEach(adicionarListenerPillDinamica);
+  elSub.querySelectorAll('.pill-categoria').forEach(adicionarListenerPillDinamica);
+}
+
+function adicionarListenerPillDinamica(pill) {
+  pill.addEventListener('click', function() {
+    var key = pill.dataset.tipo + ':' + pill.dataset.id;
+    if (catsSelecionadas.has(key)) { catsSelecionadas.delete(key); pill.classList.remove('ativa'); }
+    else { catsSelecionadas.add(key); pill.classList.add('ativa'); }
+    renderGirias();
+  });
+}
+
 function renderGirias() {
   var grid = document.getElementById('girias-grid');
   var lista = todasGirias.slice();
   if (catsSelecionadas.size > 0) {
     lista = lista.filter(function(g) {
-      return g.categorias && g.categorias.some(function(c) {
-        return Array.from(catsSelecionadas).some(function(sel) { return c.includes(sel.toLowerCase()); });
+      return Array.from(catsSelecionadas).some(function(sel) {
+        var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
+        if (tipo === 'cat') return g.catIds && g.catIds.includes(id);
+        if (tipo === 'sub') return g.subIds && g.subIds.includes(id);
+        return false;
       });
     });
   }
