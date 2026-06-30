@@ -337,6 +337,16 @@
 
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
+          <div class="tabela-titulo">🌌 UNIVERSOS — SUBTIPOS</div>
+          <button class="btn-mini btn-editar" onclick="document.getElementById('modal-novo-univ-sub').classList.add('aberto')">➕ Novo Subtipo</button>
+        </div>
+        <div id="univ-subs-lista" style="padding:16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
           <div class="tabela-titulo">✦ CATEGORIAS — GÍRIAS NC</div>
           <button class="btn-mini btn-editar" onclick="document.getElementById('modal-nova-nc-cat').classList.add('aberto')">➕ Nova Categoria</button>
         </div>
@@ -368,6 +378,7 @@
                 <option value="dicionario">Dicionário</option>
                 <option value="giria">Gíria</option>
                 <option value="cultura_pop">Cultura Pop</option>
+                <option value="universo">🌌 Universo</option>
                 <option value="giria_nao_catalogada">✦ Gíria NC (não catalogada)</option>
               </select>
             </div>
@@ -380,6 +391,17 @@
               <div id="rv-nc-cats" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;">
                 <span style="color:#4a6fa5;font-size:12px;">Carregando categorias...</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Linha 2c: subtipo universo -->
+          <div id="rv-univ-wrap" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;padding:16px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#00eaff;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">UNIVERSO</label>
+              <select id="rv-univ-sub" class="busca-tabela" style="width:100%;">
+                <option value="">Carregando...</option>
+              </select>
+              <div style="font-size:11px;color:#4a6fa5;margin-top:6px;">✦ Universos criam o item automaticamente em <em>rimas_cultura_pop</em> com tipo='universo'.</div>
             </div>
           </div>
 
@@ -537,6 +559,7 @@ async function carregarTudo() {
     carregarContribuicoes(),
     carregarNcCategorias(),
     carregarCpOpcoes(),
+    carregarUniversos(),
   ])
 }
 
@@ -1317,8 +1340,10 @@ let ncCategoriasCache = []
 function toggleSubtipo() {
   const tipo = document.getElementById('rv-tipo').value
   document.getElementById('rv-subtipo-wrap').style.display = tipo === 'cultura_pop' ? 'block' : 'none'
-  document.getElementById('rv-nc-wrap').style.display = tipo === 'giria_nao_catalogada' ? 'block' : 'none'
+  document.getElementById('rv-nc-wrap').style.display     = tipo === 'giria_nao_catalogada' ? 'block' : 'none'
+  document.getElementById('rv-univ-wrap').style.display   = tipo === 'universo' ? 'block' : 'none'
   if (tipo === 'giria_nao_catalogada') renderNcCatsPills()
+  if (tipo === 'universo') renderUnivSelect()
 }
 
 function renderNcCatsPills() {
@@ -1349,6 +1374,62 @@ function toggleNcCat(slug, btn) {
     btn.style.borderColor = 'rgba(245,232,0,0.3)'
     btn.style.opacity = '0.5'
   }
+}
+
+// ── UNIVERSOS ──
+let univSubsCache = []
+
+async function carregarUniversos() {
+  const { data } = await sb.from('rimas_univ_subtipos').select('*').eq('ativo', true).order('nome')
+  univSubsCache = data || []
+  renderUnivSelect()
+  renderUnivLista()
+}
+
+function renderUnivSelect() {
+  const sel = document.getElementById('rv-univ-sub')
+  if (!sel) return
+  if (!univSubsCache.length) { sel.innerHTML = '<option value="">Nenhum subtipo cadastrado</option>'; return }
+  sel.innerHTML = univSubsCache.map(s => `<option value="${s.slug}">${s.emoji || '🌌'} ${s.nome}</option>`).join('')
+}
+
+function renderUnivLista() {
+  const el = document.getElementById('univ-subs-lista')
+  if (!el) return
+  if (!univSubsCache.length) { el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhum subtipo ainda.</span>'; return }
+  el.innerHTML = univSubsCache.map(s => `
+    <div style="background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">${s.emoji || '🌌'}</span>
+      <span style="font-family:'Fredoka One',cursive;color:#00eaff;">${s.nome}</span>
+      <span style="font-size:11px;color:#4a6fa5;">${s.slug}</span>
+      <button class="btn-mini btn-excluir" style="margin-left:auto;" onclick="removerUnivSub('${s.id}','${s.nome}')">🗑️</button>
+    </div>`).join('')
+}
+
+async function salvarUnivSub() {
+  const nome  = document.getElementById('univ-sub-nome').value.trim()
+  const emoji = document.getElementById('univ-sub-emoji').value.trim()
+  const desc  = document.getElementById('univ-sub-desc').value.trim()
+  const slug  = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-')
+  if (!nome) { mostrarToast('⚠️ Preencha o nome', 'erro'); return }
+  const { error } = await sb.from('rimas_univ_subtipos').insert({ nome, slug, emoji, descricao: desc, ativo: true })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Subtipo criado!', 'sucesso')
+  document.getElementById('modal-novo-univ-sub').classList.remove('aberto')
+  document.getElementById('univ-sub-nome').value = ''
+  document.getElementById('univ-sub-emoji').value = ''
+  document.getElementById('univ-sub-desc').value = ''
+  await carregarUniversos()
+}
+
+async function removerUnivSub(id, nome) {
+  if (!confirm(`Remover subtipo "${nome}"?`)) return
+  const { error } = await sb.from('rimas_univ_subtipos').update({ ativo: false }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('🗑️ Removido', 'sucesso')
+  univSubsCache = univSubsCache.filter(s => s.id !== id)
+  renderUnivLista()
+  renderUnivSelect()
 }
 
 // ── CULTURA POP — CATEGORIAS E SUBCATEGORIAS ──
@@ -1490,18 +1571,18 @@ async function adicionarVariacaoRima() {
     ? ncCategoriasSelecionadas.join(',')
     : null
 
-  // Se for cultura_pop, criar/atualizar em rimas_cultura_pop primeiro
+  // Se for cultura_pop ou universo, criar/atualizar em rimas_cultura_pop primeiro
   let popId = null
-  if (tipo === 'cultura_pop') {
-    const subTipo = document.getElementById('rv-subtipo-tipo').value
-    const subCat  = document.getElementById('rv-subtipo-sub').value
+  if (tipo === 'cultura_pop' || tipo === 'universo') {
+    const subTipo = tipo === 'universo' ? 'universo' : document.getElementById('rv-subtipo-tipo').value
+    const subCat  = tipo === 'universo' ? document.getElementById('rv-univ-sub').value : document.getElementById('rv-subtipo-sub').value
 
     const { data: popExist } = await sb.from('rimas_cultura_pop')
       .select('id').ilike('nome', palavra).limit(1)
 
     if (popExist && popExist.length > 0) {
       popId = popExist[0].id
-      mostrarToast('✦ Item já existe na Cultura Pop, adicionando variação...', 'info')
+      mostrarToast('✦ Item já existe, adicionando variação...', 'info')
     } else {
       const { data: popNew, error: popErr } = await sb.from('rimas_cultura_pop').insert({
         nome: palavra,
@@ -1563,7 +1644,7 @@ async function buscarVariacoesRima() {
     <tr id="row-rv-${r.id}">
       <td><strong>${r.palavra}</strong></td>
       <td style="color:var(--ciano);font-family:'Fredoka One',cursive;">${r.chave}</td>
-      <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : r.tipo === 'giria_nao_catalogada' ? '' : 'badge-rejeitado'}" style="${r.tipo === 'giria_nao_catalogada' ? 'background:rgba(245,232,0,0.1);color:#f5e800;border:1px solid rgba(245,232,0,0.3);' : ''}">${r.tipo === 'giria_nao_catalogada' ? '✦ NC' : r.tipo}</span></td>
+      <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : r.tipo === 'giria_nao_catalogada' ? '' : r.tipo === 'universo' ? '' : 'badge-rejeitado'}" style="${r.tipo === 'giria_nao_catalogada' ? 'background:rgba(245,232,0,0.1);color:#f5e800;border:1px solid rgba(245,232,0,0.3);' : r.tipo === 'universo' ? 'background:rgba(0,234,255,0.1);color:#00eaff;border:1px solid rgba(0,234,255,0.3);' : ''}">${r.tipo === 'giria_nao_catalogada' ? '✦ NC' : r.tipo === 'universo' ? '🌌 Universo' : r.tipo}</span></td>
       <td style="color:#4a6fa5;font-size:12px;">${r.categoria ? r.categoria.split(',').map(c => `<span style="background:rgba(245,232,0,0.08);border:1px solid rgba(245,232,0,0.2);border-radius:4px;padding:1px 6px;margin:1px;display:inline-block;">${c}</span>`).join('') : '—'}</td>
       <td style="color:#4a6fa5">${r.criado_por}</td>
       <td><div class="acoes-cell">
@@ -1669,6 +1750,24 @@ init()
     <div class="modal-footer" id="mc-btns" style="gap:8px;flex-wrap:wrap;"></div>
   </div>
 </div>
+<div class="modal-overlay" id="modal-novo-univ-sub">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">🌌 NOVO SUBTIPO — UNIVERSOS</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-novo-univ-sub').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-campo"><label>Emoji</label><input type="text" id="univ-sub-emoji" placeholder="ex: 🌿" maxlength="2"></div>
+      <div class="modal-campo"><label>Nome</label><input type="text" id="univ-sub-nome" placeholder="ex: Natureza"></div>
+      <div class="modal-campo"><label>Descrição (opcional)</label><input type="text" id="univ-sub-desc" placeholder="ex: flores, paisagens, pedras preciosas..."></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-novo-univ-sub').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarUnivSub()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-nova-cp-cat">
   <div class="modal">
     <div class="modal-header">
