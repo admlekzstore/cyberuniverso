@@ -56,7 +56,7 @@
     .card-giria { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .2s,transform .2s,box-shadow .2s; text-decoration:none; display:block; position:relative; }
     .card-giria:hover { border-color:var(--ciano); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,234,255,.1); }
     .card-giria-nome { font-family:'Fredoka One',sans-serif; font-size:1.2rem; color:#fff; margin-bottom:4px; padding-right:32px; }
-    .card-giria-cats { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
+    .card-giria-cats { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; max-height:54px; overflow-y:auto; }
     .cat-mini { font-size:.65rem; background:rgba(155,77,255,.15); color:#b380ff; border:1px solid rgba(155,77,255,.25); border-radius:4px; padding:1px 6px; font-family:'Fredoka One',sans-serif; }
     /* VOTOS */
     .btn-voto { position:absolute; top:12px; right:12px; background:transparent; border:none; cursor:pointer; font-size:1rem; opacity:.4; transition:all .2s; padding:4px; border-radius:6px; line-height:1; }
@@ -366,6 +366,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   var p = match ? decodeURIComponent(match[1]) : params.get('p');
   if (p) { document.getElementById('input-busca').value = p; buscar(p); }
   setupEventListeners();
+
+  window.addEventListener('popstate', function() {
+    var params2 = new URLSearchParams(window.location.search);
+    var p2 = params2.get('p');
+    if (p2) { document.getElementById('input-busca').value = p2; buscar(p2, true); }
+  });
 });
 
 function setupEventListeners() {
@@ -404,9 +410,9 @@ function setupEventListeners() {
   document.getElementById('btn-ia-compostor').addEventListener('click', ativarIA);
 }
 
-async function buscar(palavra) {
+async function buscar(palavra, semPush) {
   palavraAtual = palavra.toLowerCase().trim();
-  window.history.pushState({}, '', '/rimas/' + encodeURIComponent(palavraAtual));
+  if (!semPush) window.history.pushState({}, '', '/rimas.html?p=' + encodeURIComponent(palavraAtual));
   document.getElementById('page-title').textContent = 'O que rima com ' + palavraAtual + '? — CyberUniverso';
   document.getElementById('hero-palavra').textContent = palavraAtual + '?';
   document.getElementById('resultados').classList.add('ativo');
@@ -549,27 +555,11 @@ function renderGirias() {
     var votoKey = g.palavra + '|giria';
     var jaVotou = votosFeitos[votoKey];
     var cats = g.categorias && g.categorias.length > 0
-      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
-          return '<span class="cat-mini">'+c+'</span>';
-        }).join('') + '</div>' : '';
-    return '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug||g.palavra)+'">' +
-      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats +
-      '</a>' +
-      '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>';
-  }).join('').replace(/<\/a><button/g, function(m) {
-    // Wrap em div pra posicionar o botão corretamente
-    return '</a><button';
-  });
-  // Reescrever com wrapper
-  grid.innerHTML = lista.map(function(g) {
-    var votoKey = g.palavra + '|giria';
-    var jaVotou = votosFeitos[votoKey];
-    var cats = g.categorias && g.categorias.length > 0
-      ? '<div class="card-giria-cats">' + g.categorias.slice(0,3).map(function(c) {
+      ? '<div class="card-giria-cats">' + g.categorias.map(function(c) {
           return '<span class="cat-mini">'+c+'</span>';
         }).join('') + '</div>' : '';
     return '<div style="position:relative">' +
-      '<a class="card-giria" href="/palavra.html?slug='+encodeURIComponent(g.slug||g.palavra)+'">' +
+      '<a class="card-giria" href="/palavra.html?w='+encodeURIComponent(g.slug||g.palavra)+'">' +
       '<div class="card-giria-nome">'+g.palavra+'</div>' + cats + '</a>' +
       '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>' +
       '</div>';
