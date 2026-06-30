@@ -114,7 +114,23 @@
     .pop-toggle:hover { border-color:var(--roxo); }
     .pop-toggle-titulo { font-family:'Fredoka One',sans-serif; font-size:1rem; color:#b380ff; letter-spacing:1px; }
     .pop-toggle-icone { color:rgba(224,232,255,.4); transition:transform .3s; }
-    .pop-toggle.aberto .pop-toggle-icone { transform:rotate(180deg); }
+    .btn-ver-todas { background:rgba(0,234,255,.06); border:1px solid rgba(0,234,255,.25); color:var(--ciano); border-radius:20px; padding:6px 16px; font-size:.78rem; font-family:'Nunito',sans-serif; font-weight:800; cursor:pointer; transition:all .2s; margin-top:14px; }
+    .btn-ver-todas:hover { background:rgba(0,234,255,.15); border-color:var(--ciano); }
+    .modal-vertodas-overlay { display:none; position:fixed; inset:0; background:rgba(2,4,10,.85); z-index:1000; align-items:flex-start; justify-content:center; padding:60px 16px; overflow-y:auto; }
+    .modal-vertodas-overlay.aberto { display:flex; }
+    .modal-vertodas { background:var(--card); border:1px solid var(--borda); border-radius:16px; max-width:760px; width:100%; max-height:80vh; display:flex; flex-direction:column; }
+    .modal-vertodas-header { display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--borda); flex-shrink:0; }
+    .modal-vertodas-titulo { font-family:'Fredoka One',sans-serif; font-size:1.05rem; color:var(--ciano); }
+    .modal-vertodas-fechar { background:transparent; border:none; color:rgba(224,232,255,.5); font-size:1.3rem; cursor:pointer; line-height:1; padding:4px 8px; }
+    .modal-vertodas-fechar:hover { color:#fff; }
+    .modal-vertodas-busca { padding:14px 22px 0; flex-shrink:0; }
+    .modal-vertodas-busca input { width:100%; background:var(--fundo); border:1px solid var(--borda); border-radius:8px; padding:9px 14px; color:var(--texto); font-size:.88rem; font-family:'Nunito',sans-serif; }
+    .modal-vertodas-busca input:focus { outline:none; border-color:var(--ciano); }
+    .modal-vertodas-corpo { padding:16px 22px 22px; overflow-y:auto; flex:1; }
+    .modal-vertodas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; }
+    .modal-vertodas-item { background:var(--fundo); border:1px solid var(--borda); border-radius:8px; padding:9px 12px; font-size:.85rem; color:var(--texto); text-align:center; text-decoration:none; transition:all .15s; display:block; }
+    .modal-vertodas-item:hover { border-color:var(--ciano); color:var(--ciano); }
+    .modal-vertodas-count { font-size:.78rem; color:#4a6fa5; margin-bottom:12px; }
     .pop-conteudo { display:none; padding:20px 0 0; }
     .pop-conteudo.aberto { display:block; }
     .pop-abas { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
@@ -210,6 +226,7 @@
     <div class="girias-grid" id="girias-grid">
       <div class="vazio">Busque uma palavra para ver as gírias que rimam</div>
     </div>
+    <button class="btn-ver-todas" id="btn-vertodas-girias" style="display:none;" type="button">ver todas dessa categoria</button>
   </div>
 
   <!-- PALAVRAS DICIONÁRIO -->
@@ -246,6 +263,7 @@
     <div class="nc-grid" id="nc-grid">
       <span class="vazio">Nenhuma gíria NC encontrada</span>
     </div>
+    <button class="btn-ver-todas" id="btn-vertodas-nc" style="display:none;" type="button">ver todas dessa categoria</button>
   </div>
 
   <!-- UNIVERSOS -->
@@ -261,6 +279,7 @@
       <div class="univ-lista" id="univ-lista">
         <span class="vazio">Nenhum resultado de universos</span>
       </div>
+      <button class="btn-ver-todas" id="btn-vertodas-univ" type="button">ver todas dessa categoria</button>
     </div>
   </div>
 
@@ -282,6 +301,7 @@
       <div class="pop-lista" id="pop-lista">
         <span class="vazio">Nenhum resultado de cultura pop</span>
       </div>
+      <button class="btn-ver-todas" id="btn-vertodas-pop" type="button">ver todas dessa categoria</button>
     </div>
   </div>
 
@@ -618,6 +638,7 @@ function adicionarListenerPillDinamica(pill) {
 function renderGirias() {
   var grid = document.getElementById('girias-grid');
   var lista = todasGirias.slice();
+  document.getElementById('btn-vertodas-girias').style.display = catsSelecionadas.size > 0 ? 'inline-block' : 'none';
   if (catsSelecionadas.size > 0) {
     lista = lista.filter(function(g) {
       return Array.from(catsSelecionadas).some(function(sel) {
@@ -705,6 +726,7 @@ function renderNC() {
   renderNcPills();
 
   var lista = todosNC.slice();
+  document.getElementById('btn-vertodas-nc').style.display = ncCatsSelecionadas.size > 0 ? 'inline-block' : 'none';
   if (ncCatsSelecionadas.size > 0) {
     lista = lista.filter(function(item) {
       if (!item.categoria) return false;
@@ -934,6 +956,91 @@ async function ativarIA() {
   btn.disabled = false; btn.innerHTML = '<span>⚡</span> Ativar IA Compositora';
 }
 
+// ── MODAL "VER TODAS DESSA CATEGORIA" ──
+var verTodasItensAtual = [];
+
+document.getElementById('modal-vertodas-fechar').addEventListener('click', fecharModalVerTodas);
+document.getElementById('modal-vertodas-overlay').addEventListener('click', function(e) {
+  if (e.target === this) fecharModalVerTodas();
+});
+document.getElementById('modal-vertodas-busca-input').addEventListener('input', function(e) {
+  renderModalVerTodas(e.target.value.trim().toLowerCase());
+});
+
+function abrirModalVerTodas(titulo, itens, montarHref) {
+  verTodasItensAtual = itens.map(function(i) { return { nome: i, href: montarHref ? montarHref(i) : null }; });
+  document.getElementById('modal-vertodas-titulo').textContent = titulo;
+  document.getElementById('modal-vertodas-busca-input').value = '';
+  document.getElementById('modal-vertodas-overlay').classList.add('aberto');
+  renderModalVerTodas('');
+}
+
+function fecharModalVerTodas() {
+  document.getElementById('modal-vertodas-overlay').classList.remove('aberto');
+}
+
+function renderModalVerTodas(filtro) {
+  var lista = verTodasItensAtual.filter(function(i) { return !filtro || i.nome.toLowerCase().includes(filtro); });
+  document.getElementById('modal-vertodas-count').textContent = lista.length + ' palavra' + (lista.length !== 1 ? 's' : '');
+  var grid = document.getElementById('modal-vertodas-grid');
+  if (lista.length === 0) {
+    grid.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>'; return;
+  }
+  grid.innerHTML = lista.map(function(i) {
+    return i.href
+      ? '<a class="modal-vertodas-item" href="' + i.href + '">' + i.nome + '</a>'
+      : '<span class="modal-vertodas-item">' + i.nome + '</span>';
+  }).join('');
+}
+
+// Botão "ver todas" — Gírias
+document.getElementById('btn-vertodas-girias').addEventListener('click', async function() {
+  if (catsSelecionadas.size === 0) return;
+  var sel = Array.from(catsSelecionadas)[0];
+  var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
+  var col = tipo === 'cat' ? 'categoria_id' : 'subcategoria_id';
+  var pcRes = await sb.from('palavras_categorias').select('palavra_id').eq(col, id);
+  var ids = (pcRes.data || []).map(function(r) { return r.palavra_id; });
+  if (ids.length === 0) { abrirModalVerTodas('Ver todas', [], null); return; }
+  var pRes = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').in('id', ids).order('termo');
+  var nomes = (pRes.data || []).map(function(p) { return p.termo; });
+  var hrefMap = {};
+  (pRes.data || []).forEach(function(p) { hrefMap[p.termo] = '/palavra.html?w=' + encodeURIComponent(p.slug || p.termo); });
+  abrirModalVerTodas('🎤 Gírias dessa categoria', nomes, function(n) { return hrefMap[n]; });
+});
+
+// Botão "ver todas" — Gírias NC
+document.getElementById('btn-vertodas-nc').addEventListener('click', async function() {
+  if (ncCatsSelecionadas.size === 0) return;
+  var slugsSel = Array.from(ncCatsSelecionadas);
+  var orFiltro = slugsSel.map(function(s) { return 'categoria.ilike.%' + s + '%'; }).join(',');
+  var ncRes = await sb.from('rimas_variacoes').select('palavra, categoria').eq('tipo', 'giria_nao_catalogada').eq('ativo', true).or(orFiltro);
+  var vistos = {};
+  (ncRes.data || []).forEach(function(r) { vistos[r.palavra] = true; });
+  var nomes = Object.keys(vistos).sort();
+  abrirModalVerTodas('✦ Gírias NC dessa categoria', nomes, null);
+});
+
+// Botão "ver todas" — Universos
+document.getElementById('btn-vertodas-univ').addEventListener('click', async function() {
+  var query = sb.from('rimas_cultura_pop').select('nome').eq('tipo', 'universo').eq('ativo', true);
+  if (univSubSelecionado !== 'todos') query = query.eq('subtipo', univSubSelecionado);
+  var res = await query.order('nome');
+  var nomes = (res.data || []).map(function(p) { return p.nome; });
+  var subInfo = univSubtiposCache.find(function(s) { return s.slug === univSubSelecionado; });
+  var titulo = '🌌 ' + (subInfo ? subInfo.nome : 'Todos os Universos');
+  abrirModalVerTodas(titulo, nomes, null);
+});
+
+// Botão "ver todas" — Cultura Pop
+document.getElementById('btn-vertodas-pop').addEventListener('click', async function() {
+  var query = sb.from('rimas_cultura_pop').select('nome').neq('tipo', 'universo').eq('ativo', true);
+  if (popTipoSelecionado !== 'todos') query = query.eq('tipo', popTipoSelecionado);
+  var res = await query.order('nome');
+  var nomes = (res.data || []).map(function(p) { return p.nome; });
+  abrirModalVerTodas('🎮 Cultura Pop' + (popTipoSelecionado !== 'todos' ? ' — ' + popTipoSelecionado : ''), nomes, null);
+});
+
 async function registrarBusca(palavra, chave) {
   try {
     await sb.from('rimas_buscas').upsert({ palavra_buscada:palavra, chave_fonetica:chave,
@@ -942,6 +1049,23 @@ async function registrarBusca(palavra, chave) {
   } catch(e) {}
 }
 </script>
+
+<div class="modal-vertodas-overlay" id="modal-vertodas-overlay">
+  <div class="modal-vertodas">
+    <div class="modal-vertodas-header">
+      <span class="modal-vertodas-titulo" id="modal-vertodas-titulo">Ver todas</span>
+      <button class="modal-vertodas-fechar" id="modal-vertodas-fechar">✕</button>
+    </div>
+    <div class="modal-vertodas-busca">
+      <input type="text" id="modal-vertodas-busca-input" placeholder="Filtrar palavras...">
+    </div>
+    <div class="modal-vertodas-corpo">
+      <div class="modal-vertodas-count" id="modal-vertodas-count"></div>
+      <div class="modal-vertodas-grid" id="modal-vertodas-grid"></div>
+    </div>
+  </div>
+</div>
+
   <script src="./header.js"></script>
 </body>
 </html>
