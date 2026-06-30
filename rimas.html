@@ -495,10 +495,11 @@ async function buscarResultados(chaves) {
         var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', bigintIds);
         (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
 
-        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome)').in('palavra_id', bigintIds);
+        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categorias(nome), subcategorias(nome)').in('palavra_id', bigintIds);
         (catsRes.data || []).forEach(function(pc) {
           if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = [];
           if (pc.categorias && pc.categorias.nome) catsMap[pc.palavra_id].push(pc.categorias.nome.toLowerCase());
+          if (pc.subcategorias && pc.subcategorias.nome) catsMap[pc.palavra_id].push(pc.subcategorias.nome.toLowerCase());
         });
       }
 
@@ -554,13 +555,9 @@ function renderGirias() {
   grid.innerHTML = lista.map(function(g) {
     var votoKey = g.palavra + '|giria';
     var jaVotou = votosFeitos[votoKey];
-    var cats = g.categorias && g.categorias.length > 0
-      ? '<div class="card-giria-cats">' + g.categorias.map(function(c) {
-          return '<span class="cat-mini">'+c+'</span>';
-        }).join('') + '</div>' : '';
     return '<div style="position:relative">' +
       '<a class="card-giria" href="/palavra.html?w='+encodeURIComponent(g.slug||g.palavra)+'">' +
-      '<div class="card-giria-nome">'+g.palavra+'</div>' + cats + '</a>' +
+      '<div class="card-giria-nome">'+g.palavra+'</div></a>' +
       '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>' +
       '</div>';
   }).join('');
