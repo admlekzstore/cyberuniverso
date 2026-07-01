@@ -1552,6 +1552,12 @@ async function removerNcCategoria(id, nome) {
   renderNcCatsLista()
 }
 
+function capitalizarTitulo(str) {
+  return str.trim().split(' ').map(function(w) {
+    return w.length > 0 ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w;
+  }).join(' ');
+}
+
 async function adicionarVariacaoRima() {
   const palavra  = document.getElementById('rv-palavra').value.trim()
   const chaveRaw = document.getElementById('rv-chave').value.trim()
@@ -1565,6 +1571,7 @@ async function adicionarVariacaoRima() {
   // Suporta múltiplas chaves separadas por vírgula: "éde, ad"
   const chaves = chaveRaw.split(',').map(c => c.trim().toLowerCase()).filter(Boolean)
   const palavraLower = palavra.toLowerCase().trim()
+  const palavraTitulo = capitalizarTitulo(palavra)
 
   // Categoria NC
   const categoriaNC = tipo === 'giria_nao_catalogada' && ncCategoriasSelecionadas.length
@@ -1578,14 +1585,14 @@ async function adicionarVariacaoRima() {
     const subCat  = tipo === 'universo' ? document.getElementById('rv-univ-sub').value : document.getElementById('rv-subtipo-sub').value
 
     const { data: popExist } = await sb.from('rimas_cultura_pop')
-      .select('id').ilike('nome', palavra).limit(1)
+      .select('id').ilike('nome', palavraTitulo).limit(1)
 
     if (popExist && popExist.length > 0) {
       popId = popExist[0].id
       mostrarToast('✦ Item já existe, adicionando variação...', 'info')
     } else {
       const { data: popNew, error: popErr } = await sb.from('rimas_cultura_pop').insert({
-        nome: palavra,
+        nome: palavraTitulo,
         tipo: subTipo,
         subtipo: subCat,
         chave_fonetica: chaves[0] || '',
@@ -1602,8 +1609,9 @@ async function adicionarVariacaoRima() {
   }
 
   // Inserir todas as chaves em rimas_variacoes
+  const palavraFinal = (tipo === 'cultura_pop' || tipo === 'universo') ? palavraTitulo : palavraLower
   const registros = chaves.map(chave => ({
-    palavra: palavraLower,
+    palavra: palavraFinal,
     chave,
     tipo,
     ref_id: popId || null,
