@@ -292,13 +292,8 @@
       <span class="pop-toggle-icone">▼</span>
     </button>
     <div class="pop-conteudo" id="pop-conteudo">
-      <div class="pop-abas">
+      <div class="pop-abas" id="pop-abas">
         <button class="pop-aba ativa" data-tipo="todos">todos</button>
-        <button class="pop-aba" data-tipo="personagem">personagens</button>
-        <button class="pop-aba" data-tipo="titulo">títulos</button>
-        <button class="pop-aba" data-tipo="famoso">famosos</button>
-        <button class="pop-aba" data-tipo="time">times</button>
-        <button class="pop-aba" data-tipo="marca">marcas</button>
       </div>
       <div class="pop-lista" id="pop-lista">
         <span class="vazio">Nenhum resultado de cultura pop</span>
@@ -406,6 +401,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Carregar subtipos de universo dinamicamente
   carregarUnivSubtipos();
   carregarNcCats();
+  carregarPopAbas();
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -459,12 +455,6 @@ function setupEventListeners() {
   document.getElementById('pop-toggle').addEventListener('click', function() {
     this.classList.toggle('aberto');
     document.getElementById('pop-conteudo').classList.toggle('aberto');
-  });
-  document.querySelectorAll('.pop-aba').forEach(function(aba) {
-    aba.addEventListener('click', function() {
-      document.querySelectorAll('.pop-aba').forEach(function(a) { a.classList.remove('ativa'); });
-      aba.classList.add('ativa'); popTipoSelecionado = aba.dataset.tipo; renderPop();
-    });
   });
   document.getElementById('btn-ia-compostor').addEventListener('click', ativarIA);
   setupModalVerTodas();
@@ -870,6 +860,27 @@ function renderUniversos() {
   }).join('');
 }
 
+var popCatsCache = [];
+
+async function carregarPopAbas() {
+  var res = await sb.from('rimas_cp_opcoes').select('slug, nome, emoji').eq('tipo', 'categoria').eq('ativo', true).order('nome');
+  popCatsCache = res.data || [];
+  var abas = document.getElementById('pop-abas');
+  if (!abas) return;
+  abas.innerHTML = '<button class="pop-aba ativa" data-tipo="todos">todos</button>' +
+    popCatsCache.map(function(c) {
+      return '<button class="pop-aba" data-tipo="' + c.slug + '">' + (c.emoji ? c.emoji + ' ' : '') + c.nome + '</button>';
+    }).join('');
+  abas.querySelectorAll('.pop-aba').forEach(function(aba) {
+    aba.addEventListener('click', function() {
+      abas.querySelectorAll('.pop-aba').forEach(function(a) { a.classList.remove('ativa'); });
+      aba.classList.add('ativa');
+      popTipoSelecionado = aba.dataset.tipo;
+      renderPop();
+    });
+  });
+}
+
 async function buscarPop(chaves) {
   var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', palavraAtual).eq('ativo', true).limit(100);
   var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
@@ -884,9 +895,10 @@ function renderPop() {
   var itens = todosPopItens.slice();
   if (popTipoSelecionado !== 'todos') itens = itens.filter(function(i) { return i.tipo === popTipoSelecionado; });
   if (itens.length === 0) { lista.innerHTML = '<span class="vazio">Nenhum item de cultura pop com essa rima</span>'; return; }
-  var icones = { personagem:'🎭', titulo:'🎬', famoso:'⭐', time:'⚽', marca:'🏷️' };
   lista.innerHTML = itens.map(function(i) {
-    return '<span class="tag-pop">'+(icones[i.tipo]||'✦')+' '+i.nome+'<span class="pop-sub">'+(i.subtipo||i.tipo)+'</span></span>';
+    var catInfo = popCatsCache.find(function(c) { return c.slug === i.tipo; });
+    var icone = catInfo ? (catInfo.emoji || '✦') : '✦';
+    return '<span class="tag-pop">' + icone + ' ' + i.nome + '<span class="pop-sub">' + (i.subtipo || i.tipo) + '</span></span>';
   }).join('');
 }
 
