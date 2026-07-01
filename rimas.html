@@ -464,6 +464,7 @@ function setupEventListeners() {
     });
   });
   document.getElementById('btn-ia-compostor').addEventListener('click', ativarIA);
+  setupModalVerTodas();
 }
 
 async function buscar(palavra, semPush) {
@@ -959,13 +960,59 @@ async function ativarIA() {
 // ── MODAL "VER TODAS DESSA CATEGORIA" ──
 var verTodasItensAtual = [];
 
-document.getElementById('modal-vertodas-fechar').addEventListener('click', fecharModalVerTodas);
-document.getElementById('modal-vertodas-overlay').addEventListener('click', function(e) {
-  if (e.target === this) fecharModalVerTodas();
-});
-document.getElementById('modal-vertodas-busca-input').addEventListener('input', function(e) {
-  renderModalVerTodas(e.target.value.trim().toLowerCase());
-});
+function setupModalVerTodas() {
+  document.getElementById('modal-vertodas-fechar').addEventListener('click', fecharModalVerTodas);
+  document.getElementById('modal-vertodas-overlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalVerTodas();
+  });
+  document.getElementById('modal-vertodas-busca-input').addEventListener('input', function(e) {
+    renderModalVerTodas(e.target.value.trim().toLowerCase());
+  });
+
+  document.getElementById('btn-vertodas-girias').addEventListener('click', async function() {
+    if (catsSelecionadas.size === 0) return;
+    var sel = Array.from(catsSelecionadas)[0];
+    var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
+    var col = tipo === 'cat' ? 'categoria_id' : 'subcategoria_id';
+    var pcRes = await sb.from('palavras_categorias').select('palavra_id').eq(col, id);
+    var ids = (pcRes.data || []).map(function(r) { return r.palavra_id; });
+    if (ids.length === 0) { abrirModalVerTodas('Ver todas', [], null); return; }
+    var pRes = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').in('id', ids).order('termo');
+    var nomes = (pRes.data || []).map(function(p) { return p.termo; });
+    var hrefMap = {};
+    (pRes.data || []).forEach(function(p) { hrefMap[p.termo] = '/palavra.html?w=' + encodeURIComponent(p.slug || p.termo); });
+    abrirModalVerTodas('🎤 Gírias dessa categoria', nomes, function(n) { return hrefMap[n]; });
+  });
+
+  document.getElementById('btn-vertodas-nc').addEventListener('click', async function() {
+    if (ncCatsSelecionadas.size === 0) return;
+    var slugsSel = Array.from(ncCatsSelecionadas);
+    var orFiltro = slugsSel.map(function(s) { return 'categoria.ilike.%' + s + '%'; }).join(',');
+    var ncRes = await sb.from('rimas_variacoes').select('palavra, categoria').eq('tipo', 'giria_nao_catalogada').eq('ativo', true).or(orFiltro);
+    var vistos = {};
+    (ncRes.data || []).forEach(function(r) { vistos[r.palavra] = true; });
+    var nomes = Object.keys(vistos).sort();
+    abrirModalVerTodas('✦ Gírias NC dessa categoria', nomes, null);
+  });
+
+  document.getElementById('btn-vertodas-univ').addEventListener('click', async function() {
+    var query = sb.from('rimas_cultura_pop').select('nome').eq('tipo', 'universo').eq('ativo', true);
+    if (univSubSelecionado !== 'todos') query = query.eq('subtipo', univSubSelecionado);
+    var res = await query.order('nome');
+    var nomes = (res.data || []).map(function(p) { return p.nome; });
+    var subInfo = univSubtiposCache.find(function(s) { return s.slug === univSubSelecionado; });
+    var titulo = '🌌 ' + (subInfo ? subInfo.nome : 'Todos os Universos');
+    abrirModalVerTodas(titulo, nomes, null);
+  });
+
+  document.getElementById('btn-vertodas-pop').addEventListener('click', async function() {
+    var query = sb.from('rimas_cultura_pop').select('nome').neq('tipo', 'universo').eq('ativo', true);
+    if (popTipoSelecionado !== 'todos') query = query.eq('tipo', popTipoSelecionado);
+    var res = await query.order('nome');
+    var nomes = (res.data || []).map(function(p) { return p.nome; });
+    abrirModalVerTodas('🎮 Cultura Pop' + (popTipoSelecionado !== 'todos' ? ' — ' + popTipoSelecionado : ''), nomes, null);
+  });
+}
 
 function abrirModalVerTodas(titulo, itens, montarHref) {
   verTodasItensAtual = itens.map(function(i) { return { nome: i, href: montarHref ? montarHref(i) : null }; });
@@ -993,53 +1040,6 @@ function renderModalVerTodas(filtro) {
   }).join('');
 }
 
-// Botão "ver todas" — Gírias
-document.getElementById('btn-vertodas-girias').addEventListener('click', async function() {
-  if (catsSelecionadas.size === 0) return;
-  var sel = Array.from(catsSelecionadas)[0];
-  var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
-  var col = tipo === 'cat' ? 'categoria_id' : 'subcategoria_id';
-  var pcRes = await sb.from('palavras_categorias').select('palavra_id').eq(col, id);
-  var ids = (pcRes.data || []).map(function(r) { return r.palavra_id; });
-  if (ids.length === 0) { abrirModalVerTodas('Ver todas', [], null); return; }
-  var pRes = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').in('id', ids).order('termo');
-  var nomes = (pRes.data || []).map(function(p) { return p.termo; });
-  var hrefMap = {};
-  (pRes.data || []).forEach(function(p) { hrefMap[p.termo] = '/palavra.html?w=' + encodeURIComponent(p.slug || p.termo); });
-  abrirModalVerTodas('🎤 Gírias dessa categoria', nomes, function(n) { return hrefMap[n]; });
-});
-
-// Botão "ver todas" — Gírias NC
-document.getElementById('btn-vertodas-nc').addEventListener('click', async function() {
-  if (ncCatsSelecionadas.size === 0) return;
-  var slugsSel = Array.from(ncCatsSelecionadas);
-  var orFiltro = slugsSel.map(function(s) { return 'categoria.ilike.%' + s + '%'; }).join(',');
-  var ncRes = await sb.from('rimas_variacoes').select('palavra, categoria').eq('tipo', 'giria_nao_catalogada').eq('ativo', true).or(orFiltro);
-  var vistos = {};
-  (ncRes.data || []).forEach(function(r) { vistos[r.palavra] = true; });
-  var nomes = Object.keys(vistos).sort();
-  abrirModalVerTodas('✦ Gírias NC dessa categoria', nomes, null);
-});
-
-// Botão "ver todas" — Universos
-document.getElementById('btn-vertodas-univ').addEventListener('click', async function() {
-  var query = sb.from('rimas_cultura_pop').select('nome').eq('tipo', 'universo').eq('ativo', true);
-  if (univSubSelecionado !== 'todos') query = query.eq('subtipo', univSubSelecionado);
-  var res = await query.order('nome');
-  var nomes = (res.data || []).map(function(p) { return p.nome; });
-  var subInfo = univSubtiposCache.find(function(s) { return s.slug === univSubSelecionado; });
-  var titulo = '🌌 ' + (subInfo ? subInfo.nome : 'Todos os Universos');
-  abrirModalVerTodas(titulo, nomes, null);
-});
-
-// Botão "ver todas" — Cultura Pop
-document.getElementById('btn-vertodas-pop').addEventListener('click', async function() {
-  var query = sb.from('rimas_cultura_pop').select('nome').neq('tipo', 'universo').eq('ativo', true);
-  if (popTipoSelecionado !== 'todos') query = query.eq('tipo', popTipoSelecionado);
-  var res = await query.order('nome');
-  var nomes = (res.data || []).map(function(p) { return p.nome; });
-  abrirModalVerTodas('🎮 Cultura Pop' + (popTipoSelecionado !== 'todos' ? ' — ' + popTipoSelecionado : ''), nomes, null);
-});
 
 async function registrarBusca(palavra, chave) {
   try {
