@@ -1040,6 +1040,8 @@ function setupModalVerTodas() {
     var nomeAmigavel = dicCatNomes[dicCatSelecionada] || dicCatSelecionada;
     abrirModalVerTodas('📖 ' + nomeAmigavel, nomes, null);
   });
+
+  document.getElementById('btn-vertodas-girias').addEventListener('click', async function() {
     if (catsSelecionadas.size === 0) return;
     var sel = Array.from(catsSelecionadas)[0];
     var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
