@@ -244,9 +244,11 @@
       <button class="btn-sil" data-sil="3">3</button>
       <button class="btn-sil" data-sil="4+">4+</button>
     </div>
+    <div class="categorias-pills" id="dic-cats-pills" style="margin-bottom:16px;display:none;flex-wrap:wrap;gap:8px;"></div>
     <div class="palavras-lista" id="palavras-lista">
       <span class="vazio">Busque uma palavra para ver as rimas</span>
     </div>
+    <button class="btn-ver-todas" id="btn-vertodas-dic" style="display:none;" type="button">ver todas dessa categoria</button>
   </div>
 
   <!-- GÍRIAS NC -->
@@ -327,6 +329,7 @@ var palavraAtual = '';
 var chavesAtuais = [];
 var todasGirias = [];
 var todasPalavras = [];
+var dicCatSelecionada = null;
 var todosNC = [];
 var ncCatsSelecionadas = new Set();
 var ncCategoriasCache = [];
@@ -474,6 +477,8 @@ async function buscar(palavra, semPush) {
   document.getElementById('hero-palavra').textContent = palavraAtual + '?';
   document.getElementById('resultados').classList.add('ativo');
   document.getElementById('res-palavra').textContent = palavraAtual;
+  dicCatSelecionada = null;
+  ncCatsSelecionadas = new Set();
   document.getElementById('girias-grid').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('palavras-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('nc-grid').innerHTML = '<div class="vazio">Buscando...</div>';
@@ -668,13 +673,70 @@ function renderGirias() {
   }).join('');
 }
 
+// mapa de nome amigável pras categorias do dicionário
+var dicCatNomes = {
+  relacionamento: '💛 Relacionamento', dinheiro: '💰 Dinheiro',
+  desenvolvimento: '🚀 Desenvolvimento', festa: '🎉 Festa',
+  musica: '🎵 Música', espiritualidade: '✨ Espiritualidade',
+  corpo: '💪 Corpo', tempo_lugar: '🗺️ Tempo & Lugar',
+  conflito: '⚔️ Conflito', natureza: '🌿 Natureza',
+  acao: '⚡ Ação', geral: '📝 Geral'
+};
+
+function renderDicPills() {
+  var pillsEl = document.getElementById('dic-cats-pills');
+  if (!pillsEl) return;
+  // Categorias presentes nos resultados atuais (excluindo geral e null)
+  var catsPresentes = new Set();
+  todasPalavras.forEach(function(p) {
+    if (p.categoria && p.categoria !== 'geral') catsPresentes.add(p.categoria);
+  });
+  if (catsPresentes.size === 0) { pillsEl.style.display = 'none'; return; }
+  pillsEl.style.display = 'flex';
+  var cats = Array.from(catsPresentes).sort();
+  pillsEl.innerHTML = cats.map(function(cat) {
+    var ativa = dicCatSelecionada === cat ? ' ativa' : '';
+    var nome = dicCatNomes[cat] || cat;
+    return '<span class="pill-categoria' + ativa + '" data-dic-cat="' + cat + '" style="cursor:pointer;">' + nome + '</span>';
+  }).join('');
+  pillsEl.querySelectorAll('[data-dic-cat]').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var cat = pill.dataset.dicCat;
+      if (dicCatSelecionada === cat) {
+        dicCatSelecionada = null;
+        pill.classList.remove('ativa');
+      } else {
+        dicCatSelecionada = cat;
+        pillsEl.querySelectorAll('[data-dic-cat]').forEach(function(p) { p.classList.remove('ativa'); });
+        pill.classList.add('ativa');
+      }
+      renderPalavras();
+    });
+  });
+}
+
 function renderPalavras() {
   var lista = document.getElementById('palavras-lista');
   var palavras = todasPalavras.slice();
+
+  // Filtro sílabas
   if (silSelecionada !== 'todas') {
     if (silSelecionada === '4+') palavras = palavras.filter(function(p) { return p.num_silabas >= 4; });
     else { var n = parseInt(silSelecionada); palavras = palavras.filter(function(p) { return p.num_silabas === n; }); }
   }
+
+  // Renderizar pills (sempre, antes do filtro de categoria)
+  renderDicPills();
+
+  // Filtro categoria
+  var btnVertodas = document.getElementById('btn-vertodas-dic');
+  if (dicCatSelecionada) {
+    palavras = palavras.filter(function(p) { return p.categoria === dicCatSelecionada; });
+    if (btnVertodas) btnVertodas.style.display = 'inline-block';
+  } else {
+    if (btnVertodas) btnVertodas.style.display = 'none';
+  }
+
   document.getElementById('count-palavras').textContent = '(' + palavras.length + ')';
   if (palavras.length === 0) { lista.innerHTML = '<span class="vazio">Nenhuma palavra encontrada</span>'; return; }
   lista.innerHTML = palavras.map(function(p) {
@@ -969,7 +1031,15 @@ function setupModalVerTodas() {
     renderModalVerTodas(e.target.value.trim().toLowerCase());
   });
 
-  document.getElementById('btn-vertodas-girias').addEventListener('click', async function() {
+  document.getElementById('btn-vertodas-dic').addEventListener('click', async function() {
+    if (!dicCatSelecionada) return;
+    var res = await sb.from('rimas_variacoes')
+      .select('palavra').eq('tipo', 'dicionario').eq('ativo', true)
+      .eq('categoria', dicCatSelecionada).order('palavra');
+    var nomes = (res.data || []).map(function(r) { return r.palavra; });
+    var nomeAmigavel = dicCatNomes[dicCatSelecionada] || dicCatSelecionada;
+    abrirModalVerTodas('📖 ' + nomeAmigavel, nomes, null);
+  });
     if (catsSelecionadas.size === 0) return;
     var sel = Array.from(catsSelecionadas)[0];
     var tipo = sel.split(':')[0], id = parseInt(sel.split(':')[1], 10);
