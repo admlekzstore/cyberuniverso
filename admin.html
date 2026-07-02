@@ -345,6 +345,31 @@
         </div>
       </div>
 
+      <!-- REGRAS FONÉTICAS -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">🔤 REGRAS FONÉTICAS</div>
+          <button class="btn-mini btn-editar" onclick="document.getElementById('modal-nova-regra').classList.add('aberto')">➕ Nova Regra</button>
+        </div>
+        <div id="regras-lista" style="padding:16px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
+      <!-- EXCEÇÕES FONÉTICAS -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">⚠️ EXCEÇÕES FONÉTICAS</div>
+          <button class="btn-mini btn-editar" onclick="document.getElementById('modal-nova-excecao').classList.add('aberto')">➕ Nova Exceção</button>
+        </div>
+        <div style="padding:10px 16px;">
+          <input type="text" id="excecoes-busca" class="busca-tabela" placeholder="Buscar palavra..." style="width:100%;margin-bottom:10px;" oninput="filtrarExcecoes(this.value)">
+        </div>
+        <div id="excecoes-lista" style="padding:0 16px 16px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
           <div class="tabela-titulo">✦ CATEGORIAS — GÍRIAS NC</div>
@@ -560,6 +585,7 @@ async function carregarTudo() {
     carregarNcCategorias(),
     carregarCpOpcoes(),
     carregarUniversos(),
+    carregarRegrasFoneticas(),
   ])
 }
 
@@ -1376,6 +1402,99 @@ function toggleNcCat(slug, btn) {
   }
 }
 
+// ── REGRAS E EXCEÇÕES FONÉTICAS ──
+let regrasFoneticasCache = []
+let excecoesFoneticasCache = []
+
+async function carregarRegrasFoneticas() {
+  const [regRes, excRes] = await Promise.all([
+    sb.from('rimas_regras').select('*').eq('ativo', true).order('terminacao'),
+    sb.from('rimas_excecoes').select('*').eq('ativo', true).order('palavra')
+  ])
+  regrasFoneticasCache = regRes.data || []
+  excecoesFoneticasCache = excRes.data || []
+  renderRegras()
+  renderExcecoes('')
+}
+
+function renderRegras() {
+  const el = document.getElementById('regras-lista')
+  if (!el) return
+  if (!regrasFoneticasCache.length) { el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhuma regra cadastrada.</span>'; return }
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">' +
+    regrasFoneticasCache.map(r => `
+      <div style="background:rgba(26,110,245,0.06);border:1px solid rgba(26,110,245,0.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'Fredoka One',cursive;color:#7ab0ff;font-size:1.1rem;">-${r.terminacao}</span>
+        <span style="font-size:12px;color:#00eaff;">→ ${r.chaves.join(', ')}</span>
+        ${r.descricao ? `<span style="font-size:11px;color:#4a6fa5;margin-left:auto;">${r.descricao}</span>` : ''}
+        <button class="btn-mini btn-excluir" style="margin-left:auto;" onclick="removerRegra('${r.id}','${r.terminacao}')">🗑️</button>
+      </div>`).join('') + '</div>'
+}
+
+function renderExcecoes(filtro) {
+  const el = document.getElementById('excecoes-lista')
+  if (!el) return
+  const lista = excecoesFoneticasCache.filter(e => !filtro || e.palavra.includes(filtro.toLowerCase()))
+  if (!lista.length) { el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhuma exceção encontrada.</span>'; return }
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">' +
+    lista.map(e => `
+      <div style="background:rgba(245,200,0,0.05);border:1px solid rgba(245,200,0,0.2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'Fredoka One',cursive;color:#f5e800;">${e.palavra}</span>
+        <span style="font-size:12px;color:#00eaff;">→ ${e.chaves.join(', ')}</span>
+        <button class="btn-mini btn-excluir" style="margin-left:auto;" onclick="removerExcecao('${e.id}','${e.palavra}')">🗑️</button>
+      </div>`).join('') + '</div>'
+}
+
+function filtrarExcecoes(val) { renderExcecoes(val) }
+
+async function salvarRegra() {
+  const terminacao = document.getElementById('regra-terminacao').value.trim().toLowerCase()
+  const chavesRaw  = document.getElementById('regra-chaves').value.trim()
+  const descricao  = document.getElementById('regra-descricao').value.trim()
+  if (!terminacao || !chavesRaw) { mostrarToast('⚠️ Preencha terminação e chaves', 'erro'); return }
+  const chaves = chavesRaw.split(',').map(c => c.trim()).filter(Boolean)
+  const { error } = await sb.from('rimas_regras').upsert({ terminacao, chaves, descricao, ativo: true }, { onConflict: 'terminacao' })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Regra salva!', 'sucesso')
+  document.getElementById('modal-nova-regra').classList.remove('aberto')
+  document.getElementById('regra-terminacao').value = ''
+  document.getElementById('regra-chaves').value = ''
+  document.getElementById('regra-descricao').value = ''
+  await carregarRegrasFoneticas()
+}
+
+async function salvarExcecao() {
+  const palavra  = document.getElementById('excecao-palavra').value.trim().toLowerCase()
+  const chavesRaw = document.getElementById('excecao-chaves').value.trim()
+  const motivo   = document.getElementById('excecao-motivo').value.trim()
+  if (!palavra || !chavesRaw) { mostrarToast('⚠️ Preencha palavra e chaves', 'erro'); return }
+  const chaves = chavesRaw.split(',').map(c => c.trim()).filter(Boolean)
+  const { error } = await sb.from('rimas_excecoes').upsert({ palavra, chaves, motivo, ativo: true }, { onConflict: 'palavra' })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Exceção salva!', 'sucesso')
+  document.getElementById('modal-nova-excecao').classList.remove('aberto')
+  document.getElementById('excecao-palavra').value = ''
+  document.getElementById('excecao-chaves').value = ''
+  document.getElementById('excecao-motivo').value = ''
+  await carregarRegrasFoneticas()
+}
+
+async function removerRegra(id, term) {
+  if (!confirm(`Remover regra "-${term}"?`)) return
+  await sb.from('rimas_regras').update({ ativo: false }).eq('id', id)
+  mostrarToast('🗑️ Regra removida', 'sucesso')
+  regrasFoneticasCache = regrasFoneticasCache.filter(r => r.id !== id)
+  renderRegras()
+}
+
+async function removerExcecao(id, palavra) {
+  if (!confirm(`Remover exceção "${palavra}"?`)) return
+  await sb.from('rimas_excecoes').update({ ativo: false }).eq('id', id)
+  mostrarToast('🗑️ Exceção removida', 'sucesso')
+  excecoesFoneticasCache = excecoesFoneticasCache.filter(e => e.id !== id)
+  renderExcecoes(document.getElementById('excecoes-busca').value)
+}
+
 // ── UNIVERSOS ──
 let univSubsCache = []
 
@@ -1806,6 +1925,42 @@ init()
     <div class="modal-footer">
       <button class="btn-cancelar" onclick="document.getElementById('modal-nova-cp-sub').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" onclick="salvarCpSubcategoria()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-nova-regra">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">🔤 NOVA REGRA FONÉTICA</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-regra').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-campo"><label>Terminação (ex: ar, ada, ete)</label><input type="text" id="regra-terminacao" placeholder="ex: ete"></div>
+      <div class="modal-campo"><label>Chaves de rima (separadas por vírgula)</label><input type="text" id="regra-chaves" placeholder="ex: éte, ête"></div>
+      <div class="modal-campo"><label>Descrição / exemplos (opcional)</label><input type="text" id="regra-descricao" placeholder="ex: topete, carpete, sete"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-regra').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarRegra()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-nova-excecao">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">⚠️ NOVA EXCEÇÃO FONÉTICA</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-excecao').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-campo"><label>Palavra (ex: mulher, tapete)</label><input type="text" id="excecao-palavra" placeholder="ex: tapete"></div>
+      <div class="modal-campo"><label>Chaves de rima (separadas por vírgula)</label><input type="text" id="excecao-chaves" placeholder="ex: ête"></div>
+      <div class="modal-campo"><label>Motivo (opcional)</label><input type="text" id="excecao-motivo" placeholder="ex: exceção fonética de -ete"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-excecao').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarExcecao()">SALVAR ✓</button>
     </div>
   </div>
 </div>

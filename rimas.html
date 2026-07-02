@@ -351,7 +351,42 @@ if (!sessionId) {
   localStorage.setItem('cy_session_id', sessionId);
 }
 
-function variacoesIngles(palavra) {
+// ── SISTEMA DE REGRAS FONÉTICAS ──
+var regrasCache = [];
+var excecoesCache = {};
+
+async function carregarRegras() {
+  var [regRes, excRes] = await Promise.all([
+    sb.from('rimas_regras').select('terminacao, chaves').eq('ativo', true),
+    sb.from('rimas_excecoes').select('palavra, chaves').eq('ativo', true)
+  ]);
+  // Ordenar por tamanho desc pra testar terminações mais longas primeiro
+  regrasCache = (regRes.data || []).sort(function(a,b) { return b.terminacao.length - a.terminacao.length; });
+  (excRes.data || []).forEach(function(e) { excecoesCache[e.palavra] = e.chaves; });
+}
+
+function chavesParaBusca(palavra) {
+  var w = palavra.toLowerCase().trim();
+  var chaves = new Set();
+
+  // 1. Exceção cadastrada pra essa palavra específica
+  if (excecoesCache[w]) {
+    excecoesCache[w].forEach(function(c) { chaves.add(c); });
+    return Array.from(chaves);
+  }
+
+  // 2. Verificar regras por terminação (mais longa primeiro)
+  for (var i = 0; i < regrasCache.length; i++) {
+    var r = regrasCache[i];
+    if (w.endsWith(r.terminacao)) {
+      r.chaves.forEach(function(c) { chaves.add(c); });
+      return Array.from(chaves); // para na primeira regra que bate
+    }
+  }
+
+  // 3. Nenhuma regra encontrada — não gera chave local
+  return [];
+}
   var v = []; var w = palavra.toLowerCase().replace(/\s/g,'');
   if (/ick$|ik$/.test(w)) { v.push('ique','ick','ic'); }
   if (/ic$/.test(w) && !/ick$/.test(w)) { v.push('ique','ic'); }
@@ -376,15 +411,6 @@ function temPadraoIngles(w) {
   return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ness$|ool$|ake$/.test(w) || !/[áéíóúâêîôûãõàç]/.test(w);
 }
 
-function chavesParaBusca(palavra) {
-  var chaves = new Set(); var w = palavra.toLowerCase().trim();
-  if (w.length >= 2) chaves.add(w.slice(-2));
-  if (w.length >= 3) chaves.add(w.slice(-3));
-  if (w.length >= 4) chaves.add(w.slice(-4));
-  if (temPadraoIngles(w)) variacoesIngles(w).forEach(function(v) { chaves.add(v); });
-  return Array.from(chaves);
-}
-
 document.addEventListener('DOMContentLoaded', async function() {
   // Verificar se é admin
   var session = await sb.auth.getSession();
@@ -403,6 +429,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   carregarUnivSubtipos();
   carregarNcCats();
   carregarPopAbas();
+  carregarRegras();
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -480,30 +507,11 @@ async function buscar(palavra, semPush) {
   var chavesBanco = (refRes.data || []).map(function(r) { return r.chave; });
   var chavesLocais = chavesParaBusca(palavraAtual);
   var todasChaves = Array.from(new Set(chavesBanco.concat(chavesLocais)));
-
-  // Chamar IA fonética em paralelo, só se não tiver chaves manuais no banco
-  var chavesIA = [];
-  if (chavesBanco.length === 0) {
-    try {
-      var iaRes = await fetch('https://fdqjnqlbjjpeyzzckjux.supabase.co/functions/v1/detectar-fonetica', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ palavra: palavraAtual })
-      });
-      var iaData = await iaRes.json();
-      if (iaData.chaves && iaData.chaves.length > 0) {
-        chavesIA = iaData.chaves;
-        todasChaves = Array.from(new Set(todasChaves.concat(chavesIA)));
-      }
-    } catch(e) { /* IA indisponível, continua sem ela */ }
-  }
-
   chavesAtuais = todasChaves;
 
   if (todasChaves.length > 0) {
     document.getElementById('chaves-usadas').innerHTML = todasChaves.map(function(c) {
-      var isIA = chavesIA.indexOf(c) !== -1 && chavesBanco.indexOf(c) === -1;
-      return '<span class="chave-badge' + (isIA ? ' chave-ia' : '') + '">rima com ' + c + (isIA ? ' 🤖' : '') + '</span>';
+      return '<span class="chave-badge">rima com ' + c + '</span>';
     }).join('');
   }
 
