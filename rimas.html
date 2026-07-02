@@ -42,6 +42,7 @@
     .resultado-count { font-size:.85rem; color:rgba(224,232,255,.45); }
     .chaves-usadas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
     .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; }
+    .chave-ia { background:rgba(155,77,255,.12); border-color:rgba(155,77,255,.35); color:#b380ff; }
     .secao { margin-bottom:48px; }
     .secao-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
     .secao-titulo { font-family:'Fredoka One',sans-serif; font-size:1.1rem; color:var(--ciano); text-transform:uppercase; letter-spacing:2px; }
@@ -479,11 +480,30 @@ async function buscar(palavra, semPush) {
   var chavesBanco = (refRes.data || []).map(function(r) { return r.chave; });
   var chavesLocais = chavesParaBusca(palavraAtual);
   var todasChaves = Array.from(new Set(chavesBanco.concat(chavesLocais)));
+
+  // Chamar IA fonética em paralelo, só se não tiver chaves manuais no banco
+  var chavesIA = [];
+  if (chavesBanco.length === 0) {
+    try {
+      var iaRes = await fetch('https://fdqjnqlbjjpeyzzckjux.supabase.co/functions/v1/detectar-fonetica', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ palavra: palavraAtual })
+      });
+      var iaData = await iaRes.json();
+      if (iaData.chaves && iaData.chaves.length > 0) {
+        chavesIA = iaData.chaves;
+        todasChaves = Array.from(new Set(todasChaves.concat(chavesIA)));
+      }
+    } catch(e) { /* IA indisponível, continua sem ela */ }
+  }
+
   chavesAtuais = todasChaves;
 
   if (todasChaves.length > 0) {
     document.getElementById('chaves-usadas').innerHTML = todasChaves.map(function(c) {
-      return '<span class="chave-badge">rima com ' + c + '</span>';
+      var isIA = chavesIA.indexOf(c) !== -1 && chavesBanco.indexOf(c) === -1;
+      return '<span class="chave-badge' + (isIA ? ' chave-ia' : '') + '">rima com ' + c + (isIA ? ' 🤖' : '') + '</span>';
     }).join('');
   }
 
