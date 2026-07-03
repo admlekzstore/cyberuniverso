@@ -307,6 +307,17 @@
     </div>
 
     <div class="secao" id="sec-rimas">
+      <!-- SUGESTÕES DA GALERA -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">📬 SUGESTÕES DA GALERA <span class="nav-badge" id="badge-sugestoes" style="margin-left:8px;">0</span></div>
+        </div>
+        <div style="padding:8px 16px 16px;font-size:12px;color:#4a6fa5;">Palavras/nomes enviados pelo público nas seções Gírias NC, Universos e Cultura Pop. Aprovar calcula a chave de rima automaticamente usando as Regras/Exceções Fonéticas — se nenhuma regra bater com a palavra, adicione uma regra antes de aprovar.</div>
+        <div id="sugestoes-lista" style="padding:0 16px 16px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
           <div class="tabela-titulo">🎮 CULTURA POP — CATEGORIAS E SUBCATEGORIAS</div>
@@ -586,6 +597,7 @@ async function carregarTudo() {
     carregarCpOpcoes(),
     carregarUniversos(),
     carregarRegrasFoneticas(),
+    carregarSugestoes(),
   ])
 }
 
@@ -1493,6 +1505,109 @@ async function removerExcecao(id, palavra) {
   mostrarToast('🗑️ Exceção removida', 'sucesso')
   excecoesFoneticasCache = excecoesFoneticasCache.filter(e => e.id !== id)
   renderExcecoes(document.getElementById('excecoes-busca').value)
+}
+
+// ── SUGESTÕES DA GALERA ──
+let sugestoesCache = []
+
+async function carregarSugestoes() {
+  const { data } = await sb.from('rimas_sugestoes').select('*').eq('status', 'pendente').order('criado_em', { ascending: true })
+  sugestoesCache = data || []
+  renderSugestoes()
+}
+
+function renderSugestoes() {
+  const el = document.getElementById('sugestoes-lista')
+  const badge = document.getElementById('badge-sugestoes')
+  if (badge) badge.textContent = sugestoesCache.length
+  if (!el) return
+  if (!sugestoesCache.length) { el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhuma sugestão pendente 🎉</span>'; return }
+  const labels = { giria_nao_catalogada: '✦ NC', universo: '🌌 Universo', cultura_pop: '🎮 Cultura Pop' }
+  el.innerHTML = sugestoesCache.map(s => {
+    const catTxt = s.tipo === 'cultura_pop' ? [s.cp_tipo, s.cp_subtipo].filter(Boolean).join(' / ') : (s.categoria || '—')
+    return `
+      <div style="background:rgba(26,110,245,0.05);border:1px solid var(--borda);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+        <span style="font-family:'Fredoka One',cursive;color:var(--amarelo);font-size:1rem;">${s.palavra}</span>
+        <span class="badge-status badge-pendente">${labels[s.tipo] || s.tipo}</span>
+        <span style="font-size:12px;color:#4a6fa5;">${catTxt}</span>
+        <span style="font-size:12px;color:#4a6fa5;">por ${s.nome_autor || '—'}</span>
+        <div class="acoes-cell" style="margin-left:auto;">
+          <button class="btn-mini btn-aprovar" onclick="aprovarSugestao('${s.id}')">✓ Aprovar</button>
+          <button class="btn-mini btn-rejeitar" onclick="rejeitarSugestao('${s.id}')">✕ Rejeitar</button>
+        </div>
+      </div>`
+  }).join('')
+}
+
+function calcularChavesSugestao(palavra) {
+  const w = palavra.toLowerCase().trim()
+  const exc = excecoesFoneticasCache.find(e => e.palavra === w)
+  if (exc) return exc.chaves
+  const ordenadas = [...regrasFoneticasCache].sort((a, b) => b.terminacao.length - a.terminacao.length)
+  for (const r of ordenadas) {
+    if (w.endsWith(r.terminacao)) return r.chaves
+  }
+  return []
+}
+
+async function aprovarSugestao(id) {
+  const s = sugestoesCache.find(x => x.id === id)
+  if (!s) return
+  const palavraLower = s.palavra.toLowerCase().trim()
+  const palavraTitulo = capitalizarTitulo(s.palavra)
+  const chaves = calcularChavesSugestao(s.palavra)
+
+  if (!chaves.length) {
+    mostrarToast('⚠️ Nenhuma regra fonética bate com "' + s.palavra + '". Cadastre uma regra/exceção antes de aprovar.', 'erro')
+    return
+  }
+
+  let popId = null
+  if (s.tipo === 'universo' || s.tipo === 'cultura_pop') {
+    const tipoPop = s.tipo === 'universo' ? 'universo' : s.cp_tipo
+    const subtipoPop = s.tipo === 'universo' ? s.categoria : s.cp_subtipo
+
+    const { data: existente } = await sb.from('rimas_cultura_pop').select('id').ilike('nome', palavraTitulo).limit(1)
+    if (existente && existente.length > 0) {
+      popId = existente[0].id
+    } else {
+      const { data: novo, error: errPop } = await sb.from('rimas_cultura_pop').insert({
+        nome: palavraTitulo, tipo: tipoPop, subtipo: subtipoPop || null,
+        chave_fonetica: chaves[0] || '', chave_ortografica: palavraLower.slice(-4),
+        fonte: 'manual', ativo: true
+      }).select('id').single()
+      if (errPop) { mostrarToast('Erro ao criar item: ' + errPop.message, 'erro'); return }
+      popId = novo.id
+    }
+  }
+
+  const palavraFinal = (s.tipo === 'cultura_pop' || s.tipo === 'universo') ? palavraTitulo : palavraLower
+  const registros = chaves.map(chave => ({
+    palavra: palavraFinal,
+    chave,
+    tipo: s.tipo,
+    ref_id: popId || null,
+    criado_por: 'manual',
+    categoria: s.tipo === 'giria_nao_catalogada' ? s.categoria : null,
+    ativo: true
+  }))
+
+  const { error } = await sb.from('rimas_variacoes').upsert(registros, { onConflict: 'chave,palavra,tipo', ignoreDuplicates: true })
+  if (error) { mostrarToast('Erro ao aprovar: ' + error.message, 'erro'); return }
+
+  await sb.from('rimas_sugestoes').update({ status: 'aprovado' }).eq('id', id)
+  mostrarToast('✅ "' + s.palavra + '" aprovada!', 'sucesso')
+  sugestoesCache = sugestoesCache.filter(x => x.id !== id)
+  renderSugestoes()
+}
+
+async function rejeitarSugestao(id) {
+  if (!confirm('Rejeitar essa sugestão?')) return
+  const { error } = await sb.from('rimas_sugestoes').update({ status: 'rejeitado' }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  sugestoesCache = sugestoesCache.filter(x => x.id !== id)
+  renderSugestoes()
+  mostrarToast('🗑️ Sugestão rejeitada', 'sucesso')
 }
 
 // ── UNIVERSOS ──

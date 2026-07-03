@@ -138,6 +138,27 @@
     .pop-aba { background:transparent; border:1px solid var(--borda); color:rgba(224,232,255,.5); border-radius:8px; padding:5px 14px; font-size:.82rem; font-family:'Fredoka One',sans-serif; cursor:pointer; transition:all .15s; }
     .pop-aba:hover,.pop-aba.ativa { border-color:var(--roxo); color:#b380ff; background:rgba(155,77,255,.1); }
     .pop-lista { display:flex; flex-wrap:wrap; gap:8px; }
+    /* SUGESTÕES (Mande uma nova) */
+    .btn-sugerir { display:inline-flex; align-items:center; gap:6px; background:rgba(0,234,255,.07); border:1.5px dashed rgba(0,234,255,.35); color:var(--ciano); border-radius:20px; padding:7px 16px; font-size:.82rem; font-family:'Nunito',sans-serif; font-weight:800; cursor:pointer; margin:4px 0 14px; transition:all .15s; }
+    .btn-sugerir:hover { background:rgba(0,234,255,.15); border-color:var(--ciano); border-style:solid; }
+    .sugestao-campo { margin-bottom:14px; }
+    .sugestao-campo label { display:block; font-size:.75rem; color:rgba(224,232,255,.5); margin-bottom:6px; font-weight:700; }
+    .sugestao-campo input[type="text"] { width:100%; background:var(--fundo); border:1px solid var(--borda); border-radius:8px; padding:9px 12px; color:var(--texto); font-size:.9rem; font-family:'Nunito',sans-serif; outline:none; transition:border-color .2s; }
+    .sugestao-campo input[type="text"]:focus { border-color:var(--ciano); }
+    .pill-sugestao { background:rgba(224,232,255,.04); border:1px solid var(--borda); border-radius:20px; padding:6px 14px; font-size:.82rem; color:var(--texto); cursor:pointer; transition:all .15s; user-select:none; }
+    .pill-sugestao:hover { border-color:var(--ciano); }
+    .pill-sugestao.ativa { background:rgba(0,234,255,.15); border-color:var(--ciano); color:var(--ciano); }
+    .sugestao-add-row { display:flex; gap:8px; margin-bottom:12px; }
+    .sugestao-add-row input { flex:1; }
+    .sugestao-add-btn { background:var(--ciano); color:#05080f; border:none; border-radius:8px; padding:0 18px; font-size:1.1rem; font-weight:900; cursor:pointer; transition:opacity .15s; }
+    .sugestao-add-btn:hover { opacity:.85; }
+    .sugestao-palavras-lista { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; min-height:20px; }
+    .chip-sugestao { background:rgba(26,110,245,.1); border:1px solid rgba(26,110,245,.35); border-radius:16px; padding:5px 6px 5px 12px; font-size:.85rem; color:var(--texto); display:inline-flex; align-items:center; gap:6px; }
+    .chip-sugestao button { background:none; border:none; color:rgba(224,232,255,.45); cursor:pointer; font-size:.8rem; padding:2px 5px; line-height:1; }
+    .chip-sugestao button:hover { color:var(--vermelho,#ff5050); }
+    .sugestao-enviar-btn { width:100%; background:linear-gradient(135deg,var(--azul),var(--ciano)); color:#fff; border:none; border-radius:10px; padding:12px; font-family:'Fredoka One',sans-serif; font-size:.95rem; letter-spacing:.5px; cursor:pointer; transition:opacity .15s; }
+    .sugestao-enviar-btn:hover { opacity:.88; }
+    .sugestao-enviar-btn:disabled { opacity:.5; cursor:not-allowed; }
     .tag-pop { background:rgba(155,77,255,.08); border:1px solid rgba(155,77,255,.2); border-radius:8px; padding:6px 14px; font-size:.88rem; color:#c49dff; display:flex; align-items:center; gap:6px; }
     .tag-pop .pop-sub { font-size:.65rem; color:rgba(196,157,255,.5); }
     /* IA */
@@ -260,6 +281,7 @@
       <div class="secao-divider"></div>
     </div>
     <p style="font-size:.8rem;color:rgba(224,232,255,.35);margin-bottom:12px;">Gírias não catalogadas ainda — rimam mas ainda não têm significado no site</p>
+    <button class="btn-sugerir" type="button" onclick="abrirModalSugestao('giria_nao_catalogada')">➕ Mande uma gíria nova</button>
     <div class="categorias-pills" id="nc-cats-pills" style="margin-bottom:16px;display:none;">
       <!-- carregado dinamicamente -->
     </div>
@@ -276,6 +298,7 @@
       <span class="univ-toggle-icone">▼</span>
     </button>
     <div class="univ-conteudo" id="univ-conteudo">
+      <button class="btn-sugerir" type="button" onclick="abrirModalSugestao('universo')">➕ Mande uma palavra pro Universo</button>
       <div class="univ-abas" id="univ-abas">
         <button class="univ-aba ativa" data-sub="todos">todos</button>
       </div>
@@ -293,6 +316,7 @@
       <span class="pop-toggle-icone">▼</span>
     </button>
     <div class="pop-conteudo" id="pop-conteudo">
+      <button class="btn-sugerir" type="button" onclick="abrirModalSugestao('cultura_pop')">➕ Mande um nome de Cultura Pop</button>
       <div class="pop-abas" id="pop-abas">
         <button class="pop-aba ativa" data-tipo="todos">todos</button>
       </div>
@@ -344,6 +368,14 @@ var votosFeitos = JSON.parse(localStorage.getItem('cy_rimas_votos') || '{}');
 var pedidosFeitos = JSON.parse(localStorage.getItem('cy_rimas_pedidos') || '{}');
 var isAdmin = false;
 
+// ── SUGESTÕES (Mande uma nova) ──
+var sugestaoTipo = null;
+var sugestaoPalavras = [];
+var sugestaoCatSelecionada = null;
+var sugestaoCpTipoSelecionada = null;
+var sugestaoCpSubtipoSelecionada = null;
+var cpSubtiposCache = [];
+
 // Hash simples do IP (usamos timestamp + random como identificador de sessão)
 var sessionId = localStorage.getItem('cy_session_id');
 if (!sessionId) {
@@ -387,25 +419,6 @@ function chavesParaBusca(palavra) {
   // 3. Nenhuma regra encontrada — não gera chave local
   return [];
 }
-  var v = []; var w = palavra.toLowerCase().replace(/\s/g,'');
-  if (/ick$|ik$/.test(w)) { v.push('ique','ick','ic'); }
-  if (/ic$/.test(w) && !/ick$/.test(w)) { v.push('ique','ic'); }
-  if (/ck$/.test(w) && !/ick$/.test(w)) { v.push('ék','ak','ack'); }
-  if (/tion$|sion$/.test(w)) { v.push('ção','são'); }
-  if (/ad$|at$|ab$/.test(w)) { v.push('éde','ad'); }
-  if (/ake$|eak$/.test(w)) { v.push('êique','eik'); }
-  if (/ing$/.test(w)) { v.push('ingue','ing'); }
-  if (/ight$|ite$/.test(w)) { v.push('aite','aight'); }
-  if (/ool$|ule$/.test(w)) { v.push('ul','ool'); }
-  if (/ey$|ay$/.test(w)) { v.push('ei','ey'); }
-  if (/ee$|ea$/.test(w)) { v.push('i','ii'); }
-  if (/oo$/.test(w)) { v.push('u','oo'); }
-  if (/ack$|act$/.test(w)) { v.push('ak','ack'); }
-  if (/man$|men$/.test(w)) { v.push('mên','man'); }
-  if (/all$/.test(w)) { v.push('ol'); }
-  if (/[^aeiou]y$/.test(w)) { v.push('i'); }
-  return v;
-}
 
 function temPadraoIngles(w) {
   return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ness$|ool$|ake$/.test(w) || !/[áéíóúâêîôûãõàç]/.test(w);
@@ -424,6 +437,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     this.classList.toggle('aberto');
     document.getElementById('univ-conteudo').classList.toggle('aberto');
   });
+
+  document.getElementById('sugestao-fechar').addEventListener('click', fecharModalSugestao);
+  document.getElementById('modal-sugestao-overlay').addEventListener('click', function(e) { if (e.target === this) fecharModalSugestao(); });
+  document.getElementById('sugestao-add-btn').addEventListener('click', adicionarSugestaoPalavra);
+  document.getElementById('sugestao-palavra-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); adicionarSugestaoPalavra(); } });
+  document.getElementById('sugestao-enviar-btn').addEventListener('click', enviarSugestoes);
 
   // Carregar subtipos de universo dinamicamente
   carregarUnivSubtipos();
@@ -930,6 +949,154 @@ function renderPop() {
   }).join('');
 }
 
+// ── SISTEMA DE SUGESTÕES (Mande uma nova) ──
+var SUGESTAO_TITULOS = {
+  giria_nao_catalogada: '✦ Mande uma gíria nova',
+  universo: '🌌 Mande uma palavra pro Universo',
+  cultura_pop: '🎮 Mande um nome de Cultura Pop'
+};
+
+function renderPillsSugestao(containerId, lista, multiEscolha) {
+  var el = document.getElementById(containerId);
+  if (!lista.length) { el.innerHTML = '<span style="font-size:.78rem;color:rgba(224,232,255,.35);">Nenhuma categoria cadastrada ainda.</span>'; return; }
+  el.innerHTML = lista.map(function(c) {
+    return '<span class="pill-sugestao" data-slug="' + c.slug + '">' + (c.emoji ? c.emoji + ' ' : '') + c.nome + '</span>';
+  }).join('');
+}
+
+async function abrirModalSugestao(tipo) {
+  sugestaoTipo = tipo;
+  sugestaoPalavras = [];
+  sugestaoCatSelecionada = null;
+  sugestaoCpTipoSelecionada = null;
+  sugestaoCpSubtipoSelecionada = null;
+  document.getElementById('sugestao-palavra-input').value = '';
+  renderListaSugestaoPalavras();
+  document.getElementById('sugestao-titulo').textContent = SUGESTAO_TITULOS[tipo] || 'Mande uma palavra nova';
+  document.getElementById('sugestao-nome').value = localStorage.getItem('cy_sugestao_nome') || '';
+
+  var catsEl = document.getElementById('sugestao-categorias');
+  catsEl.innerHTML = '<div class="sugestao-campo"><label>Categoria</label><span style="font-size:.8rem;color:rgba(224,232,255,.4);">Carregando...</span></div>';
+
+  if (tipo === 'giria_nao_catalogada') {
+    if (!ncCategoriasCache.length) await carregarNcCats();
+    catsEl.innerHTML = '<div class="sugestao-campo"><label>Categoria</label><div id="sugestao-cats-pills" style="display:flex;flex-wrap:wrap;gap:6px;"></div></div>';
+    renderPillsSugestao('sugestao-cats-pills', ncCategoriasCache);
+    document.getElementById('sugestao-cats-pills').querySelectorAll('.pill-sugestao').forEach(function(p) {
+      p.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.pill-sugestao').forEach(function(x) { x.classList.remove('ativa'); });
+        this.classList.add('ativa');
+        sugestaoCatSelecionada = this.dataset.slug;
+      });
+    });
+  } else if (tipo === 'universo') {
+    if (!univSubtiposCache.length) await carregarUnivSubtipos();
+    catsEl.innerHTML = '<div class="sugestao-campo"><label>Categoria</label><div id="sugestao-cats-pills" style="display:flex;flex-wrap:wrap;gap:6px;"></div></div>';
+    renderPillsSugestao('sugestao-cats-pills', univSubtiposCache);
+    document.getElementById('sugestao-cats-pills').querySelectorAll('.pill-sugestao').forEach(function(p) {
+      p.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.pill-sugestao').forEach(function(x) { x.classList.remove('ativa'); });
+        this.classList.add('ativa');
+        sugestaoCatSelecionada = this.dataset.slug;
+      });
+    });
+  } else if (tipo === 'cultura_pop') {
+    if (!popCatsCache.length) await carregarPopAbas();
+    if (!cpSubtiposCache.length) {
+      var res = await sb.from('rimas_cp_opcoes').select('slug, nome, emoji').eq('tipo', 'subcategoria').eq('ativo', true).order('nome');
+      cpSubtiposCache = res.data || [];
+    }
+    catsEl.innerHTML =
+      '<div class="sugestao-campo"><label>Categoria</label><div id="sugestao-cp-cats" style="display:flex;flex-wrap:wrap;gap:6px;"></div></div>' +
+      '<div class="sugestao-campo"><label>Subcategoria (opcional)</label><div id="sugestao-cp-subs" style="display:flex;flex-wrap:wrap;gap:6px;"></div></div>';
+    renderPillsSugestao('sugestao-cp-cats', popCatsCache);
+    document.getElementById('sugestao-cp-cats').querySelectorAll('.pill-sugestao').forEach(function(p) {
+      p.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.pill-sugestao').forEach(function(x) { x.classList.remove('ativa'); });
+        this.classList.add('ativa');
+        sugestaoCpTipoSelecionada = this.dataset.slug;
+      });
+    });
+    renderPillsSugestao('sugestao-cp-subs', cpSubtiposCache);
+    document.getElementById('sugestao-cp-subs').querySelectorAll('.pill-sugestao').forEach(function(p) {
+      p.addEventListener('click', function() {
+        var jaAtiva = this.classList.contains('ativa');
+        this.parentElement.querySelectorAll('.pill-sugestao').forEach(function(x) { x.classList.remove('ativa'); });
+        if (jaAtiva) { sugestaoCpSubtipoSelecionada = null; }
+        else { this.classList.add('ativa'); sugestaoCpSubtipoSelecionada = this.dataset.slug; }
+      });
+    });
+  }
+
+  document.getElementById('modal-sugestao-overlay').classList.add('aberto');
+}
+
+function fecharModalSugestao() {
+  document.getElementById('modal-sugestao-overlay').classList.remove('aberto');
+}
+
+function renderListaSugestaoPalavras() {
+  var el = document.getElementById('sugestao-lista-palavras');
+  if (!sugestaoPalavras.length) {
+    el.innerHTML = '<span style="font-size:.78rem;color:rgba(224,232,255,.3);">Nenhuma palavra adicionada ainda.</span>';
+    return;
+  }
+  el.innerHTML = sugestaoPalavras.map(function(p, i) {
+    return '<span class="chip-sugestao">' + p + '<button type="button" onclick="removerSugestaoPalavra(' + i + ')">✕</button></span>';
+  }).join('');
+}
+
+function removerSugestaoPalavra(i) {
+  sugestaoPalavras.splice(i, 1);
+  renderListaSugestaoPalavras();
+}
+
+function adicionarSugestaoPalavra() {
+  var input = document.getElementById('sugestao-palavra-input');
+  var val = input.value.trim();
+  if (!val) return;
+  var jaTem = sugestaoPalavras.some(function(p) { return p.toLowerCase() === val.toLowerCase(); });
+  if (jaTem) { mostrarToastRima('Essa palavra já está na lista!'); input.value = ''; return; }
+  sugestaoPalavras.push(val);
+  input.value = '';
+  renderListaSugestaoPalavras();
+  input.focus();
+}
+
+async function enviarSugestoes() {
+  var nome = document.getElementById('sugestao-nome').value.trim();
+  if (!nome) { mostrarToastRima('Coloca seu nome antes de enviar!'); return; }
+  if (!sugestaoPalavras.length) { mostrarToastRima('Adiciona pelo menos uma palavra!'); return; }
+  if (sugestaoTipo !== 'cultura_pop' && !sugestaoCatSelecionada) { mostrarToastRima('Escolhe uma categoria!'); return; }
+  if (sugestaoTipo === 'cultura_pop' && !sugestaoCpTipoSelecionada) { mostrarToastRima('Escolhe uma categoria!'); return; }
+
+  localStorage.setItem('cy_sugestao_nome', nome);
+
+  var registros = sugestaoPalavras.map(function(p) {
+    return {
+      tipo: sugestaoTipo,
+      palavra: p,
+      nome_autor: nome,
+      categoria: sugestaoTipo !== 'cultura_pop' ? sugestaoCatSelecionada : null,
+      cp_tipo: sugestaoTipo === 'cultura_pop' ? sugestaoCpTipoSelecionada : null,
+      cp_subtipo: sugestaoTipo === 'cultura_pop' ? sugestaoCpSubtipoSelecionada : null,
+      status: 'pendente',
+      ip_hash: sessionId
+    };
+  });
+
+  var btn = document.getElementById('sugestao-enviar-btn');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  var resp = await sb.from('rimas_sugestoes').insert(registros);
+  btn.disabled = false; btn.textContent = 'Enviar todas';
+
+  if (resp.error) { mostrarToastRima('Erro ao enviar: ' + resp.error.message); return; }
+
+  mostrarToastRima('✅ ' + registros.length + ' palavra(s) enviada(s)! Vamos revisar em breve.');
+  sugestaoPalavras = [];
+  renderListaSugestaoPalavras();
+}
+
 // ── SISTEMA DE VOTOS ──
 async function votar(e, palavra, tipo, refId) {
   e.preventDefault(); e.stopPropagation();
@@ -1174,6 +1341,32 @@ async function registrarBusca(palavra, chave) {
     <div class="modal-vertodas-corpo">
       <div class="modal-vertodas-count" id="modal-vertodas-count"></div>
       <div class="modal-vertodas-grid" id="modal-vertodas-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-vertodas-overlay" id="modal-sugestao-overlay">
+  <div class="modal-vertodas" style="max-width:520px;">
+    <div class="modal-vertodas-header">
+      <span class="modal-vertodas-titulo" id="sugestao-titulo">Mande uma palavra nova</span>
+      <button class="modal-vertodas-fechar" id="sugestao-fechar">✕</button>
+    </div>
+    <div class="modal-vertodas-corpo">
+      <p style="font-size:.78rem;color:rgba(224,232,255,.4);margin-bottom:16px;line-height:1.5;">Sua sugestão passa por uma revisão rápida antes de aparecer no site ✦</p>
+      <div class="sugestao-campo">
+        <label>Seu nome (ou apelido)</label>
+        <input type="text" id="sugestao-nome" placeholder="ex: Cris" maxlength="60">
+      </div>
+      <div id="sugestao-categorias"></div>
+      <div class="sugestao-campo">
+        <label>Palavra / nome</label>
+        <div class="sugestao-add-row">
+          <input type="text" id="sugestao-palavra-input" placeholder="digite e aperte Enter" maxlength="80">
+          <button class="sugestao-add-btn" id="sugestao-add-btn" type="button">+</button>
+        </div>
+      </div>
+      <div class="sugestao-palavras-lista" id="sugestao-lista-palavras"></div>
+      <button class="sugestao-enviar-btn" id="sugestao-enviar-btn" type="button">Enviar todas</button>
     </div>
   </div>
 </div>
