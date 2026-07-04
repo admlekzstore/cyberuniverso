@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   carregarUnivSubtipos();
   carregarNcCats();
   carregarPopAbas();
-  carregarRegras();
+  await carregarRegras();
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -507,6 +507,37 @@ function setupEventListeners() {
   setupModalVerTodas();
 }
 
+// ── NOVO MOTOR DE BUSCA DE CHAVES ──
+// Ordem: 1) palavra já catalogada (usa todas as chaves dela)
+//        2) terminação literal (3→2→1 letras) batendo com alguma chave já cadastrada,
+//           usando o "grupo fonético" completo da palavra-referência encontrada
+//        3) fallback: regras/exceções fonéticas cadastradas no admin
+async function obterChavesBusca(palavra) {
+  // 1. A palavra já está catalogada (rima cadastrada OU gíria com tag rima-com-X)?
+  var ownRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavra).eq('ativo', true);
+  var ownChaves = Array.from(new Set((ownRes.data || []).map(function(r) { return r.chave; })));
+  if (ownChaves.length > 0) return ownChaves;
+
+  // 2. Terminação literal — tenta 3, depois 2, depois 1 letra (nunca soma tamanhos diferentes)
+  var tamanhos = [3, 2, 1].filter(function(t) { return t <= palavra.length; });
+  for (var i = 0; i < tamanhos.length; i++) {
+    var sufixo = palavra.slice(-tamanhos[i]);
+    var matchRes = await sb.from('rimas_variacoes').select('palavra').eq('chave', sufixo).eq('ativo', true).limit(1);
+    if (matchRes.data && matchRes.data.length > 0) {
+      var palavraRef = matchRes.data[0].palavra;
+      var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
+      var grupoChaves = Array.from(new Set((grupoRes.data || []).map(function(r) { return r.chave; })));
+      if (grupoChaves.length > 0) return grupoChaves;
+    }
+  }
+
+  // 3. Último recurso: regras/exceções fonéticas cadastradas manualmente
+  var chavesRegras = chavesParaBusca(palavra);
+  if (chavesRegras.length > 0) return chavesRegras;
+
+  return [];
+}
+
 async function buscar(palavra, semPush) {
   palavraAtual = palavra.toLowerCase().trim();
   if (!semPush) window.history.pushState({}, '', '/rimas.html?p=' + encodeURIComponent(palavraAtual));
@@ -522,10 +553,7 @@ async function buscar(palavra, semPush) {
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('chaves-usadas').innerHTML = '';
 
-  var refRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraAtual).eq('ativo', true);
-  var chavesBanco = (refRes.data || []).map(function(r) { return r.chave; });
-  var chavesLocais = chavesParaBusca(palavraAtual);
-  var todasChaves = Array.from(new Set(chavesBanco.concat(chavesLocais)));
+  var todasChaves = await obterChavesBusca(palavraAtual);
   chavesAtuais = todasChaves;
 
   if (todasChaves.length > 0) {
