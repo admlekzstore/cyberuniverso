@@ -347,6 +347,7 @@
 var sb = window._supabase;
 var palavraAtual = '';
 var chavesAtuais = [];
+var buscaToken = 0;
 var todasGirias = [];
 var todasPalavras = [];
 var dicCatSelecionada = null;
@@ -516,7 +517,10 @@ async function obterChavesBusca(palavra) {
   // 1. A palavra já está catalogada (rima cadastrada OU gíria com tag rima-com-X)?
   var ownRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavra).eq('ativo', true);
   var ownChaves = Array.from(new Set((ownRes.data || []).map(function(r) { return r.chave; })));
-  if (ownChaves.length > 0) return ownChaves;
+  if (ownChaves.length > 0) {
+    console.log('[rimas-debug] "' + palavra + '" → camada 1 (catalogada). Chaves:', ownChaves);
+    return ownChaves;
+  }
 
   // 2. Terminação literal — tenta 3, depois 2, depois 1 letra (nunca soma tamanhos diferentes)
   var tamanhos = [3, 2, 1].filter(function(t) { return t <= palavra.length; });
@@ -527,24 +531,33 @@ async function obterChavesBusca(palavra) {
       var palavraRef = matchRes.data[0].palavra;
       var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
       var grupoChaves = Array.from(new Set((grupoRes.data || []).map(function(r) { return r.chave; })));
-      if (grupoChaves.length > 0) return grupoChaves;
+      if (grupoChaves.length > 0) {
+        console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", via palavra-referência "' + palavraRef + '"). Chaves:', grupoChaves);
+        return grupoChaves;
+      }
     }
   }
 
   // 3. Último recurso: regras/exceções fonéticas cadastradas manualmente
   var chavesRegras = chavesParaBusca(palavra);
-  if (chavesRegras.length > 0) return chavesRegras;
+  if (chavesRegras.length > 0) {
+    console.log('[rimas-debug] "' + palavra + '" → camada 3 (regras/exceções fonéticas). Chaves:', chavesRegras);
+    return chavesRegras;
+  }
 
+  console.log('[rimas-debug] "' + palavra + '" → nenhuma camada encontrou nada.');
   return [];
 }
 
 async function buscar(palavra, semPush) {
+  var meuToken = ++buscaToken;
   palavraAtual = palavra.toLowerCase().trim();
-  if (!semPush) window.history.pushState({}, '', '/rimas.html?p=' + encodeURIComponent(palavraAtual));
-  document.getElementById('page-title').textContent = 'O que rima com ' + palavraAtual + '? — CyberUniverso';
-  document.getElementById('hero-palavra').textContent = palavraAtual + '?';
+  var minhaPalavra = palavraAtual;
+  if (!semPush) window.history.pushState({}, '', '/rimas.html?p=' + encodeURIComponent(minhaPalavra));
+  document.getElementById('page-title').textContent = 'O que rima com ' + minhaPalavra + '? — CyberUniverso';
+  document.getElementById('hero-palavra').textContent = minhaPalavra + '?';
   document.getElementById('resultados').classList.add('ativo');
-  document.getElementById('res-palavra').textContent = palavraAtual;
+  document.getElementById('res-palavra').textContent = minhaPalavra;
   dicCatSelecionada = null;
   ncCatsSelecionadas = new Set();
   document.getElementById('girias-grid').innerHTML = '<div class="vazio">Buscando...</div>';
@@ -553,7 +566,8 @@ async function buscar(palavra, semPush) {
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('chaves-usadas').innerHTML = '';
 
-  var todasChaves = await obterChavesBusca(palavraAtual);
+  var todasChaves = await obterChavesBusca(minhaPalavra);
+  if (meuToken !== buscaToken) return; // já tem uma busca mais nova rodando, descarta essa
   chavesAtuais = todasChaves;
 
   if (todasChaves.length > 0) {
@@ -570,15 +584,20 @@ async function buscar(palavra, semPush) {
     return;
   }
 
-  await Promise.all([buscarResultados(todasChaves), buscarPop(todasChaves), buscarUniversos(todasChaves)]);
-  registrarBusca(palavraAtual, todasChaves.join(','));
+  await Promise.all([
+    buscarResultados(todasChaves, minhaPalavra, meuToken),
+    buscarPop(todasChaves, minhaPalavra, meuToken),
+    buscarUniversos(todasChaves, minhaPalavra, meuToken)
+  ]);
+  if (meuToken !== buscaToken) return;
+  registrarBusca(minhaPalavra, todasChaves.join(','));
 }
 
-async function buscarResultados(chaves) {
+async function buscarResultados(chaves, minhaPalavra, meuToken) {
   var varRes = await sb.from('rimas_variacoes')
     .select('palavra, tipo, ref_id, chave, relevancia, votos_total, categoria')
     .in('chave', chaves)
-    .neq('palavra', palavraAtual)
+    .neq('palavra', minhaPalavra)
     .eq('ativo', true)
     .order('relevancia', { ascending: false })
     .order('votos_total', { ascending: false })
@@ -654,6 +673,8 @@ async function buscarResultados(chaves) {
       });
     }
   }
+
+  if (meuToken !== buscaToken) return; // resultado de uma busca antiga, descarta
 
   todasGirias = girias;
   todasPalavras = palavrasDic;
@@ -905,17 +926,19 @@ async function carregarUnivSubtipos() {
   });
 }
 
-async function buscarUniversos(chaves) {
+async function buscarUniversos(chaves, minhaPalavra, meuToken) {
   var res = await sb.from('rimas_variacoes')
     .select('palavra, ref_id')
     .in('chave', chaves)
     .eq('tipo', 'universo')
-    .neq('palavra', palavraAtual)
+    .neq('palavra', minhaPalavra)
     .eq('ativo', true)
     .limit(100);
   var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
+  if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosUnivItens = []; renderUniversos(); return; }
   var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
+  if (meuToken !== buscaToken) return;
   todosUnivItens = popRes.data || [];
   renderUniversos();
 }
@@ -956,11 +979,13 @@ async function carregarPopAbas() {
   });
 }
 
-async function buscarPop(chaves) {
-  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', palavraAtual).eq('ativo', true).limit(100);
+async function buscarPop(chaves, minhaPalavra, meuToken) {
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', minhaPalavra).eq('ativo', true).limit(100);
   var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
+  if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
   var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
+  if (meuToken !== buscaToken) return;
   todosPopItens = popRes.data || [];
   renderPop();
 }
