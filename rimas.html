@@ -41,6 +41,8 @@
     .resultado-titulo span { color:var(--amarelo); }
     .resultado-count { font-size:.85rem; color:rgba(224,232,255,.45); }
     .chaves-usadas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .propria-match-card { display:inline-flex; align-items:center; gap:8px; background:rgba(245,232,0,.08); border:1px solid rgba(245,232,0,.3); border-radius:10px; padding:8px 16px; font-size:.85rem; color:var(--amarelo); text-decoration:none; transition:all .15s; }
+    .propria-match-card:hover { background:rgba(245,232,0,.16); border-color:var(--amarelo); }
     .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; }
     .chave-ia { background:rgba(155,77,255,.12); border-color:rgba(155,77,255,.35); color:#b380ff; }
     .secao { margin-bottom:48px; }
@@ -204,6 +206,7 @@
     <div>
       <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
       <div class="chaves-usadas" id="chaves-usadas"></div>
+      <div id="propria-palavra-match" style="display:none;margin-top:10px;"></div>
     </div>
     <span class="resultado-count" id="res-count"></span>
   </div>
@@ -573,7 +576,14 @@ async function obterChavesBusca(palavra) {
     if (matchRes.data && matchRes.data.length > 0) {
       var palavraRef = matchRes.data[0].palavra;
       var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
-      var grupoChaves = Array.from(new Set((grupoRes.data || []).map(function(r) { return r.chave; })));
+      // Mantém só chaves do mesmo tamanho da terminação buscada — evita herdar
+      // outras chaves da palavra-referência que representem um padrão de rima diferente
+      // (ex: "solar" tem "olar", "olá" e "ar" cadastradas — só "olá" serve pra terminação de 3 letras)
+      var grupoChaves = Array.from(new Set(
+        (grupoRes.data || [])
+          .map(function(r) { return r.chave; })
+          .filter(function(c) { return c.length === sufixo.length; })
+      ));
       if (grupoChaves.length > 0) {
         console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", via palavra-referência "' + palavraRef + '"). Chaves:', grupoChaves);
         return grupoChaves;
@@ -592,6 +602,16 @@ async function obterChavesBusca(palavra) {
   return [];
 }
 
+async function buscarPalavraPropria(palavra, meuToken) {
+  var el = document.getElementById('propria-palavra-match');
+  var res = await sb.from('palavras').select('termo, slug').eq('status', 'aprovada').ilike('termo', escapeIlike(palavra)).limit(1);
+  if (meuToken !== buscaToken) return;
+  if (res.error || !res.data || res.data.length === 0) { el.style.display = 'none'; return; }
+  var p = res.data[0];
+  el.innerHTML = '<a class="propria-match-card" href="/palavra.html?w=' + encodeURIComponent(p.slug || p.termo) + '">🔎 "' + p.termo + '" já existe no dicionário — clique pra ver o significado</a>';
+  el.style.display = 'block';
+}
+
 async function buscar(palavra, semPush) {
   var meuToken = ++buscaToken;
   palavraAtual = palavra.toLowerCase().trim();
@@ -608,6 +628,8 @@ async function buscar(palavra, semPush) {
   document.getElementById('nc-grid').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('chaves-usadas').innerHTML = '';
+  document.getElementById('propria-palavra-match').style.display = 'none';
+  buscarPalavraPropria(minhaPalavra, meuToken);
 
   var todasChaves = await obterChavesBusca(minhaPalavra);
   if (meuToken !== buscaToken) return; // já tem uma busca mais nova rodando, descarta essa
@@ -640,13 +662,13 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   var varRes = await sb.from('rimas_variacoes')
     .select('palavra, tipo, ref_id, chave, relevancia, votos_total, categoria')
     .in('chave', chaves)
-    .not('palavra', 'ilike', escapeIlike(minhaPalavra))
     .eq('ativo', true)
     .order('relevancia', { ascending: false })
     .order('votos_total', { ascending: false })
     .limit(500);
 
   var varData = varRes.data || [];
+  console.log('[rimas-debug] buscarResultados("' + minhaPalavra + '") — chaves usadas:', chaves, '| linhas retornadas:', varData.length, varData);
 
   // Agrupar por palavra+tipo, mantendo maior relevância
   var map = {};
@@ -974,7 +996,6 @@ async function buscarUniversos(chaves, minhaPalavra, meuToken) {
     .select('palavra, ref_id')
     .in('chave', chaves)
     .eq('tipo', 'universo')
-    .not('palavra', 'ilike', escapeIlike(minhaPalavra))
     .eq('ativo', true)
     .limit(100);
   var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
@@ -1023,7 +1044,7 @@ async function carregarPopAbas() {
 }
 
 async function buscarPop(chaves, minhaPalavra, meuToken) {
-  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').not('palavra', 'ilike', escapeIlike(minhaPalavra)).eq('ativo', true).limit(100);
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').eq('ativo', true).limit(100);
   var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
   if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
