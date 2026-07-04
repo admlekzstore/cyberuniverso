@@ -513,9 +513,16 @@ function setupEventListeners() {
 //        2) terminação literal (3→2→1 letras) batendo com alguma chave já cadastrada,
 //           usando o "grupo fonético" completo da palavra-referência encontrada
 //        3) fallback: regras/exceções fonéticas cadastradas no admin
+function escapeIlike(s) {
+  return s.replace(/[%_\\]/g, '\\$&');
+}
+
 async function obterChavesBusca(palavra) {
+  var palavraEsc = escapeIlike(palavra);
+
   // 1. A palavra já está catalogada (rima cadastrada OU gíria com tag rima-com-X)?
-  var ownRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavra).eq('ativo', true);
+  // ilike sem coringas = igualdade ignorando maiúsculas/minúsculas (Cultura Pop/Universo salvam "Nome Próprio")
+  var ownRes = await sb.from('rimas_variacoes').select('chave').ilike('palavra', palavraEsc).eq('ativo', true);
   var ownChaves = Array.from(new Set((ownRes.data || []).map(function(r) { return r.chave; })));
   if (ownChaves.length > 0) {
     console.log('[rimas-debug] "' + palavra + '" → camada 1 (catalogada). Chaves:', ownChaves);
@@ -526,7 +533,14 @@ async function obterChavesBusca(palavra) {
   var tamanhos = [3, 2, 1].filter(function(t) { return t <= palavra.length; });
   for (var i = 0; i < tamanhos.length; i++) {
     var sufixo = palavra.slice(-tamanhos[i]);
-    var matchRes = await sb.from('rimas_variacoes').select('palavra').eq('chave', sufixo).eq('ativo', true).limit(1);
+    // Se houver mais de uma palavra cadastrada com essa terminação, prioriza a de maior relevância/votos
+    var matchRes = await sb.from('rimas_variacoes')
+      .select('palavra, relevancia, votos_total')
+      .eq('chave', sufixo)
+      .eq('ativo', true)
+      .order('relevancia', { ascending: false })
+      .order('votos_total', { ascending: false })
+      .limit(1);
     if (matchRes.data && matchRes.data.length > 0) {
       var palavraRef = matchRes.data[0].palavra;
       var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
@@ -597,7 +611,7 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   var varRes = await sb.from('rimas_variacoes')
     .select('palavra, tipo, ref_id, chave, relevancia, votos_total, categoria')
     .in('chave', chaves)
-    .neq('palavra', minhaPalavra)
+    .not('palavra', 'ilike', escapeIlike(minhaPalavra))
     .eq('ativo', true)
     .order('relevancia', { ascending: false })
     .order('votos_total', { ascending: false })
@@ -931,7 +945,7 @@ async function buscarUniversos(chaves, minhaPalavra, meuToken) {
     .select('palavra, ref_id')
     .in('chave', chaves)
     .eq('tipo', 'universo')
-    .neq('palavra', minhaPalavra)
+    .not('palavra', 'ilike', escapeIlike(minhaPalavra))
     .eq('ativo', true)
     .limit(100);
   var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
@@ -980,7 +994,7 @@ async function carregarPopAbas() {
 }
 
 async function buscarPop(chaves, minhaPalavra, meuToken) {
-  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').neq('palavra', minhaPalavra).eq('ativo', true).limit(100);
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').not('palavra', 'ilike', escapeIlike(minhaPalavra)).eq('ativo', true).limit(100);
   var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
   if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
