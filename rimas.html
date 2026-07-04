@@ -510,11 +510,33 @@ function setupEventListeners() {
 
 // ── NOVO MOTOR DE BUSCA DE CHAVES ──
 // Ordem: 1) palavra já catalogada (usa todas as chaves dela)
-//        2) terminação literal (3→2→1 letras) batendo com alguma chave já cadastrada,
-//           usando o "grupo fonético" completo da palavra-referência encontrada
+//        2) terminação literal (3→2 letras, testando variações de acento nas vogais)
+//           batendo com alguma chave já cadastrada, usando o "grupo fonético"
+//           completo da palavra-referência encontrada
 //        3) fallback: regras/exceções fonéticas cadastradas no admin
 function escapeIlike(s) {
   return s.replace(/[%_\\]/g, '\\$&');
+}
+
+var VARIANTES_ACENTO = {
+  a: ['a', 'á', 'à', 'â', 'ã'],
+  e: ['e', 'é', 'ê'],
+  i: ['i', 'í'],
+  o: ['o', 'ó', 'ô', 'õ'],
+  u: ['u', 'ú']
+};
+
+function gerarVariantesAcento(sufixo) {
+  var resultado = [''];
+  sufixo.split('').forEach(function(ch) {
+    var opcoes = VARIANTES_ACENTO[ch] || [ch];
+    var novo = [];
+    resultado.forEach(function(prefixo) {
+      opcoes.forEach(function(op) { novo.push(prefixo + op); });
+    });
+    resultado = novo;
+  });
+  return resultado;
 }
 
 async function obterChavesBusca(palavra) {
@@ -523,27 +545,31 @@ async function obterChavesBusca(palavra) {
   // 1. A palavra já está catalogada (rima cadastrada OU gíria com tag rima-com-X)?
   // ilike sem coringas = igualdade ignorando maiúsculas/minúsculas (Cultura Pop/Universo salvam "Nome Próprio")
   var ownRes = await sb.from('rimas_variacoes').select('chave').ilike('palavra', palavraEsc).eq('ativo', true);
+  if (ownRes.error) console.error('[rimas-debug] erro na camada 1 pra "' + palavra + '":', ownRes.error);
   var ownChaves = Array.from(new Set((ownRes.data || []).map(function(r) { return r.chave; })));
   if (ownChaves.length > 0) {
     console.log('[rimas-debug] "' + palavra + '" → camada 1 (catalogada). Chaves:', ownChaves);
     return ownChaves;
   }
+  console.log('[rimas-debug] "' + palavra + '" → camada 1 não achou nada (' + (ownRes.data ? ownRes.data.length : 'erro') + ' linhas).');
 
-  // 2. Terminação literal — tenta 3, depois 2, depois 1 letra (nunca soma tamanhos diferentes)
+  // 2. Terminação literal — tenta 3, depois 2 letras, testando variações de acento nas vogais
   var tamanhos;
   if (palavra.length >= 3) tamanhos = [3, 2];
   else if (palavra.length === 2) tamanhos = [2];
   else tamanhos = [1];
   for (var i = 0; i < tamanhos.length; i++) {
     var sufixo = palavra.slice(-tamanhos[i]);
+    var variantes = gerarVariantesAcento(sufixo);
     // Se houver mais de uma palavra cadastrada com essa terminação, prioriza a de maior relevância/votos
     var matchRes = await sb.from('rimas_variacoes')
-      .select('palavra, relevancia, votos_total')
-      .eq('chave', sufixo)
+      .select('palavra, chave, relevancia, votos_total')
+      .in('chave', variantes)
       .eq('ativo', true)
       .order('relevancia', { ascending: false })
       .order('votos_total', { ascending: false })
       .limit(1);
+    if (matchRes.error) console.error('[rimas-debug] erro na camada 2 (terminação "' + sufixo + '") pra "' + palavra + '":', matchRes.error);
     if (matchRes.data && matchRes.data.length > 0) {
       var palavraRef = matchRes.data[0].palavra;
       var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
