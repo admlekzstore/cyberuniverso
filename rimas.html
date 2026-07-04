@@ -530,7 +530,10 @@ async function obterChavesBusca(palavra) {
   }
 
   // 2. Terminação literal — tenta 3, depois 2, depois 1 letra (nunca soma tamanhos diferentes)
-  var tamanhos = [3, 2, 1].filter(function(t) { return t <= palavra.length; });
+  var tamanhos;
+  if (palavra.length >= 3) tamanhos = [3, 2];
+  else if (palavra.length === 2) tamanhos = [2];
+  else tamanhos = [1];
   for (var i = 0; i < tamanhos.length; i++) {
     var sufixo = palavra.slice(-tamanhos[i]);
     // Se houver mais de uma palavra cadastrada com essa terminação, prioriza a de maior relevância/votos
