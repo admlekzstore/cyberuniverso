@@ -317,6 +317,45 @@
         <div id="sync-tags-msg" style="padding:0 16px 16px;font-size:13px;font-weight:700;"></div>
       </div>
 
+      <!-- CATEGORIAS DO DICIONÁRIO -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">📖 CATEGORIAS DO DICIONÁRIO</div>
+          <button class="btn-mini btn-editar" onclick="document.getElementById('modal-nova-dic-cat').classList.add('aberto')">➕ Nova Categoria</button>
+        </div>
+        <div id="dic-cats-lista" style="padding:16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="color:#4a6fa5;font-size:13px;">Carregando...</span>
+        </div>
+      </div>
+
+      <!-- CATEGORIZAR PALAVRAS DO DICIONÁRIO -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">🏷️ CATEGORIZAR PALAVRAS DO DICIONÁRIO</div>
+        </div>
+        <div style="padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="dic-palavras-busca" class="busca-tabela" placeholder="Buscar palavra..." style="flex:1;min-width:160px;" oninput="renderDicPalavrasTabela()">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#4a6fa5;cursor:pointer;">
+            <input type="checkbox" id="dic-filtro-sem-cat" onchange="renderDicPalavrasTabela()"> só sem categoria
+          </label>
+        </div>
+        <div style="padding:0 16px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="dic-bulk-categoria" class="busca-tabela" style="width:auto;"></select>
+          <button class="btn-mini btn-aprovar" onclick="aplicarCategoriaEmMassa()">📌 Aplicar à seleção</button>
+          <span id="dic-selecao-count" style="font-size:12px;color:#4a6fa5;"></span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tabela-admin">
+            <thead><tr>
+              <th style="width:36px;"><input type="checkbox" id="dic-select-all" onchange="toggleSelecionarTodasDic(this.checked)"></th>
+              <th>Palavra</th>
+              <th>Categoria</th>
+            </tr></thead>
+            <tbody id="tbody-dic-palavras"><tr><td colspan="3" class="vazio-msg">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- SUGESTÕES DA GALERA -->
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
@@ -608,6 +647,8 @@ async function carregarTudo() {
     carregarUniversos(),
     carregarRegrasFoneticas(),
     carregarSugestoes(),
+    carregarDicCategorias(),
+    carregarDicPalavras(),
   ])
 }
 
@@ -1517,6 +1558,151 @@ async function removerExcecao(id, palavra) {
   renderExcecoes(document.getElementById('excecoes-busca').value)
 }
 
+// ── CATEGORIAS DO DICIONÁRIO ──
+let dicCategoriasCache = []
+let dicPalavrasCache = []
+let dicSelecionadas = new Set()
+
+async function carregarDicCategorias() {
+  const { data } = await sb.from('rimas_dic_categorias').select('*').eq('ativo', true).order('nome')
+  dicCategoriasCache = data || []
+  renderDicCatsLista()
+  renderDicBulkSelect()
+  return data
+}
+
+function renderDicCatsLista() {
+  const el = document.getElementById('dic-cats-lista')
+  if (!el) return
+  if (!dicCategoriasCache.length) {
+    el.innerHTML = '<span style="color:#4a6fa5;font-size:13px;">Nenhuma categoria ainda.</span>'
+    return
+  }
+  el.innerHTML = dicCategoriasCache.map(c => `
+    <div style="background:rgba(245,232,0,0.06);border:1px solid rgba(245,232,0,0.2);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">${c.emoji || '🏷️'}</span>
+      <span style="font-family:'Fredoka One',cursive;color:#f5e800;">${c.nome}</span>
+      <span style="font-size:11px;color:#4a6fa5;">${c.slug}</span>
+      <button class="btn-mini btn-excluir" style="margin-left:auto;" onclick="removerDicCategoria('${c.id}','${c.nome}')">🗑️</button>
+    </div>`).join('')
+}
+
+function renderDicBulkSelect() {
+  const el = document.getElementById('dic-bulk-categoria')
+  if (!el) return
+  el.innerHTML = '<option value="">— Geral —</option>' + dicCategoriasCache.map(c => `<option value="${c.slug}">${c.emoji || ''} ${c.nome}</option>`).join('')
+}
+
+async function salvarDicCategoria() {
+  const nome  = document.getElementById('dic-cat-nome').value.trim()
+  const slug  = document.getElementById('dic-cat-slug').value.trim().toLowerCase().replace(/\s+/g, '-')
+  const emoji = document.getElementById('dic-cat-emoji').value.trim()
+  const desc  = document.getElementById('dic-cat-desc').value.trim()
+  if (!nome || !slug) { mostrarToast('⚠️ Nome e slug são obrigatórios', 'erro'); return }
+  const { error } = await sb.from('rimas_dic_categorias').insert({ nome, slug, emoji, descricao: desc, ativo: true })
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('✅ Categoria criada!', 'sucesso')
+  document.getElementById('modal-nova-dic-cat').classList.remove('aberto')
+  document.getElementById('dic-cat-nome').value = ''
+  document.getElementById('dic-cat-slug').value = ''
+  document.getElementById('dic-cat-emoji').value = ''
+  document.getElementById('dic-cat-desc').value = ''
+  await carregarDicCategorias()
+  renderDicPalavrasTabela()
+}
+
+async function removerDicCategoria(id, nome) {
+  if (!confirm(`Remover categoria "${nome}"? As palavras que estavam nela não são apagadas — só voltam a ficar sem categoria (Geral).`)) return
+  const { error } = await sb.from('rimas_dic_categorias').update({ ativo: false }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  mostrarToast('🗑️ Categoria removida', 'sucesso')
+  await carregarDicCategorias()
+}
+
+// ── CATEGORIZAR PALAVRAS DO DICIONÁRIO ──
+async function carregarDicPalavras() {
+  const { data, error } = await sb.from('rimas_palavras')
+    .select('id, palavra, categoria')
+    .eq('fonte', 'manual')
+    .eq('ativo', true)
+    .order('palavra')
+    .limit(3000)
+  if (error) { console.error(error); return }
+  dicPalavrasCache = data || []
+  renderDicPalavrasTabela()
+}
+
+function renderDicPalavrasTabela() {
+  const tbody = document.getElementById('tbody-dic-palavras')
+  if (!tbody) return
+  const buscaEl = document.getElementById('dic-palavras-busca')
+  const semCatEl = document.getElementById('dic-filtro-sem-cat')
+  const q = (buscaEl ? buscaEl.value : '').toLowerCase().trim()
+  const soSemCat = semCatEl ? semCatEl.checked : false
+  let lista = dicPalavrasCache
+  if (q) lista = lista.filter(p => p.palavra.toLowerCase().includes(q))
+  if (soSemCat) lista = lista.filter(p => !p.categoria)
+  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="3" class="vazio-msg">Nenhuma palavra encontrada.</td></tr>'; return }
+  const mostrar = lista.slice(0, 300)
+  let html = mostrar.map(p => `
+    <tr>
+      <td><input type="checkbox" class="dic-check" data-id="${p.id}" ${dicSelecionadas.has(p.id) ? 'checked' : ''} onchange="toggleSelecaoDic('${p.id}', this.checked)"></td>
+      <td style="font-family:'Fredoka One',cursive;color:#e0e8ff;">${p.palavra}</td>
+      <td>
+        <select onchange="mudarCategoriaDic('${p.id}', this.value)" style="background:#0a1628;color:#e0e8ff;border:1px solid #1a3a6e;border-radius:6px;padding:4px 8px;">
+          <option value="">— Geral —</option>
+          ${dicCategoriasCache.map(c => `<option value="${c.slug}" ${p.categoria === c.slug ? 'selected' : ''}>${c.emoji || ''} ${c.nome}</option>`).join('')}
+        </select>
+      </td>
+    </tr>`).join('')
+  if (lista.length > 300) {
+    html += `<tr><td colspan="3" style="text-align:center;color:#4a6fa5;font-size:12px;padding:10px;">Mostrando 300 de ${lista.length} — refine a busca pra ver mais.</td></tr>`
+  }
+  tbody.innerHTML = html
+  atualizarContagemSelecaoDic()
+}
+
+function toggleSelecaoDic(id, marcado) {
+  if (marcado) dicSelecionadas.add(id); else dicSelecionadas.delete(id)
+  atualizarContagemSelecaoDic()
+}
+
+function toggleSelecionarTodasDic(marcado) {
+  document.querySelectorAll('.dic-check').forEach(chk => {
+    chk.checked = marcado
+    if (marcado) dicSelecionadas.add(chk.dataset.id); else dicSelecionadas.delete(chk.dataset.id)
+  })
+  atualizarContagemSelecaoDic()
+}
+
+function atualizarContagemSelecaoDic() {
+  const countEl = document.getElementById('dic-selecao-count')
+  if (countEl) countEl.textContent = dicSelecionadas.size ? `${dicSelecionadas.size} selecionada(s)` : ''
+}
+
+async function mudarCategoriaDic(id, categoria) {
+  const { error } = await sb.from('rimas_palavras').update({ categoria: categoria || null }).eq('id', id)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  const item = dicPalavrasCache.find(p => p.id === id)
+  if (item) item.categoria = categoria || null
+  mostrarToast('✅ Categoria atualizada', 'sucesso')
+}
+
+async function aplicarCategoriaEmMassa() {
+  const categoria = document.getElementById('dic-bulk-categoria').value
+  if (!dicSelecionadas.size) { mostrarToast('⚠️ Selecione ao menos uma palavra', 'erro'); return }
+  const ids = Array.from(dicSelecionadas)
+  const { error } = await sb.from('rimas_palavras').update({ categoria: categoria || null }).in('id', ids)
+  if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
+  ids.forEach(id => {
+    const item = dicPalavrasCache.find(p => p.id === id)
+    if (item) item.categoria = categoria || null
+  })
+  mostrarToast(`✅ Categoria aplicada a ${ids.length} palavra(s)!`, 'sucesso')
+  dicSelecionadas.clear()
+  renderDicPalavrasTabela()
+}
+
 // ── SINCRONIZAR TAGS DE RIMA ──
 async function sincronizarTagsRima() {
   const msg = document.getElementById('sync-tags-msg')
@@ -2166,6 +2352,25 @@ init()
     <div class="modal-footer">
       <button class="btn-cancelar" onclick="document.getElementById('modal-nova-nc-cat').classList.remove('aberto')">CANCELAR</button>
       <button class="btn-salvar" onclick="salvarNcCategoria()">SALVAR ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-nova-dic-cat">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-titulo">📖 NOVA CATEGORIA DO DICIONÁRIO</div>
+      <button class="modal-fechar" onclick="document.getElementById('modal-nova-dic-cat').classList.remove('aberto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-campo"><label>Emoji</label><input type="text" id="dic-cat-emoji" placeholder="ex: 🎮" maxlength="2"></div>
+      <div class="modal-campo"><label>Nome</label><input type="text" id="dic-cat-nome" placeholder="ex: Internet"></div>
+      <div class="modal-campo"><label>Slug (identificador único, sem espaços)</label><input type="text" id="dic-cat-slug" placeholder="ex: internet"></div>
+      <div class="modal-campo"><label>Descrição (opcional)</label><input type="text" id="dic-cat-desc" placeholder="ex: gírias e termos de internet"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" onclick="document.getElementById('modal-nova-dic-cat').classList.remove('aberto')">CANCELAR</button>
+      <button class="btn-salvar" onclick="salvarDicCategoria()">SALVAR ✓</button>
     </div>
   </div>
 </div>

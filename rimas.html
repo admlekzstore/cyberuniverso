@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   carregarUnivSubtipos();
   carregarNcCats();
   carregarPopAbas();
-  await carregarRegras();
+  await Promise.all([carregarDicCategoriasPublico(), carregarRegras()]);
 
   var path = window.location.pathname;
   var match = path.match(/\/rimas\/(.+)/);
@@ -824,15 +824,17 @@ function renderGirias() {
   }).join('');
 }
 
-// mapa de nome amigável pras categorias do dicionário
-var dicCatNomes = {
-  relacionamento: '💛 Relacionamento', dinheiro: '💰 Dinheiro',
-  desenvolvimento: '🚀 Desenvolvimento', festa: '🎉 Festa',
-  musica: '🎵 Música', espiritualidade: '✨ Espiritualidade',
-  corpo: '💪 Corpo', tempo_lugar: '🗺️ Tempo & Lugar',
-  conflito: '⚔️ Conflito', natureza: '🌿 Natureza',
-  acao: '⚡ Ação', geral: '📝 Geral'
-};
+// mapa de nome amigável pras categorias do dicionário — carregado de rimas_dic_categorias
+var dicCatNomes = {};
+
+async function carregarDicCategoriasPublico() {
+  var res = await sb.from('rimas_dic_categorias').select('slug, nome, emoji').eq('ativo', true);
+  var mapa = {};
+  (res.data || []).forEach(function(c) {
+    mapa[c.slug] = (c.emoji ? c.emoji + ' ' : '') + c.nome;
+  });
+  dicCatNomes = mapa;
+}
 
 function renderDicPills() {
   var pillsEl = document.getElementById('dic-cats-pills');
