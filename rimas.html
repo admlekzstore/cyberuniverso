@@ -521,6 +521,16 @@ function escapeIlike(s) {
   return s.replace(/[%_\\]/g, '\\$&');
 }
 
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 var VARIANTES_ACENTO = {
   a: ['a', 'á', 'à', 'â', 'ã'],
   e: ['e', 'é', 'ê'],
@@ -608,7 +618,7 @@ async function buscarPalavraPropria(palavra, meuToken) {
   if (meuToken !== buscaToken) return;
   if (res.error || !res.data || res.data.length === 0) { el.style.display = 'none'; return; }
   var p = res.data[0];
-  el.innerHTML = '<a class="propria-match-card" href="/palavra.html?w=' + encodeURIComponent(p.slug || p.termo) + '">🔎 "' + p.termo + '" já existe no dicionário — clique pra ver o significado</a>';
+  el.innerHTML = '<a class="propria-match-card" href="/palavra.html?w=' + encodeURIComponent(p.slug || p.termo) + '">🔎 "' + escapeHtml(p.termo) + '" já existe no dicionário — clique pra ver o significado</a>';
   el.style.display = 'block';
 }
 
@@ -818,8 +828,8 @@ function renderGirias() {
     var jaVotou = votosFeitos[votoKey];
     return '<div style="position:relative">' +
       '<a class="card-giria" href="/palavra.html?w='+encodeURIComponent(g.slug||g.palavra)+'">' +
-      '<div class="card-giria-nome">'+g.palavra+'</div></a>' +
-      '<button class="btn-voto'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+g.palavra+'\',\'giria\',\''+g.ref_id+'\')" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>' +
+      '<div class="card-giria-nome">'+escapeHtml(g.palavra)+'</div></a>' +
+      '<button class="btn-voto'+(jaVotou?' votado':'')+'" data-palavra="'+escapeHtml(g.palavra)+'" data-ref="'+escapeHtml(g.ref_id)+'" onclick="votar(event,this.dataset.palavra,\'giria\',this.dataset.ref)" title="Bombar esta palavra">⚡<span class="voto-count">'+(g.votos||0)+'</span></button>' +
       '</div>';
   }).join('');
 }
@@ -895,9 +905,9 @@ function renderPalavras() {
   lista.innerHTML = palavras.map(function(p) {
     var votoKey = p.palavra + '|dicionario';
     var jaVotou = votosFeitos[votoKey];
-    return '<span class="tag-palavra">' + p.palavra +
+    return '<span class="tag-palavra">' + escapeHtml(p.palavra) +
       (p.num_silabas ? '<span class="sil">'+p.num_silabas+'sil</span>' : '') +
-      '<button class="btn-voto-dic'+(jaVotou?' votado':'')+'" onclick="votar(event,\''+p.palavra+'\',\'dicionario\',\''+p.ref_id+'\')" title="Bombar">⚡</button>' +
+      '<button class="btn-voto-dic'+(jaVotou?' votado':'')+'" data-palavra="'+escapeHtml(p.palavra)+'" data-ref="'+escapeHtml(p.ref_id)+'" onclick="votar(event,this.dataset.palavra,\'dicionario\',this.dataset.ref)" title="Bombar">⚡</button>' +
       '</span>';
   }).join('');
 }
@@ -968,8 +978,8 @@ function renderNC() {
       });
       catBadges = '<span style="font-size:.65rem;color:rgba(245,232,0,.45);margin-left:4px;">' + nomes.join(' · ') + '</span>';
     }
-    return '<span class="tag-nc">' + item.palavra + catBadges +
-      '<button class="btn-pedir-sig' + (jaPediu ? ' pedido' : '') + '" onclick="pedirSignificado(\'' + item.palavra + '\',\'' + item.ref_id + '\')">' +
+    return '<span class="tag-nc">' + escapeHtml(item.palavra) + catBadges +
+      '<button class="btn-pedir-sig' + (jaPediu ? ' pedido' : '') + '" data-palavra="' + escapeHtml(item.palavra) + '" data-ref="' + escapeHtml(item.ref_id) + '" onclick="pedirSignificado(this.dataset.palavra,this.dataset.ref)">' +
       (jaPediu ? '✓ pedido' : '+ significado') + '</button></span>';
   }).join('');
 }
@@ -1019,8 +1029,8 @@ function renderUniversos() {
   var emojis = { espaco:'🌌', lendas:'🧜', natureza:'🌿', parque:'🎡', locais:'📍' };
   lista.innerHTML = itens.map(function(i) {
     var emoji = emojis[i.subtipo] || '✦';
-    return '<span class="tag-univ">' + emoji + ' ' + i.nome +
-      '<span class="univ-sub">' + (i.subtipo || '') + '</span></span>';
+    return '<span class="tag-univ">' + emoji + ' ' + escapeHtml(i.nome) +
+      '<span class="univ-sub">' + escapeHtml(i.subtipo || '') + '</span></span>';
   }).join('');
 }
 
@@ -1064,7 +1074,7 @@ function renderPop() {
   lista.innerHTML = itens.map(function(i) {
     var catInfo = popCatsCache.find(function(c) { return c.slug === i.tipo; });
     var icone = catInfo ? (catInfo.emoji || '✦') : '✦';
-    return '<span class="tag-pop">' + icone + ' ' + i.nome + '<span class="pop-sub">' + (i.subtipo || i.tipo) + '</span></span>';
+    return '<span class="tag-pop">' + icone + ' ' + escapeHtml(i.nome) + '<span class="pop-sub">' + escapeHtml(i.subtipo || i.tipo) + '</span></span>';
   }).join('');
 }
 
@@ -1161,7 +1171,7 @@ function renderListaSugestaoPalavras() {
     return;
   }
   el.innerHTML = sugestaoPalavras.map(function(p, i) {
-    return '<span class="chip-sugestao">' + p + '<button type="button" onclick="removerSugestaoPalavra(' + i + ')">✕</button></span>';
+    return '<span class="chip-sugestao">' + escapeHtml(p) + '<button type="button" onclick="removerSugestaoPalavra(' + i + ')">✕</button></span>';
   }).join('');
 }
 

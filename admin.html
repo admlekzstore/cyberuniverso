@@ -1683,12 +1683,12 @@ function renderDicPalavrasTabela() {
 
   tbody.innerHTML = mostrar.map(p => `
     <tr>
-      <td><input type="checkbox" class="dic-check" data-palavra="${p.palavra}" ${dicSelecionadas.has(p.palavra) ? 'checked' : ''} onchange="toggleSelecaoDic('${p.palavra}', this.checked)"></td>
-      <td style="font-family:'Fredoka One',cursive;color:#e0e8ff;">${p.palavra}</td>
+      <td><input type="checkbox" class="dic-check" data-palavra="${escapeHtml(p.palavra)}" ${dicSelecionadas.has(p.palavra) ? 'checked' : ''} onchange="toggleSelecaoDic(this.dataset.palavra, this.checked)"></td>
+      <td style="font-family:'Fredoka One',cursive;color:#e0e8ff;">${escapeHtml(p.palavra)}</td>
       <td>
-        <select onchange="mudarCategoriaDic('${p.palavra}', this.value)" style="background:#0a1628;color:#e0e8ff;border:1px solid #1a3a6e;border-radius:6px;padding:4px 8px;">
+        <select data-palavra="${escapeHtml(p.palavra)}" onchange="mudarCategoriaDic(this.dataset.palavra, this.value)" style="background:#0a1628;color:#e0e8ff;border:1px solid #1a3a6e;border-radius:6px;padding:4px 8px;">
           <option value="">— Geral —</option>
-          ${dicCategoriasCache.map(c => `<option value="${c.slug}" ${p.categoria === c.slug ? 'selected' : ''}>${c.emoji || ''} ${c.nome}</option>`).join('')}
+          ${dicCategoriasCache.map(c => `<option value="${c.slug}" ${p.categoria === c.slug ? 'selected' : ''}>${c.emoji || ''} ${escapeHtml(c.nome)}</option>`).join('')}
         </select>
       </td>
     </tr>`).join('')
@@ -1812,6 +1812,16 @@ async function sincronizarTagsRima() {
   mostrarToast('🔄 Tags de rima sincronizadas!', 'sucesso')
 }
 
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 // ── SUGESTÕES DA GALERA ──
 let sugestoesCache = []
 
@@ -1833,11 +1843,11 @@ function renderSugestoes() {
     const chavesSugeridas = calcularChavesSugestao(s.palavra).join(', ')
     return `
       <div style="background:rgba(26,110,245,0.05);border:1px solid var(--borda);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-        <span style="font-family:'Fredoka One',cursive;color:var(--amarelo);font-size:1rem;">${s.palavra}</span>
+        <span style="font-family:'Fredoka One',cursive;color:var(--amarelo);font-size:1rem;">${escapeHtml(s.palavra)}</span>
         <span class="badge-status badge-pendente">${labels[s.tipo] || s.tipo}</span>
-        <span style="font-size:12px;color:#4a6fa5;">${catTxt}</span>
-        <span style="font-size:12px;color:#4a6fa5;">por ${s.nome_autor || '—'}</span>
-        <input type="text" id="sug-chave-${s.id}" class="busca-tabela" style="width:150px;" placeholder="chave(s) de rima" value="${chavesSugeridas}">
+        <span style="font-size:12px;color:#4a6fa5;">${escapeHtml(catTxt)}</span>
+        <span style="font-size:12px;color:#4a6fa5;">por ${escapeHtml(s.nome_autor || '—')}</span>
+        <input type="text" id="sug-chave-${s.id}" class="busca-tabela" style="width:150px;" placeholder="chave(s) de rima" value="${escapeHtml(chavesSugeridas)}">
         <div class="acoes-cell" style="margin-left:auto;">
           <button class="btn-mini btn-aprovar" onclick="aprovarSugestao('${s.id}')">✓ Aprovar</button>
           <button class="btn-mini btn-rejeitar" onclick="rejeitarSugestao('${s.id}')">✕ Rejeitar</button>
@@ -2192,11 +2202,11 @@ async function buscarVariacoesRima() {
   }
   tbody.innerHTML = data.map(r => `
     <tr id="row-rv-${r.id}">
-      <td><strong>${r.palavra}</strong></td>
-      <td style="color:var(--ciano);font-family:'Fredoka One',cursive;">${r.chave}</td>
+      <td><strong>${escapeHtml(r.palavra)}</strong></td>
+      <td style="color:var(--ciano);font-family:'Fredoka One',cursive;">${escapeHtml(r.chave)}</td>
       <td><span class="badge-status ${r.tipo === 'giria' ? 'badge-aprovado' : r.tipo === 'cultura_pop' ? 'badge-pendente' : r.tipo === 'giria_nao_catalogada' ? '' : r.tipo === 'universo' ? '' : 'badge-rejeitado'}" style="${r.tipo === 'giria_nao_catalogada' ? 'background:rgba(245,232,0,0.1);color:#f5e800;border:1px solid rgba(245,232,0,0.3);' : r.tipo === 'universo' ? 'background:rgba(0,234,255,0.1);color:#00eaff;border:1px solid rgba(0,234,255,0.3);' : ''}">${r.tipo === 'giria_nao_catalogada' ? '✦ NC' : r.tipo === 'universo' ? '🌌 Universo' : r.tipo}</span></td>
-      <td style="color:#4a6fa5;font-size:12px;">${r.categoria ? r.categoria.split(',').map(c => `<span style="background:rgba(245,232,0,0.08);border:1px solid rgba(245,232,0,0.2);border-radius:4px;padding:1px 6px;margin:1px;display:inline-block;">${c}</span>`).join('') : '—'}</td>
-      <td style="color:#4a6fa5">${r.criado_por}</td>
+      <td style="color:#4a6fa5;font-size:12px;">${r.categoria ? r.categoria.split(',').map(c => `<span style="background:rgba(245,232,0,0.08);border:1px solid rgba(245,232,0,0.2);border-radius:4px;padding:1px 6px;margin:1px;display:inline-block;">${escapeHtml(c)}</span>`).join('') : '—'}</td>
+      <td style="color:#4a6fa5">${escapeHtml(r.criado_por)}</td>
       <td><div class="acoes-cell">
         ${r.ativo
           ? `<button class="btn-mini btn-excluir" onclick="removerVariacaoRima('${r.id}')">🗑️ Remover</button>`
