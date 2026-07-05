@@ -1624,10 +1624,10 @@ async function removerDicCategoria(id, nome) {
 async function carregarDicPalavras() {
   const { data, error } = await sb.from('rimas_palavras')
     .select('id, palavra, categoria')
-    .eq('fonte', 'manual')
+    .eq('fonte', 'dicionario')
     .eq('ativo', true)
     .order('palavra')
-    .limit(3000)
+    .limit(15000)
   if (error) {
     console.error('[dic-palavras] erro ao carregar:', error)
     const tbody = document.getElementById('tbody-dic-palavras')
