@@ -330,29 +330,33 @@
 
       <!-- CATEGORIZAR PALAVRAS DO DICIONÁRIO -->
       <div class="tabela-wrap" style="margin-bottom:20px;">
-        <div class="tabela-header">
+        <div class="tabela-header" style="cursor:pointer;" onclick="toggleDicPalavrasSecao()">
           <div class="tabela-titulo">🏷️ CATEGORIZAR PALAVRAS DO DICIONÁRIO</div>
+          <span id="dic-secao-icone" style="color:#4a6fa5;">▶</span>
         </div>
-        <div style="padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-          <input type="text" id="dic-palavras-busca" class="busca-tabela" placeholder="Buscar palavra..." style="flex:1;min-width:160px;" oninput="renderDicPalavrasTabela()">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#4a6fa5;cursor:pointer;">
-            <input type="checkbox" id="dic-filtro-sem-cat" onchange="renderDicPalavrasTabela()"> só sem categoria
-          </label>
-        </div>
-        <div style="padding:0 16px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <select id="dic-bulk-categoria" class="busca-tabela" style="width:auto;"></select>
-          <button class="btn-mini btn-aprovar" onclick="aplicarCategoriaEmMassa()">📌 Aplicar à seleção</button>
-          <span id="dic-selecao-count" style="font-size:12px;color:#4a6fa5;"></span>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="tabela-admin">
-            <thead><tr>
-              <th style="width:36px;"><input type="checkbox" id="dic-select-all" onchange="toggleSelecionarTodasDic(this.checked)"></th>
-              <th>Palavra</th>
-              <th>Categoria</th>
-            </tr></thead>
-            <tbody id="tbody-dic-palavras"><tr><td colspan="3" class="vazio-msg">Carregando...</td></tr></tbody>
-          </table>
+        <div id="dic-secao-conteudo" style="display:none;">
+          <div style="padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="dic-palavras-busca" class="busca-tabela" placeholder="Buscar palavra..." style="flex:1;min-width:160px;" oninput="dicPaginaAtual=1;renderDicPalavrasTabela()">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#4a6fa5;cursor:pointer;">
+              <input type="checkbox" id="dic-filtro-sem-cat" onchange="dicPaginaAtual=1;renderDicPalavrasTabela()"> só sem categoria
+            </label>
+          </div>
+          <div style="padding:0 16px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="dic-bulk-categoria" class="busca-tabela" style="width:auto;"></select>
+            <button class="btn-mini btn-aprovar" onclick="aplicarCategoriaEmMassa()">📌 Aplicar à seleção</button>
+            <span id="dic-selecao-count" style="font-size:12px;color:#4a6fa5;"></span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tabela-admin">
+              <thead><tr>
+                <th style="width:36px;"><input type="checkbox" id="dic-select-all" onchange="toggleSelecionarTodasDic(this.checked)"></th>
+                <th>Palavra</th>
+                <th>Categoria</th>
+              </tr></thead>
+              <tbody id="tbody-dic-palavras"><tr><td colspan="3" class="vazio-msg">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+          <div id="dic-paginacao" style="padding:12px 16px;display:flex;align-items:center;gap:10px;justify-content:center;"></div>
         </div>
       </div>
 
@@ -1562,6 +1566,16 @@ async function removerExcecao(id, palavra) {
 let dicCategoriasCache = []
 let dicPalavrasCache = []
 let dicSelecionadas = new Set()
+let dicPaginaAtual = 1
+const DIC_POR_PAGINA = 50
+
+function toggleDicPalavrasSecao() {
+  const conteudo = document.getElementById('dic-secao-conteudo')
+  const icone = document.getElementById('dic-secao-icone')
+  const abrindo = conteudo.style.display === 'none'
+  conteudo.style.display = abrindo ? 'block' : 'none'
+  icone.textContent = abrindo ? '▼' : '▶'
+}
 
 async function carregarDicCategorias() {
   const { data, error } = await sb.from('rimas_dic_categorias').select('*').eq('ativo', true).order('nome')
@@ -1654,9 +1668,20 @@ function renderDicPalavrasTabela() {
   let lista = dicPalavrasCache
   if (q) lista = lista.filter(p => p.palavra.toLowerCase().includes(q))
   if (soSemCat) lista = lista.filter(p => !p.categoria)
-  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="3" class="vazio-msg">Nenhuma palavra encontrada.</td></tr>'; return }
-  const mostrar = lista.slice(0, 300)
-  let html = mostrar.map(p => `
+
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="3" class="vazio-msg">Nenhuma palavra encontrada.</td></tr>'
+    document.getElementById('dic-paginacao').innerHTML = ''
+    return
+  }
+
+  const totalPaginas = Math.max(1, Math.ceil(lista.length / DIC_POR_PAGINA))
+  if (dicPaginaAtual > totalPaginas) dicPaginaAtual = totalPaginas
+  if (dicPaginaAtual < 1) dicPaginaAtual = 1
+  const inicio = (dicPaginaAtual - 1) * DIC_POR_PAGINA
+  const mostrar = lista.slice(inicio, inicio + DIC_POR_PAGINA)
+
+  tbody.innerHTML = mostrar.map(p => `
     <tr>
       <td><input type="checkbox" class="dic-check" data-palavra="${p.palavra}" ${dicSelecionadas.has(p.palavra) ? 'checked' : ''} onchange="toggleSelecaoDic('${p.palavra}', this.checked)"></td>
       <td style="font-family:'Fredoka One',cursive;color:#e0e8ff;">${p.palavra}</td>
@@ -1667,11 +1692,24 @@ function renderDicPalavrasTabela() {
         </select>
       </td>
     </tr>`).join('')
-  if (lista.length > 300) {
-    html += `<tr><td colspan="3" style="text-align:center;color:#4a6fa5;font-size:12px;padding:10px;">Mostrando 300 de ${lista.length} — refine a busca pra ver mais.</td></tr>`
-  }
-  tbody.innerHTML = html
+
+  renderDicPaginacao(lista.length, totalPaginas)
   atualizarContagemSelecaoDic()
+}
+
+function renderDicPaginacao(totalItens, totalPaginas) {
+  const el = document.getElementById('dic-paginacao')
+  if (!el) return
+  el.innerHTML = `
+    <button class="btn-mini btn-editar" ${dicPaginaAtual <= 1 ? 'disabled' : ''} onclick="dicIrParaPagina(${dicPaginaAtual - 1})">◀ Anterior</button>
+    <span style="font-size:13px;color:#4a6fa5;">Página ${dicPaginaAtual} de ${totalPaginas} (${totalItens} palavras)</span>
+    <button class="btn-mini btn-editar" ${dicPaginaAtual >= totalPaginas ? 'disabled' : ''} onclick="dicIrParaPagina(${dicPaginaAtual + 1})">Próxima ▶</button>
+  `
+}
+
+function dicIrParaPagina(pagina) {
+  dicPaginaAtual = pagina
+  renderDicPalavrasTabela()
 }
 
 function toggleSelecaoDic(palavra, marcado) {
