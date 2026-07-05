@@ -1622,9 +1622,9 @@ async function removerDicCategoria(id, nome) {
 
 // ── CATEGORIZAR PALAVRAS DO DICIONÁRIO ──
 async function carregarDicPalavras() {
-  const { data, error } = await sb.from('rimas_palavras')
-    .select('id, palavra, categoria')
-    .eq('fonte', 'dicionario')
+  const { data, error } = await sb.from('rimas_variacoes')
+    .select('palavra, categoria')
+    .eq('tipo', 'dicionario')
     .eq('ativo', true)
     .order('palavra')
     .limit(15000)
@@ -1634,7 +1634,13 @@ async function carregarDicPalavras() {
     if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="vazio-msg" style="color:var(--vermelho,#ff5050);">Erro ao carregar: ${error.message}</td></tr>`
     return
   }
-  dicPalavrasCache = data || []
+  // Uma palavra pode ter várias linhas (uma por chave de rima) — agrupa por palavra
+  const mapa = new Map()
+  ;(data || []).forEach(r => {
+    if (!mapa.has(r.palavra)) mapa.set(r.palavra, r.categoria || null)
+    else if (!mapa.get(r.palavra) && r.categoria) mapa.set(r.palavra, r.categoria)
+  })
+  dicPalavrasCache = Array.from(mapa.entries()).map(([palavra, categoria]) => ({ palavra, categoria }))
   renderDicPalavrasTabela()
 }
 
@@ -1652,10 +1658,10 @@ function renderDicPalavrasTabela() {
   const mostrar = lista.slice(0, 300)
   let html = mostrar.map(p => `
     <tr>
-      <td><input type="checkbox" class="dic-check" data-id="${p.id}" ${dicSelecionadas.has(p.id) ? 'checked' : ''} onchange="toggleSelecaoDic('${p.id}', this.checked)"></td>
+      <td><input type="checkbox" class="dic-check" data-palavra="${p.palavra}" ${dicSelecionadas.has(p.palavra) ? 'checked' : ''} onchange="toggleSelecaoDic('${p.palavra}', this.checked)"></td>
       <td style="font-family:'Fredoka One',cursive;color:#e0e8ff;">${p.palavra}</td>
       <td>
-        <select onchange="mudarCategoriaDic('${p.id}', this.value)" style="background:#0a1628;color:#e0e8ff;border:1px solid #1a3a6e;border-radius:6px;padding:4px 8px;">
+        <select onchange="mudarCategoriaDic('${p.palavra}', this.value)" style="background:#0a1628;color:#e0e8ff;border:1px solid #1a3a6e;border-radius:6px;padding:4px 8px;">
           <option value="">— Geral —</option>
           ${dicCategoriasCache.map(c => `<option value="${c.slug}" ${p.categoria === c.slug ? 'selected' : ''}>${c.emoji || ''} ${c.nome}</option>`).join('')}
         </select>
@@ -1668,15 +1674,15 @@ function renderDicPalavrasTabela() {
   atualizarContagemSelecaoDic()
 }
 
-function toggleSelecaoDic(id, marcado) {
-  if (marcado) dicSelecionadas.add(id); else dicSelecionadas.delete(id)
+function toggleSelecaoDic(palavra, marcado) {
+  if (marcado) dicSelecionadas.add(palavra); else dicSelecionadas.delete(palavra)
   atualizarContagemSelecaoDic()
 }
 
 function toggleSelecionarTodasDic(marcado) {
   document.querySelectorAll('.dic-check').forEach(chk => {
     chk.checked = marcado
-    if (marcado) dicSelecionadas.add(chk.dataset.id); else dicSelecionadas.delete(chk.dataset.id)
+    if (marcado) dicSelecionadas.add(chk.dataset.palavra); else dicSelecionadas.delete(chk.dataset.palavra)
   })
   atualizarContagemSelecaoDic()
 }
@@ -1686,10 +1692,11 @@ function atualizarContagemSelecaoDic() {
   if (countEl) countEl.textContent = dicSelecionadas.size ? `${dicSelecionadas.size} selecionada(s)` : ''
 }
 
-async function mudarCategoriaDic(id, categoria) {
-  const { error } = await sb.from('rimas_palavras').update({ categoria: categoria || null }).eq('id', id)
+async function mudarCategoriaDic(palavra, categoria) {
+  // Atualiza TODAS as linhas dessa palavra em rimas_variacoes (ela pode ter mais de uma chave)
+  const { error } = await sb.from('rimas_variacoes').update({ categoria: categoria || null }).eq('palavra', palavra).eq('tipo', 'dicionario')
   if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
-  const item = dicPalavrasCache.find(p => p.id === id)
+  const item = dicPalavrasCache.find(p => p.palavra === palavra)
   if (item) item.categoria = categoria || null
   mostrarToast('✅ Categoria atualizada', 'sucesso')
 }
@@ -1697,14 +1704,14 @@ async function mudarCategoriaDic(id, categoria) {
 async function aplicarCategoriaEmMassa() {
   const categoria = document.getElementById('dic-bulk-categoria').value
   if (!dicSelecionadas.size) { mostrarToast('⚠️ Selecione ao menos uma palavra', 'erro'); return }
-  const ids = Array.from(dicSelecionadas)
-  const { error } = await sb.from('rimas_palavras').update({ categoria: categoria || null }).in('id', ids)
+  const palavras = Array.from(dicSelecionadas)
+  const { error } = await sb.from('rimas_variacoes').update({ categoria: categoria || null }).in('palavra', palavras).eq('tipo', 'dicionario')
   if (error) { mostrarToast('Erro: ' + error.message, 'erro'); return }
-  ids.forEach(id => {
-    const item = dicPalavrasCache.find(p => p.id === id)
+  palavras.forEach(palavra => {
+    const item = dicPalavrasCache.find(p => p.palavra === palavra)
     if (item) item.categoria = categoria || null
   })
-  mostrarToast(`✅ Categoria aplicada a ${ids.length} palavra(s)!`, 'sucesso')
+  mostrarToast(`✅ Categoria aplicada a ${palavras.length} palavra(s)!`, 'sucesso')
   dicSelecionadas.clear()
   renderDicPalavrasTabela()
 }
