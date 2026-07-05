@@ -307,6 +307,16 @@
     </div>
 
     <div class="secao" id="sec-rimas">
+      <!-- SINCRONIZAR TAGS DE RIMA -->
+      <div class="tabela-wrap" style="margin-bottom:20px;">
+        <div class="tabela-header">
+          <div class="tabela-titulo">🔄 SINCRONIZAR TAGS DE RIMA</div>
+          <button class="btn-mini btn-aprovar" onclick="sincronizarTagsRima()">🔄 Sincronizar agora</button>
+        </div>
+        <div style="padding:8px 16px 16px;font-size:12px;color:#4a6fa5;">Procura por tags "rima-com-X" na tabela de tags e cria a variação de rima correspondente em <em>rimas_variacoes</em> pra qualquer palavra que ainda não tenha sido sincronizada. Só adiciona — nunca apaga ou altera nada que já existe. Use isso depois de adicionar uma tag de rima nova em "Editar Palavra".</div>
+        <div id="sync-tags-msg" style="padding:0 16px 16px;font-size:13px;font-weight:700;"></div>
+      </div>
+
       <!-- SUGESTÕES DA GALERA -->
       <div class="tabela-wrap" style="margin-bottom:20px;">
         <div class="tabela-header">
@@ -1505,6 +1515,64 @@ async function removerExcecao(id, palavra) {
   mostrarToast('🗑️ Exceção removida', 'sucesso')
   excecoesFoneticasCache = excecoesFoneticasCache.filter(e => e.id !== id)
   renderExcecoes(document.getElementById('excecoes-busca').value)
+}
+
+// ── SINCRONIZAR TAGS DE RIMA ──
+async function sincronizarTagsRima() {
+  const msg = document.getElementById('sync-tags-msg')
+  msg.style.color = '#4a6fa5'
+  msg.textContent = '🔄 Sincronizando, aguenta aí...'
+
+  const { data: tagsRima, error: errTags } = await sb.from('tags').select('id, nome').ilike('nome', 'rima-com-%')
+  if (errTags) { msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro ao buscar tags: ' + errTags.message; return }
+  if (!tagsRima || !tagsRima.length) { msg.style.color = '#4a6fa5'; msg.textContent = 'Nenhuma tag "rima-com-X" encontrada.'; return }
+
+  let criadas = 0, jaExistiam = 0, semPalavra = 0, erros = 0
+
+  for (const tag of tagsRima) {
+    const chave = tag.nome.replace(/^rima-com-/i, '').trim().toLowerCase()
+    if (!chave) continue
+
+    const { data: relacoes, error: errRel } = await sb.from('palavras_tags').select('palavra_id').eq('tag_id', tag.id)
+    if (errRel || !relacoes || !relacoes.length) continue
+
+    const palavraIds = relacoes.map(r => r.palavra_id)
+    const { data: palavrasData, error: errPal } = await sb.from('palavras').select('id, termo').in('id', palavraIds).eq('status', 'aprovada')
+    if (errPal || !palavrasData) continue
+
+    for (const p of palavrasData) {
+      const palavraLower = (p.termo || '').toLowerCase().trim()
+      if (!palavraLower) { semPalavra++; continue }
+
+      // Já existe um rimas_palavras vinculado a essa gíria? Se não, cria.
+      let rpId = null
+      const { data: rpExist } = await sb.from('rimas_palavras').select('id').eq('giria_id', p.id).eq('eh_giria', true).limit(1)
+      if (rpExist && rpExist.length > 0) {
+        rpId = rpExist[0].id
+      } else {
+        const { data: rpNovo, error: errRpNovo } = await sb.from('rimas_palavras').insert({
+          palavra: palavraLower, chave_fonetica: chave, chave_ortografica: palavraLower.slice(-4),
+          eh_giria: true, giria_id: p.id, fonte: 'giria', ativo: true
+        }).select('id').single()
+        if (errRpNovo) { erros++; continue }
+        rpId = rpNovo.id
+      }
+
+      // Insere a variação, ignorando se já existir (nunca sobrescreve/apaga)
+      const { data: varData, error: errVar } = await sb.from('rimas_variacoes')
+        .upsert({ palavra: palavraLower, chave, tipo: 'giria', ref_id: rpId, criado_por: 'auto', ativo: true },
+          { onConflict: 'chave,palavra,tipo', ignoreDuplicates: true })
+        .select()
+
+      if (errVar) { erros++; }
+      else if (varData && varData.length > 0) { criadas++; }
+      else { jaExistiam++; }
+    }
+  }
+
+  msg.style.color = 'var(--verde)'
+  msg.textContent = `✅ Sincronização concluída! ${criadas} nova(s) variação(ões) criada(s), ${jaExistiam} já existiam${erros ? ', ' + erros + ' erro(s)' : ''}.`
+  mostrarToast('🔄 Tags de rima sincronizadas!', 'sucesso')
 }
 
 // ── SUGESTÕES DA GALERA ──
