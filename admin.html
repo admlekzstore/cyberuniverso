@@ -1564,7 +1564,8 @@ let dicPalavrasCache = []
 let dicSelecionadas = new Set()
 
 async function carregarDicCategorias() {
-  const { data } = await sb.from('rimas_dic_categorias').select('*').eq('ativo', true).order('nome')
+  const { data, error } = await sb.from('rimas_dic_categorias').select('*').eq('ativo', true).order('nome')
+  if (error) console.error('[dic-categorias] erro ao carregar:', error)
   dicCategoriasCache = data || []
   renderDicCatsLista()
   renderDicBulkSelect()
@@ -1627,7 +1628,12 @@ async function carregarDicPalavras() {
     .eq('ativo', true)
     .order('palavra')
     .limit(3000)
-  if (error) { console.error(error); return }
+  if (error) {
+    console.error('[dic-palavras] erro ao carregar:', error)
+    const tbody = document.getElementById('tbody-dic-palavras')
+    if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="vazio-msg" style="color:var(--vermelho,#ff5050);">Erro ao carregar: ${error.message}</td></tr>`
+    return
+  }
   dicPalavrasCache = data || []
   renderDicPalavrasTabela()
 }
