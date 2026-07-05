@@ -754,8 +754,8 @@ async function carregarPalavras() {
   }
   tbody.innerHTML = data.map(p => `
     <tr id="row-p-${p.id}">
-      <td><strong>${p.termo}</strong></td>
-      <td style="color:#4a6fa5">${nomeAutorP(p)}</td>
+      <td><strong>${escapeHtml(p.termo)}</strong></td>
+      <td style="color:#4a6fa5">${escapeHtml(nomeAutorP(p))}</td>
       <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
       <td>${formatarData(p.criado_em)}</td>
       <td><div class="acoes-cell">
@@ -809,7 +809,7 @@ async function carregarUsuarios() {
   }
   tbody.innerHTML = data.map(u => `
     <tr>
-      <td><strong>${u.username || '—'}</strong></td>
+      <td><strong>${escapeHtml(u.username || '—')}</strong></td>
       <td>${u.is_admin ? '<span class="badge-status badge-aprovado">Admin</span>' : '—'}</td>
       <td>${formatarData(u.criado_em)}</td>
       <td><div class="acoes-cell">
@@ -828,8 +828,8 @@ async function carregarComentarios() {
   }
   tbody.innerHTML = data.map(c => `
     <tr>
-      <td style="max-width:220px;color:#4a6fa5;">"${c.texto}"</td>
-      <td>${c.palavras?.termo || '—'}</td>
+      <td style="max-width:220px;color:#4a6fa5;">"${escapeHtml(c.texto)}"</td>
+      <td>${escapeHtml(c.palavras?.termo || '—')}</td>
       <td>${formatarData(c.criado_em)}</td>
       <td><div class="acoes-cell">
         <button class="btn-mini btn-excluir" onclick="excluirComentario('${c.id}', this)">🗑️</button>
@@ -1003,9 +1003,9 @@ async function carregarContribuicoes() {
     } catch(e) {}
     const badgeClass = c.status === 'pendente' ? 'badge-pendente' : c.status === 'aprovada' ? 'badge-aprovado' : 'badge-rejeitado'
     return `<tr id="row-contrib-${c.id}">
-      <td><strong>${palavra?.termo || '—'}</strong><br><span style="font-size:11px;color:#4a6fa5;">${palavra?.slug || ''}</span></td>
-      <td style="color:#4a6fa5">${nomeAutor}</td>
-      <td style="max-width:200px;font-size:13px;color:#7ab0ff;font-style:italic;">"${previa}"</td>
+      <td><strong>${escapeHtml(palavra?.termo || '—')}</strong><br><span style="font-size:11px;color:#4a6fa5;">${escapeHtml(palavra?.slug || '')}</span></td>
+      <td style="color:#4a6fa5">${escapeHtml(nomeAutor)}</td>
+      <td style="max-width:200px;font-size:13px;color:#7ab0ff;font-style:italic;">"${escapeHtml(previa)}"</td>
       <td>${formatarData(c.criado_em)}</td>
       <td><div class="acoes-cell">
         <button class="btn-mini btn-editar" onclick="verContribuicao(${JSON.stringify(c).replace(/"/g, '&quot;')}, ${JSON.stringify(palavra || {}).replace(/"/g, '&quot;')})">👁️ Ver</button>
@@ -1041,10 +1041,10 @@ function verContribuicao(contrib, palavra) {
       }
       sigsHtml += `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--borda);">
         <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:6px;">SIGNIFICADO ${i+1}</div>
-        <div style="font-size:15px;font-weight:700;color:#e8f4ff;line-height:1.6;">${texto.replace(/\n/g,'<br>')}</div>`
+        <div style="font-size:15px;font-weight:700;color:#e8f4ff;line-height:1.6;">${escapeHtml(texto).replace(/\n/g,'<br>')}</div>`
       extras.forEach(ex => {
-        if (ex.titulo) sigsHtml += `<div style="font-family:'Fredoka One',cursive;color:#a3ff4a;margin-top:10px;">${ex.titulo}</div>`
-        if (ex.texto) sigsHtml += `<div style="font-size:14px;color:var(--texto);line-height:1.6;">${ex.texto.replace(/\n/g,'<br>')}</div>`
+        if (ex.titulo) sigsHtml += `<div style="font-family:'Fredoka One',cursive;color:#a3ff4a;margin-top:10px;">${escapeHtml(ex.titulo)}</div>`
+        if (ex.texto) sigsHtml += `<div style="font-size:14px;color:var(--texto);line-height:1.6;">${escapeHtml(ex.texto).replace(/\n/g,'<br>')}</div>`
       })
       sigsHtml += '</div>'
     })
@@ -1055,7 +1055,7 @@ function verContribuicao(contrib, palavra) {
   let exHtml = ''
   try {
     const exs = JSON.parse(contrib.exemplos || '[]')
-    exHtml = exs.length ? exs.map(e => `<div style="background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px;font-size:14px;font-style:italic;color:#b0ccff;">— ${e}</div>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum exemplo</span>'
+    exHtml = exs.length ? exs.map(e => `<div style="background:rgba(26,110,245,0.08);border-left:3px solid var(--azul);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px;font-size:14px;font-style:italic;color:#b0ccff;">— ${escapeHtml(e)}</div>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum exemplo</span>'
   } catch(e) { exHtml = '—' }
   document.getElementById('mc-exemplos').innerHTML = exHtml
 
@@ -1063,7 +1063,7 @@ function verContribuicao(contrib, palavra) {
   let sinHtml = ''
   try {
     const sins = JSON.parse(contrib.sinonimos || '[]')
-    sinHtml = sins.length ? sins.map(s => `<span style="background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;margin:3px;">${s}</span>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum sinônimo</span>'
+    sinHtml = sins.length ? sins.map(s => `<span style="background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;margin:3px;">${escapeHtml(s)}</span>`).join('') : '<span style="color:#2a4a7a;font-size:13px;">Nenhum sinônimo</span>'
   } catch(e) { sinHtml = '—' }
   document.getElementById('mc-sinonimos').innerHTML = sinHtml
 
@@ -1090,7 +1090,7 @@ function renderExtraEdit(extra, sigIdx, extraIdx) {
   return `<div class="mc-extra-bloco" data-sig="${sigIdx}" data-extra="${extraIdx}" style="background:rgba(26,110,245,0.05);border:1px solid rgba(26,110,245,0.2);border-radius:8px;padding:10px;margin-top:8px;position:relative;">
     <button onclick="removerExtraEdit(this)" style="position:absolute;top:6px;right:6px;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:800;cursor:pointer;">✕</button>
     <input class="mc-extra-titulo" type="text" value="${(extra.titulo||'').replace(/"/g,'&quot;')}" placeholder="Título (ex: Origem, Curiosidade...)" style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--borda);outline:none;color:var(--ciano);font-family:Bangers,cursive;font-size:15px;letter-spacing:1px;padding:3px 0 6px;margin-bottom:6px;">
-    <textarea class="mc-extra-texto" placeholder="Texto adicional..." style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:13px;resize:vertical;min-height:50px;">${(extra.texto||'').replace(/</g,'&lt;')}</textarea>
+    <textarea class="mc-extra-texto" placeholder="Texto adicional..." style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:13px;resize:vertical;min-height:50px;">${escapeHtml(extra.texto||'')}</textarea>
   </div>`
 }
 
@@ -1160,7 +1160,7 @@ function ativarEdicaoContrib() {
       const extrasHtml = extras.map((ex, ei) => renderExtraEdit(ex, i, ei)).join('')
       return `<div class="mc-sig-wrap" data-sig="${i}" style="margin-bottom:16px;background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;padding:12px;">
         <div style="font-size:11px;color:#4a6fa5;font-weight:800;margin-bottom:6px;">SIGNIFICADO ${i+1}</div>
-        <textarea class="mc-sig-edit" style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;resize:vertical;min-height:75px;">${texto.replace(/</g,'&lt;')}</textarea>
+        <textarea class="mc-sig-edit" style="width:100%;background:transparent;border:none;outline:none;color:var(--texto);font-family:Nunito,sans-serif;font-size:14px;resize:vertical;min-height:75px;">${escapeHtml(texto)}</textarea>
         <div class="mc-extras-wrap">${extrasHtml}</div>
         <button onclick="adicionarExtraEdit(this)" style="margin-top:8px;background:rgba(0,234,255,0.08);border:1px dashed rgba(0,234,255,0.25);color:var(--ciano);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:800;cursor:pointer;">➕ Adicionar título extra</button>
       </div>`
