@@ -139,6 +139,16 @@
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 const params = new URLSearchParams(window.location.search)
 const catId = params.get('c')
 const isSub = params.get('sub') === '1'
@@ -258,9 +268,9 @@ function renderizar(lista) {
     if (def.includes('[extras]')) def = def.split('[extras]')[0].trim()
 
     return `
-      <a href="palavra.html?w=${p.slug}" class="palavra-card" style="animation-delay:${i * 0.04}s">
-        <div class="pc-nome">${p.termo}</div>
-        ${def ? `<div class="pc-def">${def}</div>` : ''}
+      <a href="palavra.html?w=${encodeURIComponent(p.slug)}" class="palavra-card" style="animation-delay:${i * 0.04}s">
+        <div class="pc-nome">${escapeHtml(p.termo)}</div>
+        ${def ? `<div class="pc-def">${escapeHtml(def)}</div>` : ''}
         <div class="pc-footer">
           <span class="pc-seta">→</span>
         </div>

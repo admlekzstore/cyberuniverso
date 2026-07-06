@@ -132,6 +132,16 @@
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 let dadosOriginais = []
 
 async function init() {
@@ -220,10 +230,10 @@ function renderizar(lista) {
       ${grupo.cats.map(cat => cat.subcats.length > 0 ? `
         <div class="cat-principal" id="cat-${cat.id}">
           <div class="cat-header" onclick="toggleCat(${cat.id})">
-            <div class="cat-emoji-grande">${cat.emoji}</div>
+            <div class="cat-emoji-grande">${escapeHtml(cat.emoji)}</div>
             <div class="cat-info">
-              <div class="cat-nome-principal">${cat.nome}</div>
-              ${cat.desc ? `<div class="cat-desc-principal">${cat.desc}</div>` : ''}
+              <div class="cat-nome-principal">${escapeHtml(cat.nome)}</div>
+              ${cat.desc ? `<div class="cat-desc-principal">${escapeHtml(cat.desc)}</div>` : ''}
             </div>
             <div class="cat-meta">
               <div class="cat-total">${cat.total} palavras</div>
@@ -232,16 +242,16 @@ function renderizar(lista) {
           </div>
           <div class="subcats-wrap" id="sub-${cat.id}">
             <div class="subcats-inner">
-              <a href="categoria.html?c=${cat.id}" class="ver-todos-link">
-                <span class="ver-todos-texto">🔍 Ver todas em ${cat.nome}</span>
+              <a href="categoria.html?c=${encodeURIComponent(cat.id)}" class="ver-todos-link">
+                <span class="ver-todos-texto">🔍 Ver todas em ${escapeHtml(cat.nome)}</span>
                 <span class="ver-todos-count">${cat.total} palavras →</span>
               </a>
               <div class="subcats-grid">
                 ${cat.subcats.map(sub => `
-                  <a href="categoria.html?c=${sub.id}&sub=1" class="subcat-card">
-                    <span class="subcat-emoji">${sub.emoji}</span>
+                  <a href="categoria.html?c=${encodeURIComponent(sub.id)}&sub=1" class="subcat-card">
+                    <span class="subcat-emoji">${escapeHtml(sub.emoji)}</span>
                     <div class="subcat-body">
-                      <div class="subcat-nome">${sub.nome}</div>
+                      <div class="subcat-nome">${escapeHtml(sub.nome)}</div>
                       <div class="subcat-count">${sub.count} palavras</div>
                     </div>
                   </a>
@@ -252,11 +262,11 @@ function renderizar(lista) {
         </div>
       ` : `
         <div class="cat-principal" id="cat-${cat.id}">
-          <a href="categoria.html?c=${cat.id}" class="cat-header link-direto">
-            <div class="cat-emoji-grande">${cat.emoji}</div>
+          <a href="categoria.html?c=${encodeURIComponent(cat.id)}" class="cat-header link-direto">
+            <div class="cat-emoji-grande">${escapeHtml(cat.emoji)}</div>
             <div class="cat-info">
-              <div class="cat-nome-principal">${cat.nome}</div>
-              ${cat.desc ? `<div class="cat-desc-principal">${cat.desc}</div>` : ''}
+              <div class="cat-nome-principal">${escapeHtml(cat.nome)}</div>
+              ${cat.desc ? `<div class="cat-desc-principal">${escapeHtml(cat.desc)}</div>` : ''}
             </div>
             <div class="cat-meta">
               <div class="cat-total">${cat.total} palavras</div>

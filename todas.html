@@ -131,6 +131,16 @@
 <script src="./supabase.js"></script>
 <script>
   const sb = window._supabase
+
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return ''
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  }
   let todasPalavras = []
   let filtrado = []
 
@@ -213,8 +223,8 @@
         </div>
         <div class="palavras-grid">
           ${grupos[l].map(p => `
-            <a href="palavra.html?w=${p.slug}" class="palavra-item">
-              <span class="palavra-nome">${p.palavra}</span>
+            <a href="palavra.html?w=${encodeURIComponent(p.slug)}" class="palavra-item">
+              <span class="palavra-nome">${escapeHtml(p.palavra)}</span>
               <span class="palavra-seta">→</span>
             </a>
           `).join('')}
@@ -288,7 +298,7 @@
       banner.style.cssText = 'text-align:center;margin-bottom:20px;padding:12px 18px;background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;font-size:13px;font-weight:700;color:#4a6fa5;'
       document.getElementById('listagem').before(banner)
     }
-    banner.innerHTML = '🔖 Ver também "<strong style="color:var(--ciano)">' + q + '</strong>" em <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">tags e sinônimos →</a>'
+    banner.innerHTML = '🔖 Ver também "<strong style="color:var(--ciano)">' + escapeHtml(q) + '</strong>" em <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">tags e sinônimos →</a>'
     banner.style.display = 'block'
   }
 
@@ -300,7 +310,7 @@
       banner.style.cssText = 'text-align:center;margin-bottom:20px;padding:12px 18px;background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;font-size:13px;font-weight:700;color:#4a6fa5;'
       document.getElementById('listagem').before(banner)
     }
-    banner.innerHTML = '🔍 Nenhum título encontrado. <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">Buscar "' + q + '" em tags e sinônimos →</a>'
+    banner.innerHTML = '🔍 Nenhum título encontrado. <a href="tag.html?t=' + encodeURIComponent(q) + '" style="color:var(--ciano);text-decoration:none;font-weight:800">Buscar "' + escapeHtml(q) + '" em tags e sinônimos →</a>'
     banner.style.display = 'block'
   }
 
