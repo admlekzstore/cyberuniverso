@@ -94,6 +94,16 @@ const sb = window._supabase
 let categoriasDisponiveis = []
 let dadosExtraidos = null
 
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 async function init() {
   const { data: { session } } = await sb.auth.getSession()
   if (!session) { window.location.href = 'cadastro.html'; return }
@@ -147,7 +157,7 @@ function renderPagina() {
         <span class="preview-label">Categoria principal</span>
         <select class="preview-input" id="prev-categoria" style="background:var(--card2);border:1.5px solid var(--borda);border-radius:10px;color:var(--texto);">
           <option value="">Sem categoria</option>
-          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('')}
         </select>
       </div>
 
@@ -365,7 +375,7 @@ function extrairDados() {
       div.className = 'sig-preview'
       div.innerHTML = `
         <div class="sig-preview-num">Significado ${idx + 1}</div>
-        <textarea placeholder="Significado...">${sig}</textarea>
+        <textarea placeholder="Significado...">${escapeHtml(sig)}</textarea>
       `
       sigsDiv.appendChild(div)
     })
@@ -381,8 +391,8 @@ function extrairDados() {
       const subDiv = document.createElement('div')
       subDiv.className = 'sub-preview'
       subDiv.innerHTML = `
-        <input type="text" value="${sub.titulo.replace(/"/g, '&quot;')}" placeholder="Título do subtópico">
-        <textarea placeholder="Texto...">${sub.texto}</textarea>
+        <input type="text" value="${escapeHtml(sub.titulo)}" placeholder="Título do subtópico">
+        <textarea placeholder="Texto...">${escapeHtml(sub.texto)}</textarea>
       `
       primeiraSig.appendChild(subDiv)
     })
@@ -480,7 +490,7 @@ async function importar() {
   }
 
   btn.disabled = false; btn.textContent = '💾 IMPORTAR PARA O BANCO'
-  mostrarStatus(`✅ "${termo}" importada com sucesso! <a href="palavra.html?w=${slug}" target="_blank" style="color:var(--ciano)">Ver palavra →</a>`, 'sucesso')
+  mostrarStatus(`✅ "${escapeHtml(termo)}" importada com sucesso! <a href="palavra.html?w=${encodeURIComponent(slug)}" target="_blank" style="color:var(--ciano)">Ver palavra →</a>`, 'sucesso')
 
   // limpar para próxima importação
   setTimeout(() => {
