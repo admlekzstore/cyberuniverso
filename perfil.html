@@ -200,6 +200,16 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 const params = new URLSearchParams(window.location.search)
 const perfilId = params.get('id')
 
@@ -307,18 +317,18 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
   // Avatar
   let avatarHtml = ''
   if (p.avatar_url) {
-    avatarHtml = `<img src="${p.avatar_url}" alt="avatar">`
+    avatarHtml = `<img src="${escapeHtml(p.avatar_url)}" alt="avatar">`
   } else if (p.avatar_galeria && AVATARES_SVG[p.avatar_galeria]) {
     avatarHtml = AVATARES_SVG[p.avatar_galeria]
   } else {
-    avatarHtml = `<span class="av-letra">${(p.username||'?')[0].toUpperCase()}</span>`
+    avatarHtml = `<span class="av-letra">${escapeHtml((p.username||'?')[0].toUpperCase())}</span>`
   }
 
   // Badges
   let badgesHtml = ''
   if (p.mood && MOODS[p.mood]) badgesHtml += `<div class="badge-perfil badge-mood">${MOODS[p.mood]}</div>`
   if (p.planeta && PLANETAS[p.planeta]) badgesHtml += `<div class="badge-perfil badge-planeta">${PLANETAS[p.planeta]}</div>`
-  if (p.estado) badgesHtml += `<div class="badge-perfil badge-estado">📍 ${p.estado}</div>`
+  if (p.estado) badgesHtml += `<div class="badge-perfil badge-estado">📍 ${escapeHtml(p.estado)}</div>`
   if (p.missao && MISSOES[p.missao]) badgesHtml += `<div class="badge-perfil badge-missao">${MISSOES[p.missao]}</div>`
   if (p.dialeto && DIALETOS[p.dialeto]) badgesHtml += `<div class="badge-perfil badge-dialeto">${DIALETOS[p.dialeto]}</div>`
 
@@ -342,9 +352,9 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
       const sigs = (w.significados||[]).sort((a,b)=>(a.ordem||0)-(b.ordem||0))
       let def = sigs.length ? sigs[0].descricao||'' : ''
       if (def.includes('[extras]')) def = def.split('[extras]')[0].trim()
-      return `<a href="palavra.html?w=${w.slug}" class="palavra-card-perfil">
-        <div class="pc-termo">${w.termo}</div>
-        ${def ? `<div class="pc-def">${def}</div>` : ''}
+      return `<a href="palavra.html?w=${encodeURIComponent(w.slug)}" class="palavra-card-perfil">
+        <div class="pc-termo">${escapeHtml(w.termo)}</div>
+        ${def ? `<div class="pc-def">${escapeHtml(def)}</div>` : ''}
         <div class="pc-status ${w.status}">${w.status === 'aprovada' ? '✅ Aprovada' : '⏳ Pendente'}</div>
       </a>`
     }).join('')}</div>`
@@ -352,7 +362,7 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
 
   // Categorias
   let catsHtml = catsFav.length
-    ? catsFav.map(c => `<a href="${c.tipo==='cat'?'categoria.html?c='+c.id:'categoria.html?c='+c.id+'&sub=1'}" class="cat-tag-perfil">${c.label}</a>`).join('')
+    ? catsFav.map(c => `<a href="${c.tipo==='cat'?'categoria.html?c='+encodeURIComponent(c.id):'categoria.html?c='+encodeURIComponent(c.id)+'&sub=1'}" class="cat-tag-perfil">${escapeHtml(c.label)}</a>`).join('')
     : '<span style="color:#2a4a7a;font-size:13px;">Nenhuma categoria favorita</span>'
 
   // Favoritas
@@ -361,8 +371,8 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
     favHtml = `<div class="secao">
       <div class="secao-titulo">💬 Favoritas</div>
       <div class="fav-wrap">
-        ${p.giria_fav ? `<div class="fav-card fav-giria"><div class="fav-label">⭐ Gíria favorita</div><div class="fav-valor">${p.giria_fav}</div></div>` : ''}
-        ${p.expressao_fav ? `<div class="fav-card fav-expressao"><div class="fav-label">💎 Expressão favorita</div><div class="fav-valor">${p.expressao_fav}</div></div>` : ''}
+        ${p.giria_fav ? `<div class="fav-card fav-giria"><div class="fav-label">⭐ Gíria favorita</div><div class="fav-valor">${escapeHtml(p.giria_fav)}</div></div>` : ''}
+        ${p.expressao_fav ? `<div class="fav-card fav-expressao"><div class="fav-label">💎 Expressão favorita</div><div class="fav-valor">${escapeHtml(p.expressao_fav)}</div></div>` : ''}
       </div>
     </div>`
   }
@@ -383,11 +393,11 @@ function renderPerfil(p, palavras, catsFav, isMeu) {
             </div>
             <div class="perfil-info">
               ${p.exibir_como === 'nome' && p.nome
-                ? `<div class="perfil-nome">${p.nome}</div>`
-                : `<div class="perfil-username">// ${p.username || 'anônimo'}</div>
-                   <div class="perfil-nome">@${p.username || 'anônimo'}</div>`
+                ? `<div class="perfil-nome">${escapeHtml(p.nome)}</div>`
+                : `<div class="perfil-username">// ${escapeHtml(p.username || 'anônimo')}</div>
+                   <div class="perfil-nome">@${escapeHtml(p.username || 'anônimo')}</div>`
               }
-              ${p.bio ? `<div class="perfil-bio">${p.bio}</div>` : ''}
+              ${p.bio ? `<div class="perfil-bio">${escapeHtml(p.bio)}</div>` : ''}
               <div class="perfil-badges">${badgesHtml}</div>
               <div class="perfil-acoes">
                 ${isMeu ? `<a href="perfil-editar.html" class="btn-editar-perfil">✏️ Editar perfil</a>` : ''}

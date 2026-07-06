@@ -326,6 +326,16 @@
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 let tagsAtuais = []
 let categoriasDisponiveis = []
 let categoriasSelecionadas = []
@@ -335,7 +345,7 @@ async function init() {
   categoriasDisponiveis = cats || []
   const sel = document.getElementById('cat-select-nova')
   sel.innerHTML = '<option value="">Selecionar categoria...</option>' +
-    categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')
+    categoriasDisponiveis.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('')
 }
 
 // ── CATEGORIAS ──
@@ -349,8 +359,8 @@ function renderCatsLista() {
     return `
       <div class="cat-par">
         <div class="cat-par-info">
-          📁 ${cat?.nome || '—'}
-          ${sub ? `<div class="cat-par-sub">↳ ${sub.nome}</div>` : ''}
+          📁 ${escapeHtml(cat?.nome || '—')}
+          ${sub ? `<div class="cat-par-sub">↳ ${escapeHtml(sub.nome)}</div>` : ''}
         </div>
         <button class="btn-rem-cat" onclick="removerCategoria(${i})">✕ Remover</button>
       </div>`
@@ -363,7 +373,7 @@ function atualizarSubsNovas() {
   const subs = cat?.subcategorias || []
   document.getElementById('sub-select-nova').innerHTML =
     '<option value="">Subcategoria (opcional)...</option>' +
-    subs.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')
+    subs.map(s => `<option value="${s.id}">${escapeHtml(s.nome)}</option>`).join('')
 }
 
 function adicionarCategoria() {
@@ -474,7 +484,7 @@ function removerTag(tag) {
 
 function renderTags() {
   document.getElementById('tags-wrap').innerHTML =
-    tagsAtuais.map(t => `<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')
+    tagsAtuais.map(t => `<div class="tag-item">#${escapeHtml(t)}<button data-tag="${escapeHtml(t)}" onclick="removerTag(this.dataset.tag)">✕</button></div>`).join('')
 }
 
 // ── ENVIAR ──

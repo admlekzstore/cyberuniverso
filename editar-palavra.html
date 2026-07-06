@@ -129,6 +129,16 @@
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 const params = new URLSearchParams(window.location.search)
 const palavraId = params.get('id')
 
@@ -228,12 +238,12 @@ function renderFormulario(p, sigs) {
     <div class="secao-card">
       <div class="secao-titulo">📝 Informações Básicas</div>
       <div class="grid-2">
-        <div class="campo"><label>Palavra *</label><input type="text" id="f-termo" placeholder="ex: Simbora" value="${p?.termo || ''}"></div>
-        <div class="campo"><label>Slug (URL) *</label><input type="text" id="f-slug" placeholder="ex: simbora" value="${p?.slug || ''}"></div>
+        <div class="campo"><label>Palavra *</label><input type="text" id="f-termo" placeholder="ex: Simbora" value="${escapeHtml(p?.termo || '')}"></div>
+        <div class="campo"><label>Slug (URL) *</label><input type="text" id="f-slug" placeholder="ex: simbora" value="${escapeHtml(p?.slug || '')}"></div>
       </div>
       <div class="grid-2">
-        <div class="campo"><label>Pronúncia</label><input type="text" id="f-pronuncia" placeholder="ex: sim-BO-ra" value="${p?.pronuncia || ''}"></div>
-        <div class="campo"><label>Imagem (URL)</label><input type="text" id="f-imagem" placeholder="https://..." value="${p?.imagem_url || ''}"></div>
+        <div class="campo"><label>Pronúncia</label><input type="text" id="f-pronuncia" placeholder="ex: sim-BO-ra" value="${escapeHtml(p?.pronuncia || '')}"></div>
+        <div class="campo"><label>Imagem (URL)</label><input type="text" id="f-imagem" placeholder="https://..." value="${escapeHtml(p?.imagem_url || '')}"></div>
       </div>
       <div class="campo">
         <label>Status</label>
@@ -260,7 +270,7 @@ function renderFormulario(p, sigs) {
       <div class="lista-dinamica" id="lista-exemplos">
         ${(p?.exemplos?.filter(e=>!e.contrib_id).length ? p.exemplos.filter(e=>!e.contrib_id) : [{frase:''}]).map(e => `
           <div class="lista-item">
-            <input type="text" placeholder='Ex: "Simbora pra praia!"' value="${(e.frase||'').replace(/"/g,'&quot;')}">
+            <input type="text" placeholder='Ex: "Simbora pra praia!"' value="${escapeHtml(e.frase||'')}">
             <button class="btn-remover" onclick="removerItem(this)">🗑️</button>
           </div>`).join('')}
       </div>
@@ -275,7 +285,7 @@ function renderFormulario(p, sigs) {
       <div class="cat-add-bloco">
         <select id="cat-select-nova" onchange="atualizarSubsNovas()">
           <option value="">Selecionar categoria...</option>
-          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+          ${categoriasDisponiveis.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('')}
         </select>
         <select id="sub-select-nova">
           <option value="">Subcategoria (opcional)...</option>
@@ -329,7 +339,7 @@ function renderFormulario(p, sigs) {
     <div class="secao-card">
       <div class="secao-titulo">🔖 Tags</div>
       <div class="tags-wrap" id="tags-wrap">
-        ${tagsAtuais.map(t=>`<div class="tag-item">#${t}<button onclick="removerTag('${t}')">✕</button></div>`).join('')}
+        ${tagsAtuais.map(t=>`<div class="tag-item">#${escapeHtml(t)}<button data-tag="${escapeHtml(t)}" onclick="removerTag(this.dataset.tag)">✕</button></div>`).join('')}
       </div>
       <div class="tag-input-row">
         <input type="text" id="tag-input" placeholder="tag1, tag2, tag3 (separe por vírgula)" onkeydown="if(event.key==='Enter'){adicionarTag();event.preventDefault()}">
@@ -428,12 +438,12 @@ function renderFormulario(p, sigs) {
       <p style="font-size:13px;color:#4a6fa5;margin-bottom:16px;">Personalize como essa palavra aparece no Google. Se deixar vazio, usa o padrão automático.</p>
       <div class="campo" style="margin-bottom:14px;">
         <label>Título no Google <span style="color:#2a4a7a;font-size:11px;">(máx. 60 caracteres)</span></label>
-        <input type="text" id="f-seo-titulo" placeholder='ex: Rolê: A origem maluca dessa gíria brasileira' maxlength="60" value="${p?.seo_titulo || ''}">
-        <div style="font-size:11px;color:#2a4a7a;margin-top:4px;">Padrão: "O que é ${p?.termo || 'Palavra'}? - Significado e origem da gíria | CyberUniverso"</div>
+        <input type="text" id="f-seo-titulo" placeholder='ex: Rolê: A origem maluca dessa gíria brasileira' maxlength="60" value="${escapeHtml(p?.seo_titulo || '')}">
+        <div style="font-size:11px;color:#2a4a7a;margin-top:4px;">Padrão: "O que é ${escapeHtml(p?.termo || 'Palavra')}? - Significado e origem da gíria | CyberUniverso"</div>
       </div>
       <div class="campo">
         <label>Descrição no Google <span style="color:#2a4a7a;font-size:11px;">(máx. 155 caracteres)</span></label>
-        <textarea id="f-seo-descricao" placeholder="ex: Descubra a origem surpreendente de Rolê e como essa gíria conquistou o Brasil..." maxlength="155" rows="3" style="width:100%;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;">${p?.seo_descricao || ''}</textarea>
+        <textarea id="f-seo-descricao" placeholder="ex: Descubra a origem surpreendente de Rolê e como essa gíria conquistou o Brasil..." maxlength="155" rows="3" style="width:100%;background:var(--card2);border:1px solid var(--borda);border-radius:8px;padding:10px 14px;color:var(--texto);font-family:'Nunito',sans-serif;font-size:14px;resize:vertical;">${escapeHtml(p?.seo_descricao || '')}</textarea>
         <div style="font-size:11px;color:#2a4a7a;margin-top:4px;">Padrão: gerado automaticamente com o primeiro significado da palavra.</div>
       </div>
     </div>
@@ -461,8 +471,8 @@ function renderCatsLista() {
     return `
       <div class="cat-par">
         <div class="cat-par-info">
-          📁 ${cat?.nome || '—'}
-          ${sub ? `<div class="cat-par-sub">↳ ${sub.nome}</div>` : ''}
+          📁 ${escapeHtml(cat?.nome || '—')}
+          ${sub ? `<div class="cat-par-sub">↳ ${escapeHtml(sub.nome)}</div>` : ''}
         </div>
         <button class="btn-rem-cat" onclick="removerCategoria(${i})">✕ Remover</button>
       </div>`
@@ -475,7 +485,7 @@ function atualizarSubsNovas() {
   const subs = cat?.subcategorias || []
   document.getElementById('sub-select-nova').innerHTML =
     '<option value="">Subcategoria (opcional)...</option>' +
-    subs.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')
+    subs.map(s => `<option value="${s.id}">${escapeHtml(s.nome)}</option>`).join('')
 }
 
 function adicionarCategoria() {
@@ -504,14 +514,14 @@ function criarBlocoSignificado(num, texto, extras) {
     <div class="sig-extra-item">
       <button class="btn-rem-extra" onclick="this.closest('.sig-extra-item').remove()">✕</button>
       <input class="sig-extra-titulo" type="text" placeholder="Título adicional (ex: Origem, Curiosidade...)" value="${(ex.titulo||'').replace(/"/g,'&quot;')}">
-      <textarea class="sig-extra-texto" placeholder="Texto adicional...">${ex.texto||''}</textarea>
+      <textarea class="sig-extra-texto" placeholder="Texto adicional...">${escapeHtml(ex.texto||'')}</textarea>
     </div>`).join('')
 
   return `
     <div class="sig-bloco-wrap">
       <div class="sig-bloco">
         <div class="sig-numero">Significado ${num}</div>
-        <textarea class="sig-texto" placeholder="Descreva o significado...">${texto}</textarea>
+        <textarea class="sig-texto" placeholder="Descreva o significado...">${escapeHtml(texto)}</textarea>
         <div class="sig-extras">${extrasHtml}</div>
         <div class="sig-acoes">
           <button class="btn-add-sub" onclick="adicionarExtra(this)">➕ Título adicional</button>

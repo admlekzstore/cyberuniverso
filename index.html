@@ -673,6 +673,16 @@
 <script>
   const sb = window._supabase
 
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return ''
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  }
+
   // navbar scroll
   window.addEventListener('scroll', () => {
 
@@ -728,7 +738,7 @@
         const tagItem = document.createElement('div')
         tagItem.className = 'autocomplete-item'
         tagItem.style.cssText = 'color:var(--ciano);border-top:1px solid var(--borda)'
-        tagItem.innerHTML = '&#128278; Buscar "' + val + '" em tags e sin&#244;nimos'
+        tagItem.innerHTML = '&#128278; Buscar "' + escapeHtml(val) + '" em tags e sin&#244;nimos'
         tagItem.onclick = function() { window.location.href = 'tag.html?t=' + encodeURIComponent(val) }
         box.appendChild(tagItem)
         box.classList.add('open')
@@ -741,7 +751,7 @@
       merged.forEach(p => {
         const div = document.createElement('div')
         div.className = 'autocomplete-item'
-        div.innerHTML = p.termo.replace(regex, '<strong style="color:var(--amarelo)">$1</strong>')
+        div.innerHTML = escapeHtml(p.termo).replace(regex, '<strong style="color:var(--amarelo)">$1</strong>')
         div.onclick = function() { window.location.href = 'palavra.html?w=' + p.slug }
         box.appendChild(div)
       })
@@ -750,7 +760,7 @@
       const footer = document.createElement('div')
       footer.className = 'autocomplete-item'
       footer.style.cssText = 'color:#4a6fa5;font-size:13px;border-top:1px solid var(--borda)'
-      footer.innerHTML = '&#128269; Ver todos os resultados para "' + val + '"'
+      footer.innerHTML = '&#128269; Ver todos os resultados para "' + escapeHtml(val) + '"'
       footer.onclick = function() { window.doSearch() }
       box.appendChild(footer)
 
@@ -758,7 +768,7 @@
       const tagFooter = document.createElement('div')
       tagFooter.className = 'autocomplete-item'
       tagFooter.style.cssText = 'color:var(--ciano);font-size:13px;border-top:1px solid var(--borda)'
-      tagFooter.innerHTML = '&#128278; Ver tamb&#233;m "' + val + '" em tags e sin&#244;nimos'
+      tagFooter.innerHTML = '&#128278; Ver tamb&#233;m "' + escapeHtml(val) + '" em tags e sin&#244;nimos'
       tagFooter.onclick = function() { window.location.href = 'tag.html?t=' + encodeURIComponent(val) }
       box.appendChild(tagFooter)
 
@@ -786,10 +796,10 @@
       if (!fallback || fallback.length === 0) {
         list.innerHTML = '<li style="text-align:center;color:#4a6fa5;padding:10px;font-size:13px">Nenhuma palavra ainda</li>'; return
       }
-      list.innerHTML = fallback.map(p => `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`).join('')
+      list.innerHTML = fallback.map(p => `<li><a href="palavra.html?w=${encodeURIComponent(p.slug)}">${escapeHtml(p.termo)}</a></li>`).join('')
       return
     }
-    list.innerHTML = data.map(p => `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`).join('')
+    list.innerHTML = data.map(p => `<li><a href="palavra.html?w=${encodeURIComponent(p.slug)}">${escapeHtml(p.termo)}</a></li>`).join('')
   }
 
   // recentes
@@ -800,7 +810,7 @@
     if (error || !data || data.length === 0) {
       list.innerHTML = '<li style="text-align:center;color:#4a6fa5;padding:10px;font-size:13px">Nenhuma palavra ainda</li>'; return
     }
-    list.innerHTML = data.map(p => `<li><a href="palavra.html?w=${p.slug}">${p.termo}</a></li>`).join('')
+    list.innerHTML = data.map(p => `<li><a href="palavra.html?w=${encodeURIComponent(p.slug)}">${escapeHtml(p.termo)}</a></li>`).join('')
   }
 
   carregarStats()

@@ -389,6 +389,16 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 let userId = null
 let avatarFile = null
 
@@ -526,9 +536,9 @@ async function carregarCategorias() {
   const wrap = document.getElementById('catsDisponiveis')
   if (!cats) return
   wrap.innerHTML = cats.flatMap(c => [
-    `<div class="cat-opcao" onclick="toggleCat('${c.id}','${c.icone||'📁'} ${c.nome}',this)" data-id="${c.id}">${c.icone||'📁'} ${c.nome}</div>`,
+    `<div class="cat-opcao" onclick="toggleCat('${c.id}', ${JSON.stringify((c.icone||'📁') + ' ' + c.nome).replace(/"/g, '&quot;')}, this)" data-id="${c.id}">${escapeHtml(c.icone||'📁')} ${escapeHtml(c.nome)}</div>`,
     ...(c.subcategorias||[]).map(s =>
-      `<div class="cat-opcao" onclick="toggleCat('sub_${s.id}','↳ ${s.nome}',this)" data-id="sub_${s.id}" style="padding-left:16px;opacity:0.8;">↳ ${s.nome}</div>`
+      `<div class="cat-opcao" onclick="toggleCat('sub_${s.id}', ${JSON.stringify('↳ ' + s.nome).replace(/"/g, '&quot;')}, this)" data-id="sub_${s.id}" style="padding-left:16px;opacity:0.8;">↳ ${escapeHtml(s.nome)}</div>`
     )
   ]).join('')
 }
@@ -687,7 +697,7 @@ function renderCatsSelecionadas(cats) {
   wrap.innerHTML = cats.map(cid => {
     const el = document.querySelector(`.cat-opcao[data-id="${cid}"]`)
     const label = el ? el.textContent : cid
-    return `<div class="cat-tag-sel">${label}<button onclick="removerCat('${cid}')">✕</button></div>`
+    return `<div class="cat-tag-sel">${escapeHtml(label)}<button onclick="removerCat('${cid}')">✕</button></div>`
   }).join('')
 }
 
