@@ -61,39 +61,43 @@
   <a href="admin.html" class="btn-voltar">← Admin</a>
 </div>
 
-<!-- INSTRUÇÕES -->
-<div class="card">
-  <div class="card-titulo">📋 Como usar</div>
-  <ol class="instrucoes">
-    <li>Clique em <strong>Gerar Sitemap</strong> — ele vai buscar todas as palavras aprovadas do banco.</li>
-    <li>Clique em <strong>Baixar sitemap.xml</strong> e salve o arquivo na raiz do seu projeto (mesma pasta do <code>index.html</code>).</li>
-    <li>Faça o commit e push no GitHub normalmente.</li>
-    <li>No <strong>Google Search Console</strong>, vá em <strong>Sitemaps</strong> e envie: <code>https://cyberuniverso.com/sitemap.xml</code></li>
-    <li>Repita esse processo sempre que adicionar muitas palavras novas (uma vez por semana ou por mês é suficiente).</li>
-  </ol>
-</div>
+<div id="acessoMsg" style="text-align:center;padding:60px 20px;color:#4a6fa5;font-family:'Bangers',sans-serif;font-size:20px;">Verificando acesso...</div>
 
-<!-- GERADOR -->
-<div class="card">
-  <div class="card-titulo">⚡ Gerador</div>
-
-  <div class="info-box">
-    <strong>O que entra no sitemap?</strong>
-    Todas as palavras com status <strong>aprovada</strong>, mais as páginas fixas do site. O <strong>Top 10</strong> mais visualizados recebe prioridade <strong>0.9</strong>, as demais <strong>0.8</strong>.
+<div id="pageConteudo" style="display:none;">
+  <!-- INSTRUÇÕES -->
+  <div class="card">
+    <div class="card-titulo">📋 Como usar</div>
+    <ol class="instrucoes">
+      <li>Clique em <strong>Gerar Sitemap</strong> — ele vai buscar todas as palavras aprovadas do banco.</li>
+      <li>Clique em <strong>Baixar sitemap.xml</strong> e salve o arquivo na raiz do seu projeto (mesma pasta do <code>index.html</code>).</li>
+      <li>Faça o commit e push no GitHub normalmente.</li>
+      <li>No <strong>Google Search Console</strong>, vá em <strong>Sitemaps</strong> e envie: <code>https://cyberuniverso.com/sitemap.xml</code></li>
+      <li>Repita esse processo sempre que adicionar muitas palavras novas (uma vez por semana ou por mês é suficiente).</li>
+    </ol>
   </div>
 
-  <div class="stats">
-    <div class="stat"><span class="stat-num" id="statPalavras">—</span><span class="stat-label">Palavras</span></div>
-    <div class="stat"><span class="stat-num" id="statTotal">—</span><span class="stat-label">URLs totais</span></div>
-    <div class="stat"><span class="stat-num" id="statData">—</span><span class="stat-label">Gerado em</span></div>
+  <!-- GERADOR -->
+  <div class="card">
+    <div class="card-titulo">⚡ Gerador</div>
+
+    <div class="info-box">
+      <strong>O que entra no sitemap?</strong>
+      Todas as palavras com status <strong>aprovada</strong>, mais as páginas fixas do site. O <strong>Top 10</strong> mais visualizados recebe prioridade <strong>0.9</strong>, as demais <strong>0.8</strong>.
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="stat-num" id="statPalavras">—</span><span class="stat-label">Palavras</span></div>
+      <div class="stat"><span class="stat-num" id="statTotal">—</span><span class="stat-label">URLs totais</span></div>
+      <div class="stat"><span class="stat-num" id="statData">—</span><span class="stat-label">Gerado em</span></div>
+    </div>
+
+    <button class="btn-gerar" id="btnGerar" onclick="gerarSitemap()">🚀 GERAR SITEMAP</button>
+    <button class="btn-copiar" id="btnCopiar" onclick="copiarXML()">📋 COPIAR XML</button>
+    <button class="btn-download" id="btnDownload" onclick="baixarXML()">⬇️ BAIXAR sitemap.xml</button>
+
+    <div class="progresso" id="progresso"></div>
+    <div class="xml-output" id="xmlOutput"></div>
   </div>
-
-  <button class="btn-gerar" id="btnGerar" onclick="gerarSitemap()">🚀 GERAR SITEMAP</button>
-  <button class="btn-copiar" id="btnCopiar" onclick="copiarXML()">📋 COPIAR XML</button>
-  <button class="btn-download" id="btnDownload" onclick="baixarXML()">⬇️ BAIXAR sitemap.xml</button>
-
-  <div class="progresso" id="progresso"></div>
-  <div class="xml-output" id="xmlOutput"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -102,6 +106,19 @@
 const sb = window._supabase
 const BASE_URL = 'https://cyberuniverso.com'
 let xmlGerado = ''
+
+async function checarAcesso() {
+  const { data: { session } } = await sb.auth.getSession()
+  if (!session) { window.location.href = 'cadastro.html'; return }
+  const { data: perfil } = await sb.from('perfis').select('is_admin').eq('id', session.user.id).maybeSingle()
+  if (!perfil?.is_admin) {
+    document.getElementById('acessoMsg').textContent = '🚫 Acesso negado'
+    return
+  }
+  document.getElementById('acessoMsg').style.display = 'none'
+  document.getElementById('pageConteudo').style.display = 'block'
+}
+checarAcesso()
 
 // Páginas fixas do site
 const PAGINAS_FIXAS = [
