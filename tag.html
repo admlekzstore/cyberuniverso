@@ -86,6 +86,16 @@
 <script src="./supabase.js"></script>
 <script>
 const sb = window._supabase
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return ''
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 const params = new URLSearchParams(window.location.search)
 const termo = params.get('t') || ''
 
@@ -134,7 +144,7 @@ async function init() {
     document.getElementById('conteudo').innerHTML = `
       <div class="sem-resultado">
         <div class="sem-emoji">🔍</div>
-        <div class="sem-texto">Nenhuma palavra encontrada para "<strong>${termo}</strong>"</div>
+        <div class="sem-texto">Nenhuma palavra encontrada para "<strong>${escapeHtml(termo)}</strong>"</div>
         <a href="todas.html" class="sem-link">← Ver todas as palavras</a>
       </div>`
     return
@@ -157,7 +167,7 @@ async function init() {
     document.getElementById('conteudo').innerHTML = `
       <div class="sem-resultado">
         <div class="sem-emoji">🔍</div>
-        <div class="sem-texto">Nenhuma palavra aprovada encontrada para "<strong>${termo}</strong>"</div>
+        <div class="sem-texto">Nenhuma palavra aprovada encontrada para "<strong>${escapeHtml(termo)}</strong>"</div>
         <a href="todas.html" class="sem-link">← Ver todas as palavras</a>
       </div>`
     return
@@ -170,12 +180,12 @@ async function init() {
   let html = ''
 
   if (porTag.length > 0) {
-    html += `<div class="secao-titulo">🔖 Com a tag <span style="color:var(--amarelo);margin-left:6px">#${termo}</span></div>`
+    html += `<div class="secao-titulo">🔖 Com a tag <span style="color:var(--amarelo);margin-left:6px">#${escapeHtml(termo)}</span></div>`
     html += `<div class="contador">Mostrando <span>${porTag.length}</span> palavra${porTag.length !== 1 ? 's' : ''}</div>`
     html += '<div class="palavras-grid">'
     porTag.forEach(p => {
-      html += `<a href="palavra.html?w=${p.slug}" class="palavra-item">
-        <div><span class="palavra-nome">${p.termo}</span></div>
+      html += `<a href="palavra.html?w=${encodeURIComponent(p.slug)}" class="palavra-item">
+        <div><span class="palavra-nome">${escapeHtml(p.termo)}</span></div>
         <span class="palavra-seta">→</span>
       </a>`
     })
@@ -183,14 +193,14 @@ async function init() {
   }
 
   if (porSin.length > 0) {
-    html += `<div class="secao-titulo">🔄 Com o sinônimo <span style="color:var(--amarelo);margin-left:6px">${termo}</span></div>`
+    html += `<div class="secao-titulo">🔄 Com o sinônimo <span style="color:var(--amarelo);margin-left:6px">${escapeHtml(termo)}</span></div>`
     html += `<div class="contador">Mostrando <span>${porSin.length}</span> palavra${porSin.length !== 1 ? 's' : ''}</div>`
     html += '<div class="palavras-grid">'
     porSin.forEach(p => {
-      html += `<a href="palavra.html?w=${p.slug}" class="palavra-item">
+      html += `<a href="palavra.html?w=${encodeURIComponent(p.slug)}" class="palavra-item">
         <div>
-          <span class="palavra-nome">${p.termo}</span>
-          <div class="palavra-detalhe">sin: ${sinonimoPorPalavra[p.id] || termo}</div>
+          <span class="palavra-nome">${escapeHtml(p.termo)}</span>
+          <div class="palavra-detalhe">sin: ${escapeHtml(sinonimoPorPalavra[p.id] || termo)}</div>
         </div>
         <span class="palavra-seta">→</span>
       </a>`
