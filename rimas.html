@@ -25,9 +25,9 @@
     .busca-container { display:flex; align-items:center; background:var(--card); border:2px solid var(--ciano); border-radius:12px; padding:6px 6px 6px 20px; box-shadow:0 0 30px rgba(0,234,255,.15); transition:box-shadow .3s; }
     .busca-container:focus-within { box-shadow:0 0 40px rgba(0,234,255,.3); }
     .busca-prefix { font-family:'Fredoka One',sans-serif; color:rgba(224,232,255,.4); font-size:1rem; white-space:nowrap; margin-right:8px; }
-    #input-busca { flex:1; background:transparent; border:none; outline:none; color:#fff; font-family:'Nunito',sans-serif; font-size:1.2rem; font-weight:700; caret-color:var(--ciano); }
+    #input-busca { flex:1; min-width:0; background:transparent; border:none; outline:none; color:#fff; font-family:'Nunito',sans-serif; font-size:1.2rem; font-weight:700; caret-color:var(--ciano); }
     #input-busca::placeholder { color:rgba(255,255,255,.25); }
-    #btn-buscar { background:var(--ciano); color:#000; border:none; border-radius:8px; padding:10px 24px; font-family:'Fredoka One',sans-serif; font-size:1rem; cursor:pointer; transition:background .2s; white-space:nowrap; }
+    #btn-buscar { flex-shrink:0; background:var(--ciano); color:#000; border:none; border-radius:8px; padding:10px 24px; font-family:'Fredoka One',sans-serif; font-size:1rem; cursor:pointer; transition:background .2s; white-space:nowrap; }
     #btn-buscar:hover { background:#fff; }
     .autocomplete-box { position:absolute; top:calc(100% + 8px); left:0; right:0; background:var(--card); border:1px solid var(--borda); border-radius:10px; overflow:hidden; z-index:100; display:none; }
     .autocomplete-box.ativo { display:block; }
@@ -182,7 +182,7 @@
     .vazio { text-align:center; padding:32px; color:rgba(224,232,255,.3); font-size:.9rem; width:100%; }
     @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(0,234,255,.4)} 50%{text-shadow:0 0 40px rgba(0,234,255,.8),0 0 80px rgba(0,234,255,.3)} }
     .ciano-neon { animation:neon-pulse 3s ease-in-out infinite; color:var(--ciano); }
-    @media(max-width:600px) { .hero{padding:60px 16px 32px} .girias-grid{grid-template-columns:1fr 1fr} }
+    @media(max-width:600px) { .hero{padding:60px 16px 32px} .girias-grid{grid-template-columns:1fr 1fr} #btn-buscar{padding:10px 16px} }
   </style>
 </head>
 <body>
