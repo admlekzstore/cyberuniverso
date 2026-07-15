@@ -200,7 +200,7 @@ h1.glitch .accent{
 /* Cada categoria tem uma cor de destaque própria — mantém o card escuro/espacial
    mas dá contraste e diversão nos detalhes. Editar aqui muda em todas as páginas. */
 .category[data-tipo="girias"] h3{color:var(--lime);}
-.category[data-tipo="girias"] .chip{border-color:var(--lime);}
+.category[data-tipo="girias"] .chip{border-color:rgba(186,255,41,0.5);}
 .category[data-tipo="marcas"] h3{color:var(--blue);}
 .category[data-tipo="marcas"] .chip{border-color:var(--blue);}
 .category[data-tipo="lugares"] h3{color:var(--cyan);}
@@ -208,13 +208,13 @@ h1.glitch .accent{
 .category[data-tipo="culturapop"] h3{color:var(--skyblue);}
 .category[data-tipo="culturapop"] .chip{border-color:var(--skyblue);}
 .category[data-tipo="personagem"] h3{color:var(--gold);}
-.category[data-tipo="personagem"] .chip{border-color:var(--gold);}
+.category[data-tipo="personagem"] .chip{border-color:rgba(255,196,0,0.55);}
 .category[data-tipo="famoso"] h3{color:var(--yellow);}
-.category[data-tipo="famoso"] .chip{border-color:var(--yellow);}
+.category[data-tipo="famoso"] .chip{border-color:rgba(255,240,0,0.5);}
 .category[data-tipo="parque"] h3{color:var(--white); text-shadow:0 0 6px rgba(255,255,255,0.5);}
 .category[data-tipo="parque"] .chip{border-color:var(--white);}
 .category[data-tipo="expressoes"] h3{color:var(--gold);}
-.category[data-tipo="expressoes"] .chip{border-color:var(--gold);}
+.category[data-tipo="expressoes"] .chip{border-color:rgba(255,196,0,0.55);}
 .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
 .chip{
   background:var(--bg);
