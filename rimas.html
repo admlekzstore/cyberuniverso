@@ -5,9 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title id="page-title">Rimas — CyberUniverso</title>
   <meta name="description" id="page-desc" content="Encontre rimas para qualquer palavra. Gírias, palavras comuns e cultura pop para compositores de funk, trap e rap." />
+  <link rel="canonical" href="https://cyberuniverso.com/rimas.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "O que é uma rima perfeita e uma rima imperfeita?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Rima perfeita é quando o som é idêntico a partir da vogal tônica (como 'casa' e 'brasa'). Rima imperfeita (ou aproximada) é quando o som é só parecido, não idêntico — muito usada em funk, rap e trap." }
+      },
+      {
+        "@type": "Question",
+        "name": "Como achar rimas pra fazer uma música de rap ou trap?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Digite a palavra no buscador do CyberUniverso e além das rimas do dicionário formal, você também recebe gírias, expressões e termos de cultura pop." }
+      },
+      {
+        "@type": "Question",
+        "name": "O que são rimas ricas e rimas pobres?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Rima rica é entre palavras de classes gramaticais diferentes. Rima pobre é entre palavras da mesma classe gramatical." }
+      },
+      {
+        "@type": "Question",
+        "name": "Como usar um dicionário de rimas pra destravar o bloqueio criativo?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Busque a palavra-chave da sua ideia e explore não só as rimas exatas, mas as gírias e categorias relacionadas, como Universos e Cultura Pop." }
+      },
+      {
+        "@type": "Question",
+        "name": "O que é rima toante (ou assonante)?",
+        "acceptedAnswer": { "@type": "Answer", "text": "É quando só as vogais rimam, as consoantes podem ser diferentes, como em 'fazer' e 'beber'. É bastante usada em cordel, repente e rap." }
+      },
+      {
+        "@type": "Question",
+        "name": "Dá pra rimar com gírias, memes e nomes famosos?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Sim. Além das rimas de dicionário, o CyberUniverso mostra gírias atuais, expressões, marcas, famosos, personagens e muito mais." }
+      },
+      {
+        "@type": "Question",
+        "name": "Como funciona o dicionário de rimas colaborativo?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Qualquer pessoa pode sugerir uma gíria, expressão ou palavra nova. A sugestão passa por uma revisão rápida antes de entrar no site." }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre um dicionário de rimas comum e o CyberUniverso?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Dicionários tradicionais mostram só palavras formais. O CyberUniverso soma gírias atualizadas, expressões, marcas e referências de cultura pop." }
+      }
+    ]
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase.js"></script>
   <style>
@@ -183,6 +232,27 @@
     @keyframes neon-pulse { 0%,100%{text-shadow:0 0 20px rgba(0,234,255,.4)} 50%{text-shadow:0 0 40px rgba(0,234,255,.8),0 0 80px rgba(0,234,255,.3)} }
     .ciano-neon { animation:neon-pulse 3s ease-in-out infinite; color:var(--ciano); }
     @media(max-width:600px) { .hero{padding:60px 16px 32px} .girias-grid{grid-template-columns:1fr 1fr} #btn-buscar{padding:10px 16px} }
+
+    /* ===================== CONTEÚDO SEO (intro, mais buscadas, FAQ) ===================== */
+    .seo-conteudo { max-width:820px; margin:0 auto; padding:0 20px 60px; }
+    .seo-bloco { margin-bottom:44px; }
+    .seo-bloco h2 { font-family:'Fredoka One',sans-serif; font-size:1.15rem; color:var(--ciano); margin-bottom:14px; letter-spacing:.5px; }
+    .seo-bloco p { color:rgba(224,232,255,.7); font-size:.98rem; line-height:1.75; margin-bottom:12px; }
+    .seo-bloco p:last-child { margin-bottom:0; }
+    p.seo-intro-titulo { font-family:'Bangers',sans-serif; font-size:clamp(1.9rem,5.5vw,2.9rem); letter-spacing:1px; color:var(--amarelo); text-shadow:0 0 24px rgba(245,232,0,.4); margin:0 auto 16px; line-height:1.2; text-wrap:balance; max-width:680px; text-align:center; }
+
+    #mais-buscadas { display:flex; flex-wrap:wrap; gap:8px; }
+    #mais-buscadas .chip { display:inline-block; border-radius:20px; padding:6px 16px; font-size:.88rem; font-weight:700; border:2px solid var(--borda); color:rgba(224,232,255,.5); text-decoration:none; background:transparent; }
+    #mais-buscadas a.chip.link { color:var(--azul); border-color:var(--azul); transition:all .15s; }
+    #mais-buscadas a.chip.link:hover { background:rgba(26,110,245,.12); }
+    #mais-buscadas .chip-pendente { opacity:.5; }
+    #mais-buscadas .chip-atual { color:var(--amarelo); border-color:var(--amarelo); }
+
+    .faq-item { border-bottom:1px solid var(--borda); padding:16px 0; }
+    .faq-item:last-child { border-bottom:none; }
+    .faq-pergunta { font-family:'Fredoka One',sans-serif; font-size:.98rem; color:#fff; margin-bottom:8px; display:flex; gap:10px; }
+    .faq-pergunta span { color:var(--ciano); flex-shrink:0; }
+    .faq-resposta { color:rgba(224,232,255,.65); font-size:.92rem; line-height:1.7; padding-left:24px; }
   </style>
 </head>
 <body>
@@ -199,6 +269,81 @@
     </div>
     <div class="autocomplete-box" id="autocomplete-box"></div>
   </div>
+</section>
+
+<!-- ===================== CONTEÚDO SEO — só aparece antes de uma busca ser feita ===================== -->
+<section class="seo-conteudo" id="seo-conteudo">
+
+  <div class="seo-bloco">
+    <p class="seo-intro-titulo">Encontre a Rima Perfeita com Nosso Gerador de Rimas Grátis</p>
+    <p>Bem-vindo ao dicionário de rimas online mais completo pra compositores, poetas e escritores. Se você precisa encontrar palavras que rimam pra criar sua próxima música, poesia ou verso de trap, nossa ferramenta de rimas oferece combinações instantâneas e precisas pra destravar o seu processo criativo.</p>
+  </div>
+
+  <div class="seo-bloco">
+    <h2>🔥 Dicionário de Gírias Colaborativo e Atual</h2>
+    <p>O nosso site prioriza rimas com palavras mais usadas na língua portuguesa, evitando termos em desuso. Além disso, mostramos rimas com gírias atuais e expressões, frequentemente atualizadas. Você também pode colaborar, mandando significados de gírias ou palavras que rimam mas ainda não estão catalogadas.</p>
+  </div>
+
+  <div class="seo-bloco">
+    <h2>🌌 Rimas com Marcas, Personagens e Filmes</h2>
+    <p>Outro diferencial do site é que dá pra rimar com outros elementos, separados em dois blocos. Um é "Universos", com rimas de termos do Espaço Sideral, Lendas e Criaturas, Locais, Elementos da Natureza e Parque de Diversões. O outro é "Cultura Pop", com Famosos, Marcas, Filmes, Animes, Personagens e Locais da Ficção, Times, e muito mais. E o melhor: tá sentindo falta de algum? Pode mandar, é muito simples!</p>
+  </div>
+
+  <div class="seo-bloco">
+    <h2>🔍 Como Funciona o Nosso Buscador de Rimas?</h2>
+    <p>É só digitar qualquer palavra no campo de busca pra receber uma lista de rimas de gírias catalogadas, gírias não catalogadas, Universos e Cultura Pop. Você também pode explorar as categorias e blocos pra se inspirar e escrever novos versos ou textos. Bora rimar!</p>
+  </div>
+
+  <div class="seo-bloco">
+    <h2>🔥 Rimas Mais Buscadas</h2>
+    <div id="mais-buscadas"><!-- preenchido por rimas-com-mais-buscadas.js --></div>
+  </div>
+
+  <div class="seo-bloco">
+    <h2>❓ Perguntas Frequentes</h2>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>O que é uma rima perfeita e uma rima imperfeita?</p>
+      <p class="faq-resposta">Rima perfeita é quando o som é idêntico a partir da vogal tônica (como "casa" e "brasa"). Rima imperfeita (ou aproximada) é quando o som é só parecido, não idêntico — muito usada em funk, rap e trap porque soa mais solta e natural do que a rima "de manual".</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>Como achar rimas pra fazer uma música de rap ou trap?</p>
+      <p class="faq-resposta">Digite a palavra no buscador do CyberUniverso e além das rimas do dicionário formal, você também recebe gírias, expressões e termos de cultura pop — o tipo de rima que realmente aparece em letra de rap e trap, e que a maioria dos outros sites não tem.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>O que são rimas ricas e rimas pobres?</p>
+      <p class="faq-resposta">Rima rica é entre palavras de classes gramaticais diferentes (um verbo rimando com um substantivo, por exemplo). Rima pobre é entre palavras da mesma classe (dois substantivos, dois verbos). Rima rica costuma soar mais interessante numa letra porque é menos óbvia.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>Como usar um dicionário de rimas pra destravar o bloqueio criativo?</p>
+      <p class="faq-resposta">Busque a palavra-chave da sua ideia e explore não só as rimas exatas, mas as gírias e categorias relacionadas (Universos, Cultura Pop). Muitas vezes uma palavra que você nem tinha pensado — tipo uma gíria ou o nome de um lugar — puxa uma linha inteira nova de verso.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>O que é rima toante (ou assonante)?</p>
+      <p class="faq-resposta">É quando só as vogais rimam, as consoantes podem ser diferentes (como "fazer" e "beber"). É bastante usada em cordel, repente e também no rap, porque dá mais liberdade de vocabulário sem perder a musicalidade do verso.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>Dá pra rimar com gírias, memes e nomes famosos?</p>
+      <p class="faq-resposta">Sim, e é isso que faz o CyberUniverso diferente. Além das rimas de dicionário, você encontra gírias atuais, expressões do dia a dia, marcas, famosos, personagens de filme/anime e muito mais — tudo organizado em categorias fáceis de explorar.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>Como funciona o dicionário de rimas colaborativo?</p>
+      <p class="faq-resposta">Qualquer pessoa pode sugerir uma gíria, expressão ou palavra nova que rime com o termo buscado. A sugestão passa por uma revisão rápida antes de entrar no site — assim o dicionário fica sempre atualizado com o que tá rolando de verdade.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-pergunta"><span>▸</span>Qual a diferença entre um dicionário de rimas comum e o CyberUniverso?</p>
+      <p class="faq-resposta">Dicionários de rima tradicionais mostram só palavras formais do português. O CyberUniverso soma a isso gírias atualizadas, expressões, marcas, nomes famosos e referências de cultura pop — pensado especificamente pra quem escreve letra de música, não só poesia clássica.</p>
+    </div>
+
+  </div>
+
 </section>
 
 <section id="resultados">
@@ -630,6 +775,8 @@ async function buscar(palavra, semPush) {
   document.getElementById('page-title').textContent = 'O que rima com ' + minhaPalavra + '? — CyberUniverso';
   document.getElementById('hero-palavra').textContent = minhaPalavra + '?';
   document.getElementById('resultados').classList.add('ativo');
+  var seoConteudo = document.getElementById('seo-conteudo');
+  if (seoConteudo) seoConteudo.style.display = 'none';
   document.getElementById('res-palavra').textContent = minhaPalavra;
   dicCatSelecionada = null;
   ncCatsSelecionadas = new Set();
@@ -1500,6 +1647,7 @@ async function registrarBusca(palavra, chave) {
   </div>
 </div>
 
+  <script src="./rimas-com-mais-buscadas.js"></script>
   <script src="./header.js"></script>
 </body>
 </html>

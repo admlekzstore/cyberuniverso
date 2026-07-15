@@ -1,0 +1,340 @@
+/* ============================================================
+   rimas-com.css
+   Estilo compartilhado por TODAS as páginas "rimas-com-X.html"
+   Pra mudar o visual de todas as páginas de uma vez: edite só este arquivo.
+   ============================================================ */
+
+:root{
+  --bg:#020308;
+  --card:#0a1628;
+  --card-alt:#1a3a6e;
+  --blue:#1a6ef5;
+  --skyblue:#4fc3f7;
+  --yellow:#fff000;
+  --gold:#ffc400;
+  --cyan:#00eaff;
+  --lime:#baff29;
+  --white:#ffffff;
+  --text:#e8f0ff;
+  --muted:#7d93b8;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;}
+
+html{background:var(--bg);}
+
+body{
+  margin:0;
+  color:var(--text);
+  font-family:'Nunito', sans-serif;
+  line-height:1.6;
+  position:relative;
+  background:var(--bg);
+  overflow-x:hidden;
+}
+
+/* ---------------------------------------------------------
+   FUNDO ESTRELADO — CSS puro, sem imagem, leve pra qualquer
+   quantidade de páginas. Duas camadas de estrelas (tamanhos
+   diferentes) + brilho azul/ciano bem sutil + leve piscar.
+   --------------------------------------------------------- */
+.starfield{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:0;
+  background:var(--bg);
+  overflow:hidden;
+  display:block;
+}
+.starfield .glow{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(26,110,245,0.18), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(0,234,255,0.1), transparent 45%);
+}
+
+/* Estrelas de verdade, desenhadas via <canvas> por rimas-com-stars.js.
+   Fundo fica em z-index:0, canvas das estrelas em z-index:1 (mesmo nível do
+   <main>, que vem depois no HTML e por isso pinta por cima). Evitar z-index
+   negativo aqui: em alguns navegadores ele impede a camada de ser composta
+   corretamente na tela, mesmo o conteúdo existindo (bug real, já testado). */
+.starfield-canvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:1;
+  display:block;
+  pointer-events:none;
+}
+
+main{max-width:960px; margin:0 auto; padding:0 20px 60px; position:relative; z-index:1;}
+
+/* -------- Breadcrumb -------- */
+.breadcrumb{
+  font-size:0.85rem;
+  color:var(--muted);
+  padding:18px 0 0;
+}
+.breadcrumb a{color:var(--cyan); text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+
+/* -------- Hero -------- */
+.hero{padding:36px 0 24px; text-align:center;}
+.eyebrow{
+  font-family:'Fredoka One', sans-serif;
+  color:var(--cyan);
+  letter-spacing:2px;
+  font-size:0.8rem;
+  margin:0 0 10px;
+  opacity:0.85;
+}
+h1.glitch{
+  font-family:'Bangers', cursive;
+  font-size:clamp(2.4rem, 7vw, 4.2rem);
+  letter-spacing:2px;
+  margin:0 0 14px;
+  color:var(--text);
+  text-shadow:0 0 12px rgba(26,110,245,0.6), 0 0 30px rgba(0,234,255,0.25);
+}
+h1.glitch .accent{
+  color:var(--yellow);
+  text-shadow:0 0 14px rgba(255,240,0,0.7);
+}
+.hero-sub{
+  max-width:680px;
+  margin:0 auto;
+  color:var(--muted);
+  font-size:1.05rem;
+}
+.hero-sub strong{color:var(--text);}
+
+.hero-stats{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-top:22px;
+  flex-wrap:wrap;
+}
+.stat-pill{
+  font-family:'Fredoka One', sans-serif;
+  font-size:0.8rem;
+  padding:8px 16px;
+  border-radius:30px;
+  border:1px solid var(--card-alt);
+  background:rgba(10,22,40,0.75);
+  backdrop-filter:blur(2px);
+}
+.stat-pill.cyan{color:var(--cyan); border-color:var(--cyan);}
+.stat-pill.yellow{color:var(--yellow); border-color:var(--yellow);}
+
+/* -------- Rima blocks -------- */
+.rima-block{
+  margin-top:38px;
+  background:var(--card);
+  border:1px solid var(--card-alt);
+  border-radius:var(--radius);
+  padding:26px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.rima-block.exata{border-left:4px solid var(--cyan);}
+.rima-block.aproximada{border-left:4px solid var(--yellow);}
+.rima-block.relacionadas{border-left:4px solid var(--blue);}
+
+.block-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.signal-dot{
+  width:10px; height:10px; border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan);
+}
+.rima-block.aproximada .signal-dot{background:var(--yellow); box-shadow:0 0 8px var(--yellow);}
+.rima-block.relacionadas .signal-dot{background:var(--blue); box-shadow:0 0 8px var(--blue);}
+
+.block-header h2{
+  font-family:'Fredoka One', sans-serif;
+  font-size:1.3rem;
+  margin:0;
+  color:var(--text);
+}
+.match-badge{
+  margin-left:auto;
+  font-family:'Fredoka One', sans-serif;
+  font-size:0.7rem;
+  padding:4px 10px;
+  border-radius:20px;
+  background:rgba(0,234,255,0.1);
+  color:var(--cyan);
+  border:1px solid var(--cyan);
+}
+.rima-block.aproximada .match-badge{
+  background:rgba(255,240,0,0.1);
+  color:var(--yellow);
+  border-color:var(--yellow);
+}
+.rima-block.relacionadas .match-badge{
+  background:rgba(26,110,245,0.12);
+  color:var(--blue);
+  border-color:var(--blue);
+}
+.block-desc{color:var(--muted); font-size:0.92rem; margin:6px 0 20px;}
+
+.category{margin-bottom:18px;}
+.category h3{
+  font-family:'Fredoka One', sans-serif;
+  font-size:0.95rem;
+  margin:0 0 10px;
+  color:var(--text);
+}
+
+/* Cada categoria tem uma cor de destaque própria — mantém o card escuro/espacial
+   mas dá contraste e diversão nos detalhes. Editar aqui muda em todas as páginas. */
+.category[data-tipo="girias"] h3{color:var(--lime);}
+.category[data-tipo="girias"] .chip{border-color:var(--lime);}
+.category[data-tipo="marcas"] h3{color:var(--blue);}
+.category[data-tipo="marcas"] .chip{border-color:var(--blue);}
+.category[data-tipo="lugares"] h3{color:var(--cyan);}
+.category[data-tipo="lugares"] .chip{border-color:var(--cyan);}
+.category[data-tipo="culturapop"] h3{color:var(--skyblue);}
+.category[data-tipo="culturapop"] .chip{border-color:var(--skyblue);}
+.category[data-tipo="personagem"] h3{color:var(--gold);}
+.category[data-tipo="personagem"] .chip{border-color:var(--gold);}
+.category[data-tipo="famoso"] h3{color:var(--yellow);}
+.category[data-tipo="famoso"] .chip{border-color:var(--yellow);}
+.category[data-tipo="parque"] h3{color:var(--white); text-shadow:0 0 6px rgba(255,255,255,0.5);}
+.category[data-tipo="parque"] .chip{border-color:var(--white);}
+.category[data-tipo="expressoes"] h3{color:var(--gold);}
+.category[data-tipo="expressoes"] .chip{border-color:var(--gold);}
+.chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  background:var(--bg);
+  border:2px solid var(--card-alt);
+  color:var(--text);
+  padding:6px 13px;
+  border-radius:20px;
+  font-size:0.88rem;
+  font-weight:600;
+}
+.chip.link{
+  color:var(--cyan);
+  border-color:var(--cyan);
+  text-decoration:none;
+  cursor:pointer;
+}
+.chip.link:hover{background:rgba(0,234,255,0.1);}
+
+/* subgroups inside aproximada */
+.subgroup{
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px dashed var(--card-alt);
+}
+.subgroup:first-of-type{margin-top:4px; border-top:none; padding-top:0;}
+.termination{
+  font-family:'Fredoka One', sans-serif;
+  color:var(--yellow);
+  font-size:1rem;
+  margin:0 0 14px;
+  letter-spacing:1px;
+  text-shadow:0 0 8px rgba(255,240,0,0.75);
+}
+
+/* -------- Widget: Rimas Mais Buscadas -------- */
+.mais-buscadas-section{margin-top:38px;}
+.mais-buscadas-section h2{
+  font-family:'Fredoka One', sans-serif;
+  font-size:1.15rem;
+  margin-bottom:14px;
+}
+#mais-buscadas{display:flex; flex-wrap:wrap; gap:8px;}
+#mais-buscadas .chip.link{
+  color:var(--blue);
+  border-color:var(--blue);
+  text-decoration:none;
+}
+#mais-buscadas .chip.link:hover{background:rgba(26,110,245,0.12);}
+#mais-buscadas .chip-atual{
+  color:var(--yellow);
+  border-color:var(--yellow);
+  font-weight:800;
+}
+#mais-buscadas .chip-pendente{
+  color:var(--muted);
+  border-color:var(--card-alt);
+  opacity:0.55;
+}
+
+/* -------- Related terms -------- */
+.related-terms{margin-top:38px;}
+.related-terms h2{
+  font-family:'Fredoka One', sans-serif;
+  font-size:1.15rem;
+  margin-bottom:14px;
+}
+.related-grid{display:flex; flex-wrap:wrap; gap:12px;}
+.related-card{
+  display:inline-block;
+  background:var(--card);
+  border:1px solid var(--blue);
+  color:var(--text);
+  text-decoration:none;
+  padding:10px 18px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:0.92rem;
+  transition:0.2s;
+}
+.related-card:hover{background:var(--blue); box-shadow:0 0 14px rgba(26,110,245,0.5);}
+
+/* -------- CTA -------- */
+.cta-search{
+  margin-top:44px;
+  text-align:center;
+  padding:32px 20px;
+  background:linear-gradient(135deg, var(--card), var(--card-alt));
+  border-radius:var(--radius);
+}
+.cta-search h2{
+  font-family:'Fredoka One', sans-serif;
+  margin:0 0 8px;
+  font-size:1.3rem;
+}
+.cta-search p{color:var(--muted); margin:0 0 20px;}
+.cta-button{
+  display:inline-block;
+  font-family:'Fredoka One', sans-serif;
+  background:var(--yellow);
+  color:#05080f;
+  padding:12px 28px;
+  border-radius:30px;
+  text-decoration:none;
+  font-size:1rem;
+  box-shadow:0 0 18px rgba(255,240,0,0.4);
+  transition:0.2s;
+}
+.cta-button:hover{transform:translateY(-2px); box-shadow:0 0 26px rgba(255,240,0,0.6);}
+
+/* -------- Info extra -------- */
+.info-extra{
+  margin-top:30px;
+  font-size:0.88rem;
+  color:var(--muted);
+  border-left:3px solid var(--card-alt);
+  padding-left:16px;
+}
+.info-extra strong{color:var(--text);}
+
+@media (max-width:600px){
+  .rima-block{padding:20px 16px;}
+  .match-badge{margin-left:0;}
+}
