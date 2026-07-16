@@ -283,28 +283,29 @@ h1.glitch .accent{
   opacity:0.55;
 }
 
-/* -------- Palavrões (escondidos por padrão, nunca usados como snippet do Google) -------- */
-.palavroes-details{margin-top:22px;}
+/* -------- Palavrões (só o conteúdo real fica escondido, com botão exibir/ocultar) -------- */
+.palavroes-details{margin-top:18px;}
 .palavroes-details summary{
   cursor:pointer;
   font-family:'Fredoka One', sans-serif;
-  font-size:0.85rem;
+  font-size:0.8rem;
   color:var(--muted);
   list-style:none;
   display:inline-flex;
   align-items:center;
-  gap:8px;
-  padding:8px 16px;
+  gap:6px;
+  padding:6px 14px;
   border:1px dashed var(--card-alt);
   border-radius:20px;
   transition:0.2s;
 }
 .palavroes-details summary::-webkit-details-marker{display:none;}
-.palavroes-details summary::before{content:'▸'; transition:transform 0.2s;}
-.palavroes-details[open] summary::before{transform:rotate(90deg);}
 .palavroes-details summary:hover{color:var(--text); border-color:var(--muted);}
 .palavroes-details[open] summary{color:var(--text);}
-.palavroes-chips{margin-top:14px; padding-top:14px; border-top:1px dashed var(--card-alt);}
+.palavroes-details .rotulo-aberto{display:none;}
+.palavroes-details[open] .rotulo-fechado{display:none;}
+.palavroes-details[open] .rotulo-aberto{display:inline;}
+.palavroes-chips{margin-top:12px; padding-top:12px; border-top:1px dashed var(--card-alt);}
 
 /* -------- Related terms -------- */
 .related-terms{margin-top:38px;}
