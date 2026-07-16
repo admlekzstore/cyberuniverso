@@ -302,6 +302,17 @@ h1.glitch .accent{
 .palavroes-details summary::-webkit-details-marker{display:none;}
 .palavroes-details summary:hover{color:var(--text); border-color:var(--muted);}
 .palavroes-details[open] summary{color:var(--text);}
+
+/* Estado fechado = aviso/alerta antes de clicar: texto e borda vermelhos.
+   Some assim que abre (regra acima já cuida do estado aberto). */
+.palavroes-details:not([open]) summary{
+  color:#ff4d4d;
+  border-color:#ff4d4d;
+}
+.palavroes-details:not([open]) summary:hover{
+  color:#ff7676;
+  border-color:#ff7676;
+}
 .palavroes-details .rotulo-aberto{display:none;}
 .palavroes-details[open] .rotulo-fechado{display:none;}
 .palavroes-details[open] .rotulo-aberto{display:inline;}
