@@ -10,7 +10,7 @@
 (function () {
   var LISTA = [
     { termo: 'casa',     href: 'rimas-com-casa.html',     pronta: true  },
-    { termo: 'eu',       href: 'rimas-com-eu.html',       pronta: false },
+    { termo: 'eu',       href: 'rimas-com-eu.html',       pronta: true  },
     { termo: 'vida',     href: 'rimas-com-vida.html',     pronta: true  },
     { termo: 'mais',     href: 'rimas-com-mais.html',     pronta: false },
     { termo: 'amor',     href: 'rimas-com-amor.html',     pronta: false },
