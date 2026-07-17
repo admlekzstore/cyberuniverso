@@ -711,36 +711,42 @@ async function obterChavesBusca(palavra) {
   }
   console.log('[rimas-debug] "' + palavra + '" → camada 1 não achou nada (' + (ownRes.data ? ownRes.data.length : 'erro') + ' linhas).');
 
-  // 2. Terminação literal — tenta 3, depois 2 letras, testando variações de acento nas vogais
-  var tamanhos;
-  if (palavra.length >= 3) tamanhos = [3, 2];
-  else if (palavra.length === 2) tamanhos = [2];
-  else tamanhos = [1];
+  // 2. Terminação literal — tenta do maior pro menor: até 5 letras, descendo até 2
+  //    (ou até 1 letra pra palavras bem curtas). Precisa tentar tamanhos maiores primeiro,
+  //    senão terminações como "eiro"/"eira" (4 letras) acabam batendo em "iro"/"ira" (3 letras)
+  //    por engano, quando a palavra digitada não está catalogada.
+  var maxSufixo = Math.min(5, palavra.length);
+  var minSufixo = palavra.length <= 2 ? palavra.length : 2;
+  var tamanhos = [];
+  for (var t = maxSufixo; t >= minSufixo; t--) tamanhos.push(t);
+
   for (var i = 0; i < tamanhos.length; i++) {
     var sufixo = palavra.slice(-tamanhos[i]);
     var variantes = gerarVariantesAcento(sufixo);
-    // Se houver mais de uma palavra cadastrada com essa terminação, prioriza a de maior relevância/votos
+    // Busca TODAS as palavras cadastradas que batem com essa terminação — não só a
+    // "mais relevante". Antes o sistema escolhia 1 vencedora (por relevância/votos) e só
+    // usava as chaves dela; se essa vencedora não tivesse todas as variantes cadastradas
+    // (ex: só "eiro" mas não "êro"), a gente perdia variante à toa.
     var matchRes = await sb.from('rimas_variacoes')
-      .select('palavra, chave, relevancia, votos_total')
+      .select('palavra, chave')
       .in('chave', variantes)
-      .eq('ativo', true)
-      .order('relevancia', { ascending: false })
-      .order('votos_total', { ascending: false })
-      .limit(1);
+      .eq('ativo', true);
     if (matchRes.error) console.error('[rimas-debug] erro na camada 2 (terminação "' + sufixo + '") pra "' + palavra + '":', matchRes.error);
     if (matchRes.data && matchRes.data.length > 0) {
-      var palavraRef = matchRes.data[0].palavra;
-      var grupoRes = await sb.from('rimas_variacoes').select('chave').eq('palavra', palavraRef).eq('ativo', true);
+      var palavrasRef = Array.from(new Set(matchRes.data.map(function(r) { return r.palavra; })));
+      var grupoRes = await sb.from('rimas_variacoes').select('chave').in('palavra', palavrasRef).eq('ativo', true);
       // Mantém só chaves do mesmo tamanho da terminação buscada — evita herdar
-      // outras chaves da palavra-referência que representem um padrão de rima diferente
-      // (ex: "solar" tem "olar", "olá" e "ar" cadastradas — só "olá" serve pra terminação de 3 letras)
+      // outras chaves das palavras-referência que representem um padrão de rima diferente
+      // (ex: "solar" tem "olar", "olá" e "ar" cadastradas — só "olá" serve pra terminação de 3 letras).
+      // Une as chaves de TODAS as palavras-referência encontradas (não só de uma), pra não
+      // perder variantes que uma referência tem cadastrada e outra não.
       var grupoChaves = Array.from(new Set(
         (grupoRes.data || [])
           .map(function(r) { return r.chave; })
           .filter(function(c) { return c.length === sufixo.length; })
       ));
       if (grupoChaves.length > 0) {
-        console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", via palavra-referência "' + palavraRef + '"). Chaves:', grupoChaves);
+        console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", via palavras-referência: ' + palavrasRef.join(', ') + '). Chaves:', grupoChaves);
         return grupoChaves;
       }
     }
