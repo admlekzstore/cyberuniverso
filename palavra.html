@@ -356,8 +356,8 @@ async function carregarPalavra() {
   palavraId = p.id
   // Título do Google — usa personalizado se existir
   var tituloSEO = p.seo_titulo
-    ? p.seo_titulo + ' | CyberUniverso'
-    : p.termo + ': Significado da Gíria | CyberUniverso'
+    ? p.seo_titulo
+    : p.termo + ': Significado da Gíria'
   document.getElementById('pageTitle').textContent = tituloSEO
 
   // Meta description
@@ -373,7 +373,7 @@ async function carregarPalavra() {
 
   // OG title
   var ogTitle = document.getElementById('ogTitle')
-  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || (p.termo + ': Significado da Gíria | CyberUniverso'))
+  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || (p.termo + ': Significado da Gíria'))
 
   // buscar dados relacionados separadamente
   const [
@@ -469,7 +469,7 @@ async function carregarPalavra() {
   var ogDesc = document.getElementById('ogDesc')
   if (ogDesc) ogDesc.setAttribute('content', descSEO)
   var twitterTitle = document.getElementById('twitterTitle')
-  if (twitterTitle) twitterTitle.setAttribute('content', p.termo + ': Significado da Gíria | CyberUniverso')
+  if (twitterTitle) twitterTitle.setAttribute('content', p.termo + ': Significado da Gíria')
   var twitterDesc = document.getElementById('twitterDesc')
   if (twitterDesc) twitterDesc.setAttribute('content', descSEO)
 
