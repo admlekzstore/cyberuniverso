@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperar Senha — CyberUniverso</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #05080f;
+    color: #e6f0ff;
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: #0a1628;
+    border: 1px solid #1a3a6e;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 0 40px rgba(26, 110, 245, 0.15);
+  }
+  h1 {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 1px;
+    font-size: 2rem;
+    margin: 0 0 8px;
+    color: #00eaff;
+    text-shadow: 0 0 12px rgba(0, 234, 255, 0.5);
+  }
+  p.sub {
+    margin: 0 0 24px;
+    color: #9fb3d9;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #cfe0ff;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #1a3a6e;
+    background: #05080f;
+    color: #e6f0ff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 18px;
+  }
+  input[type="email"]:focus {
+    outline: none;
+    border-color: #1a6ef5;
+  }
+  button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: #1a6ef5;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #1558c2; }
+  button:disabled { background: #1a3a6e; cursor: not-allowed; }
+
+  .msg {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    display: none;
+  }
+  .msg.ok {
+    background: rgba(0, 234, 255, 0.08);
+    border: 1px solid #00eaff;
+    color: #b6f5ff;
+  }
+  .msg.erro {
+    background: rgba(245, 26, 26, 0.08);
+    border: 1px solid #f51a1a;
+    color: #ffb6b6;
+  }
+  .voltar {
+    display: inline-block;
+    margin-top: 20px;
+    color: #9fb3d9;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .voltar:hover { color: #00eaff; }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Recuperar Senha</h1>
+    <p class="sub">Digita o e-mail cadastrado no admin. A gente manda um link seguro pra você criar uma senha nova.</p>
+
+    <form id="form-recuperar">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" required autocomplete="email" placeholder="seu@email.com">
+      <button type="submit" id="btn-enviar">Enviar Link de Recuperação</button>
+    </form>
+
+    <div class="msg ok" id="msg-ok">
+      ✅ Se esse e-mail estiver cadastrado, o link de recuperação já foi enviado. Confere sua caixa de entrada (e o spam, por garantia).
+    </div>
+    <div class="msg erro" id="msg-erro">
+      ⚠️ Não deu pra enviar agora. Tenta de novo em instantes.
+    </div>
+
+    <a href="admin.html" class="voltar">← Voltar pro login</a>
+  </div>
+
+<script>
+  // Ajuste a URL e a chave anon do seu projeto Supabase aqui
+  const SUPABASE_URL = 'https://fdqjnqlbjjpeyzzckjux.supabase.co';
+  const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const form = document.getElementById('form-recuperar');
+  const btn = document.getElementById('btn-enviar');
+  const msgOk = document.getElementById('msg-ok');
+  const msgErro = document.getElementById('msg-erro');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    msgOk.style.display = 'none';
+    msgErro.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const email = document.getElementById('email').value.trim();
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://cyberuniverso.com/nova-senha.html'
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Enviar Link de Recuperação';
+
+    // Por segurança, mostramos a mesma mensagem de sucesso mesmo se o
+    // e-mail não existir no sistema (evita confirmar pra quem tenta adivinhar
+    // e-mails cadastrados).
+    if (error && error.status >= 500) {
+      msgErro.style.display = 'block';
+    } else {
+      msgOk.style.display = 'block';
+      form.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
