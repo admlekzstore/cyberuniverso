@@ -12,7 +12,7 @@
     { termo: 'casa',     href: 'rimas-com-casa.html',     pronta: true  },
     { termo: 'eu',       href: 'rimas-com-eu.html',       pronta: true  },
     { termo: 'vida',     href: 'rimas-com-vida.html',     pronta: true  },
-    { termo: 'mais',     href: 'rimas-com-mais.html',     pronta: false },
+    { termo: 'mais',     href: 'rimas-com-mais.html',     pronta: true  },
     { termo: 'amor',     href: 'rimas-com-amor.html',     pronta: false },
     { termo: 'mundo',    href: 'rimas-com-mundo.html',    pronta: false },
     { termo: 'você',     href: 'rimas-com-voce.html',     pronta: false },
