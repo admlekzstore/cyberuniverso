@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">CyberDicionário</title>
-<meta name="description" id="metaDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
-<meta property="og:title" id="ogTitle" content="CyberDicionário">
-<meta property="og:description" id="ogDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
+<title id="pageTitle">CyberUniverso</title>
+<meta name="description" id="metaDesc" content="CyberUniverso — Dicionário colaborativo de gírias e expressões do português brasileiro.">
+<meta property="og:title" id="ogTitle" content="CyberUniverso">
+<meta property="og:description" id="ogDesc" content="CyberUniverso — Dicionário colaborativo de gírias e expressões do português brasileiro.">
 <meta property="og:type" content="article">
 <meta property="og:url" id="ogUrl" content="">
-<meta property="og:site_name" content="CyberDicionário">
+<meta property="og:site_name" content="CyberUniverso">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" id="twitterTitle" content="CyberDicionário">
-<meta name="twitter:description" id="twitterDesc" content="CyberDicionário — Dicionário de gírias e expressões do português brasileiro.">
+<meta name="twitter:title" id="twitterTitle" content="CyberUniverso">
+<meta name="twitter:description" id="twitterDesc" content="CyberUniverso — Dicionário colaborativo de gírias e expressões do português brasileiro.">
 <meta name="robots" content="index, follow">
 <meta name="language" content="pt-BR">
 <link rel="canonical" id="canonicalUrl" href="">
@@ -356,8 +356,8 @@ async function carregarPalavra() {
   palavraId = p.id
   // Título do Google — usa personalizado se existir
   var tituloSEO = p.seo_titulo
-    ? p.seo_titulo + ' — CyberDicionário'
-    : 'O que é ' + p.termo + '? — CyberDicionário'
+    ? p.seo_titulo + ' | CyberUniverso'
+    : p.termo + ': Significado da Gíria | CyberUniverso'
   document.getElementById('pageTitle').textContent = tituloSEO
 
   // Meta description
@@ -373,7 +373,7 @@ async function carregarPalavra() {
 
   // OG title
   var ogTitle = document.getElementById('ogTitle')
-  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || ('O que é ' + p.termo + '? Significado e origem da gíria'))
+  if (ogTitle) ogTitle.setAttribute('content', p.seo_titulo || (p.termo + ': Significado da Gíria | CyberUniverso'))
 
   // buscar dados relacionados separadamente
   const [
@@ -447,9 +447,19 @@ async function carregarPalavra() {
   }
   var descSEO = p.seo_descricao
     ? p.seo_descricao
-    : sigTexto
-      ? 'O que significa ' + p.termo + '? ' + sigTexto.split(' ').slice(0, 5).join(' ') + '... Veja abaixo o significado, a origem da gíria, sinônimos e exemplos.'
-      : 'O que significa ' + p.termo + '? Veja abaixo o significado, a origem da gíria, sinônimos e exemplos.'
+    : (function() {
+        // Definição curta: só a primeira frase do significado, sem cortar no meio de uma palavra
+        var defCurta = sigTexto ? sigTexto.split(/(?<=[.!?])\s/)[0].replace(/[.!?]+$/, '') : ''
+        var fraseExemplo = (exemplos && exemplos.length > 0) ? exemplos[0].frase : ''
+        var texto
+        if (defCurta) {
+          texto = p.termo + ' significa ' + defCurta.charAt(0).toLowerCase() + defCurta.slice(1) + '.'
+          if (fraseExemplo) texto += ' Exemplo: "' + fraseExemplo + '"'
+        } else {
+          texto = 'O que significa ' + p.termo + '? Veja o significado, a origem e exemplos de uso dessa gíria no CyberUniverso.'
+        }
+        return texto.length > 160 ? texto.substring(0, 157).trim() + '...' : texto
+      })()
 
   var urlCanonica = 'https://cyberuniverso.com/palavra.html?w=' + encodeURIComponent(slug)
 
@@ -459,7 +469,7 @@ async function carregarPalavra() {
   var ogDesc = document.getElementById('ogDesc')
   if (ogDesc) ogDesc.setAttribute('content', descSEO)
   var twitterTitle = document.getElementById('twitterTitle')
-  if (twitterTitle) twitterTitle.setAttribute('content', 'O que é ' + p.termo + '? — CyberDicionário')
+  if (twitterTitle) twitterTitle.setAttribute('content', p.termo + ': Significado da Gíria | CyberUniverso')
   var twitterDesc = document.getElementById('twitterDesc')
   if (twitterDesc) twitterDesc.setAttribute('content', descSEO)
 
@@ -472,7 +482,7 @@ async function carregarPalavra() {
     "url": urlCanonica,
     "inDefinedTermSet": {
       "@type": "DefinedTermSet",
-      "name": "CyberDicionário — Dicionário de Gírias Brasileiras",
+      "name": "CyberUniverso — Dicionário de Gírias Brasileiras",
       "url": "https://cyberuniverso.com",
       "description": "Dicionário colaborativo de gírias e expressões do português brasileiro"
     }
@@ -484,40 +494,71 @@ async function carregarPalavra() {
     })
   }
 
-  // ── SCHEMA 2: FAQPage ──
-  var faqEntries = []
-  faqEntries.push({
-    "@type": "Question",
-    "name": "O que significa " + p.termo + "?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": sigTexto || ('Confira o significado completo de ' + p.termo + ' no CyberUniverso.')
+  // ── SCHEMA 2: QAPage — a página é literalmente uma pergunta única ("o que significa X?")
+  // com respostas enviadas pela comunidade e votadas. É o tipo que o Google recomenda pra esse
+  // formato (diferente do "Discussion Forum", que é pra thread aberta de conversa). O antigo
+  // FAQPage foi removido porque o Google descontinuou esse rich result em maio/2026.
+  var schemaQA = null
+  if (significados && significados.length > 0) {
+    var gruposQA = []
+    significados.forEach(function(s) {
+      var cid = s.contrib_id != null ? s.contrib_id : 'original'
+      var idx = gruposQA.findIndex(function(g) { return g.id === cid })
+      var texto = (s.descricao || '').split('[extras]')[0].trim()
+      if (idx === -1) {
+        gruposQA.push({ id: cid, contribAutorUid: s.contrib_autor || null, contribApelido: s.contrib_apelido || null, criadoEm: s.criado_em || null, textos: [texto], sigIds: [s.id] })
+      } else {
+        gruposQA[idx].textos.push(texto)
+        gruposQA[idx].sigIds.push(s.id)
+      }
+    })
+    gruposQA.forEach(function(g) {
+      g.likes = g.sigIds.reduce(function(acc, id) { var v = votosPorSig[id] || {}; return acc + (v.like || 0) }, 0)
+      g.score = g.sigIds.reduce(function(acc, id) { var v = votosPorSig[id] || {}; return acc + (v.like || 0) - (v.dislike || 0) }, 0)
+    })
+    // original primeiro, depois por score de votos — mesma ordem que aparece na tela
+    gruposQA.sort(function(a, b) {
+      if (a.id === 'original') return -1
+      if (b.id === 'original') return 1
+      return b.score - a.score
+    })
+
+    var autorDoGrupoQA = function(g) {
+      if (g.contribAutorUid && contribPerfisMap[g.contribAutorUid]) {
+        var perf = contribPerfisMap[g.contribAutorUid]
+        var nome = perf.exibir_como === 'nome' && perf.nome ? perf.nome : '@' + (perf.username || 'usuário')
+        return { "@type": "Person", "name": nome, "url": "https://cyberuniverso.com/perfil.html?id=" + g.contribAutorUid }
+      }
+      if (g.contribApelido) return { "@type": "Person", "name": g.contribApelido }
+      return { "@type": "Organization", "name": "CyberUniverso", "url": "https://cyberuniverso.com" }
     }
-  })
-  if (exemplos && exemplos.length > 0) {
-    faqEntries.push({
-      "@type": "Question",
-      "name": "Como usar " + p.termo + " em uma frase?",
-      "acceptedAnswer": {
+    var respostaSchemaQA = function(g) {
+      return {
         "@type": "Answer",
-        "text": exemplos.slice(0, 2).map(function(e) { return '— ' + e.frase }).join(' ')
+        "text": g.textos.join(' '),
+        "url": urlCanonica,
+        "dateCreated": g.criadoEm || p.criado_em,
+        "upvoteCount": g.likes,
+        "author": autorDoGrupoQA(g)
       }
-    })
-  }
-  if (sinonimos && sinonimos.length > 0) {
-    faqEntries.push({
-      "@type": "Question",
-      "name": "Quais são os sinônimos de " + p.termo + "?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": sinonimos.map(function(s) { return s.sinonimo }).join(', ')
+    }
+
+    var principalQA = gruposQA[0]
+    var demaisQA = gruposQA.slice(1)
+
+    schemaQA = {
+      "@context": "https://schema.org",
+      "@type": "QAPage",
+      "mainEntity": {
+        "@type": "Question",
+        "name": "O que significa " + p.termo + "?",
+        "text": "O que significa a gíria \"" + p.termo + "\"?",
+        "answerCount": gruposQA.length,
+        "author": { "@type": "Organization", "name": "CyberUniverso", "url": "https://cyberuniverso.com" },
+        "acceptedAnswer": respostaSchemaQA(principalQA),
+        "suggestedAnswer": demaisQA.map(respostaSchemaQA)
       }
-    })
-  }
-  var schemaFAQ = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqEntries
+    }
   }
 
   // ── SCHEMA 3: BreadcrumbList ──
@@ -542,7 +583,7 @@ async function carregarPalavra() {
     "dateModified": p.criado_em,
     "publisher": {
       "@type": "Organization",
-      "name": "CyberDicionário",
+      "name": "CyberUniverso",
       "url": "https://cyberuniverso.com"
     },
     "inLanguage": "pt-BR",
@@ -550,7 +591,8 @@ async function carregarPalavra() {
   }
 
   // Injetar todos os schemas
-  var schemas = [schemaDef, schemaFAQ, schemaBreadcrumb, schemaArticle]
+  var schemas = [schemaDef, schemaBreadcrumb, schemaArticle]
+  if (schemaQA) schemas.push(schemaQA)
   schemas.forEach(function(s) {
     var tag = document.createElement('script')
     tag.type = 'application/ld+json'
