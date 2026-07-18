@@ -2419,7 +2419,7 @@ async function buscarVariacoesRima() {
       <td><div class="acoes-cell">
         ${r.ativo
           ? `<button class="btn-mini btn-excluir" onclick="removerVariacaoRima('${r.id}')">🗑️ Remover</button>`
-          : `<span style="color:#4a6fa5;font-size:12px">inativo</span>`}
+          : `<button class="btn-mini btn-excluir" onclick="excluirVariacaoDefinitivo('${r.id}', '${escapeHtml(r.palavra)}')">🗑️ Excluir Definitivamente</button>`}
       </div></td>
     </tr>`).join('')
 }
@@ -2429,6 +2429,14 @@ async function removerVariacaoRima(id) {
   const { error } = await sb.from('rimas_variacoes').update({ ativo: false }).eq('id', id)
   if (error) { mostrarToast('Erro ao remover', 'erro'); return }
   mostrarToast('🗑️ Variação removida!', 'sucesso')
+  document.getElementById('row-rv-' + id)?.remove()
+}
+
+async function excluirVariacaoDefinitivo(id, palavra) {
+  if (!confirm(`Excluir "${palavra}" definitivamente? Essa ação não pode ser desfeita.`)) return
+  const { error } = await sb.from('rimas_variacoes').delete().eq('id', id)
+  if (error) { mostrarToast('Erro ao excluir', 'erro'); return }
+  mostrarToast('🗑️ Excluído definitivamente!', 'sucesso')
   document.getElementById('row-rv-' + id)?.remove()
 }
 
