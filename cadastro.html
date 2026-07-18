@@ -155,7 +155,7 @@
             </div>
           </div>
           <div style="text-align:right;margin-bottom:16px;">
-            <a href="#" onclick="esqueceuSenha()" style="font-size:13px;color:#4a6fa5;text-decoration:none;font-weight:700;">Esqueci minha senha</a>
+            <a href="esqueci-senha.html" style="font-size:13px;color:#4a6fa5;text-decoration:none;font-weight:700;">Esqueci minha senha</a>
           </div>
           <button class="btn-auth" id="btn-entrar" onclick="entrar()">ENTRAR 🚀</button>
           <div class="link-extra">Não tem conta? <a href="#" onclick="trocarTab('cadastrar')">Cadastre-se grátis</a></div>
@@ -291,15 +291,6 @@
   async function sair() {
     await sb.auth.signOut()
     window.location.reload()
-  }
-
-  // ── ESQUECEU SENHA ──
-  async function esqueceuSenha() {
-    const email = document.getElementById('login-email').value.trim()
-    if (!email) { mostrarAlerta('⚠️ Digite seu e-mail no campo acima primeiro.', 'erro'); return }
-    const { error } = await sb.auth.resetPasswordForEmail(email)
-    if (error) { mostrarAlerta('❌ Erro ao enviar e-mail.', 'erro'); return }
-    mostrarAlerta('✅ E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'sucesso')
   }
 
   // ── MOSTRAR ÁREA DO LOGADO ──
