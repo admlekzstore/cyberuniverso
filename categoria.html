@@ -167,12 +167,111 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 }
+
+// ── DADOS ESTRUTURADOS (SEO) ──
+function inserirJsonLd(id, obj) {
+  let el = document.getElementById(id)
+  if (!el) {
+    el = document.createElement('script')
+    el.type = 'application/ld+json'
+    el.id = id
+    document.head.appendChild(el)
+  }
+  el.textContent = JSON.stringify(obj)
+}
+
+function injetarSchemaCategoria(cat, subs, palavras) {
+  const origem = window.location.origin
+  const url = origem + '/categoria.html?c=' + encodeURIComponent(cat.id)
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": cat.nome,
+    "description": cat.descricao || `Coleção de gírias e expressões da categoria ${cat.nome} no CyberUniverso.`,
+    "url": url,
+    "isPartOf": { "@type": "WebSite", "name": "CyberUniverso", "url": origem + '/' }
+  }
+
+  if (subs && subs.length) {
+    schema.hasPart = subs.map(s => ({
+      "@type": "ItemList",
+      "name": s.nome,
+      "url": origem + '/categoria.html?c=' + encodeURIComponent(s.id) + '&sub=1'
+    }))
+  }
+
+  schema.mainEntity = {
+    "@type": "DefinedTermSet",
+    "name": cat.nome + " — Todos os Termos",
+    "hasDefinedTerm": (palavras || []).map(p => ({
+      "@type": "DefinedTerm",
+      "name": p.termo,
+      "url": origem + '/palavra.html?w=' + encodeURIComponent(p.slug)
+    }))
+  }
+
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Início", "item": origem + '/index.html' },
+      { "@type": "ListItem", "position": 2, "name": "Categorias", "item": origem + '/categorias.html' },
+      { "@type": "ListItem", "position": 3, "name": cat.nome, "item": url }
+    ]
+  }
+
+  inserirJsonLd('jsonld-collection', schema)
+  inserirJsonLd('jsonld-breadcrumb', breadcrumb)
+}
+
+function injetarSchemaSubcategoria(sub, catPai, palavras) {
+  const origem = window.location.origin
+  const url = origem + '/categoria.html?c=' + encodeURIComponent(sub.id) + '&sub=1'
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": sub.nome,
+    "description": sub.descricao || (catPai
+      ? `Gírias e expressões de ${sub.nome}, dentro da categoria ${catPai.nome} no CyberUniverso.`
+      : `Gírias e expressões de ${sub.nome} no CyberUniverso.`),
+    "url": url,
+    "isPartOf": { "@type": "WebSite", "name": "CyberUniverso", "url": origem + '/' },
+    "mainEntity": {
+      "@type": "DefinedTermSet",
+      "name": sub.nome + " — Todos os Termos",
+      "hasDefinedTerm": (palavras || []).map(p => ({
+        "@type": "DefinedTerm",
+        "name": p.termo,
+        "url": origem + '/palavra.html?w=' + encodeURIComponent(p.slug)
+      }))
+    }
+  }
+
+  const itens = [
+    { "@type": "ListItem", "position": 1, "name": "Início", "item": origem + '/index.html' },
+    { "@type": "ListItem", "position": 2, "name": "Categorias", "item": origem + '/categorias.html' }
+  ]
+  if (catPai) {
+    itens.push({ "@type": "ListItem", "position": 3, "name": catPai.nome, "item": origem + '/categoria.html?c=' + encodeURIComponent(catPai.id) })
+    itens.push({ "@type": "ListItem", "position": 4, "name": sub.nome, "item": url })
+  } else {
+    itens.push({ "@type": "ListItem", "position": 3, "name": sub.nome, "item": url })
+  }
+
+  const breadcrumb = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": itens }
+
+  inserirJsonLd('jsonld-collection', schema)
+  inserirJsonLd('jsonld-breadcrumb', breadcrumb)
+}
 const params = new URLSearchParams(window.location.search)
 const catId = params.get('c')
 const isSub = params.get('sub') === '1'
 
 let todasPalavras = []
 let ordemAtual = 'az'
+let subcategoriasAtuais = []
 
 async function init() {
   if (!catId) {
@@ -183,8 +282,9 @@ async function init() {
   // buscar info da categoria ou subcategoria
   if (isSub) {
     const { data: sub } = await sb.from('subcategorias').select('id, nome, descricao, categorias(id, nome, icone)').eq('id', catId).single()
+    let catPai = null
     if (sub) {
-      const catPai = sub.categorias
+      catPai = sub.categorias
       document.getElementById('pageTitle').textContent = sub.nome + ' — CyberUniverso'
       document.getElementById('breadNome').textContent = sub.nome
       document.getElementById('catEmoji').textContent = catPai?.icone || '📂'
@@ -192,6 +292,7 @@ async function init() {
       document.getElementById('catDesc').textContent = sub.descricao || (catPai ? 'Subcategoria de ' + catPai.nome : '')
     }
     await carregarPalavrasSubcat(catId)
+    if (sub) injetarSchemaSubcategoria(sub, catPai, todasPalavras)
   } else {
     const { data: cat } = await sb.from('categorias').select('id, nome, icone, descricao').eq('id', catId).single()
     if (cat) {
@@ -202,13 +303,14 @@ async function init() {
       document.getElementById('catDesc').textContent = cat.descricao || ''
     }
     await Promise.all([carregarPalavrasCategoria(catId), carregarSubcategorias(catId)])
+    if (cat) injetarSchemaCategoria(cat, subcategoriasAtuais, todasPalavras)
   }
 }
 
 // ── SUBCATEGORIAS DA CATEGORIA (só aparece na página da categoria principal) ──
 async function carregarSubcategorias(id) {
   const { data: subs } = await sb.from('subcategorias').select('id, nome').eq('categoria_id', id).order('nome')
-  if (!subs || !subs.length) return
+  if (!subs || !subs.length) { subcategoriasAtuais = []; return }
 
   const subIds = subs.map(s => s.id)
   const counts = {}
@@ -233,6 +335,7 @@ async function carregarSubcategorias(id) {
     .map(s => ({ id: s.id, nome: s.nome, count: counts[s.id] || 0 }))
     .sort((a, b) => b.count - a.count)
 
+  subcategoriasAtuais = listaSubs
   renderizarSubcats(listaSubs)
 }
 
