@@ -620,8 +620,8 @@
     <span class="stat-label">Letras</span>
   </div>
   <div class="stat-item">
-    <span class="stat-num">∞</span>
-    <span class="stat-label">Gírias novas</span>
+    <span class="stat-num" id="statCategorias">—</span>
+    <span class="stat-label">Categorias</span>
   </div>
 </div>
 
@@ -783,16 +783,23 @@
     const { count } = await sb.from('palavras')
       .select('*', { count: 'exact', head: true }).eq('status', 'aprovada')
     if (count !== null) document.getElementById('statTotal').textContent = count.toLocaleString('pt-BR')
+
+    const [{ count: countCats }, { count: countSubs }] = await Promise.all([
+      sb.from('categorias').select('*', { count: 'exact', head: true }),
+      sb.from('subcategorias').select('*', { count: 'exact', head: true })
+    ])
+    const totalCategorias = (countCats || 0) + (countSubs || 0)
+    document.getElementById('statCategorias').textContent = totalCategorias.toLocaleString('pt-BR')
   }
 
   // em alta
   async function carregarEmAlta() {
     const list = document.getElementById('listEmAlta')
-    const { data } = await sb.rpc('top_palavras_visualizacoes', { limite: 7 })
+    const { data } = await sb.rpc('top_palavras_visualizacoes', { limite: 10 })
     if (!data || data.length === 0) {
       // fallback: mais recentes
       const { data: fallback } = await sb.from('palavras').select('termo, slug')
-        .eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(7)
+        .eq('status', 'aprovada').order('criado_em', { ascending: false }).limit(10)
       if (!fallback || fallback.length === 0) {
         list.innerHTML = '<li style="text-align:center;color:#4a6fa5;padding:10px;font-size:13px">Nenhuma palavra ainda</li>'; return
       }
