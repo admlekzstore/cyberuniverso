@@ -92,8 +92,12 @@
     .chaves-usadas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
     .propria-match-card { display:inline-flex; align-items:center; gap:8px; background:rgba(245,232,0,.08); border:1px solid rgba(245,232,0,.3); border-radius:10px; padding:8px 16px; font-size:.85rem; color:var(--amarelo); text-decoration:none; transition:all .15s; }
     .propria-match-card:hover { background:rgba(245,232,0,.16); border-color:var(--amarelo); }
-    .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; }
+    .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; cursor:pointer; user-select:none; transition:all .15s; }
+    .chave-badge:hover { border-color:var(--ciano); background:rgba(0,234,255,.16); }
+    .chave-badge.desativada { opacity:.35; background:transparent; border-color:rgba(224,232,255,.15); color:rgba(224,232,255,.4); }
+    .chave-badge.desativada:hover { opacity:.6; }
     .chave-ia { background:rgba(155,77,255,.12); border-color:rgba(155,77,255,.35); color:#b380ff; }
+    .chaves-usadas-dica { font-size:.72rem; color:rgba(224,232,255,.35); margin-top:6px; }
     .secao { margin-bottom:48px; }
     .secao-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
     .secao-titulo { font-family:'Fredoka One',sans-serif; font-size:1.1rem; color:var(--ciano); text-transform:uppercase; letter-spacing:2px; }
@@ -351,6 +355,7 @@
     <div>
       <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
       <div class="chaves-usadas" id="chaves-usadas"></div>
+      <div class="chaves-usadas-dica" id="chaves-usadas-dica" style="display:none;">clique pra ligar/desligar um tipo de rima</div>
       <div id="propria-palavra-match" style="display:none;margin-top:10px;"></div>
     </div>
     <span class="resultado-count" id="res-count"></span>
@@ -495,6 +500,7 @@
 var sb = window._supabase;
 var palavraAtual = '';
 var chavesAtuais = [];
+var chavesSelecionadas = new Set();
 var buscaToken = 0;
 var todasGirias = [];
 var todasPalavras = [];
@@ -768,11 +774,11 @@ async function buscar(palavra, semPush) {
   var todasChaves = await obterChavesBusca(minhaPalavra);
   if (meuToken !== buscaToken) return; // já tem uma busca mais nova rodando, descarta essa
   chavesAtuais = todasChaves;
+  chavesSelecionadas = new Set(todasChaves); // por padrão todas ativas — usuário pode desligar as que não quer
 
   if (todasChaves.length > 0) {
-    document.getElementById('chaves-usadas').innerHTML = todasChaves.map(function(c) {
-      return '<span class="chave-badge">rima com ' + c + '</span>';
-    }).join('');
+    renderChavesUsadas();
+    document.getElementById('chaves-usadas-dica').style.display = todasChaves.length > 1 ? 'block' : 'none';
   }
 
   if (todasChaves.length === 0) {
@@ -792,6 +798,37 @@ async function buscar(palavra, semPush) {
   registrarBusca(minhaPalavra, todasChaves.join(','));
 }
 
+// ── FILTRO POR CHAVE (clique nos badges "rima com X" pra ligar/desligar) ──
+// Os 5 tipos de resultado (gírias, palavras, NC, universos, cultura pop) já vêm
+// carregados de uma vez com TODAS as chaves da busca. Ao clicar num badge, a
+// gente não refaz a busca no banco — só re-renderiza filtrando pelas chaves
+// que continuam ativas, igual já era feito com as pills de categoria.
+function renderChavesUsadas() {
+  document.getElementById('chaves-usadas').innerHTML = chavesAtuais.map(function(c) {
+    var ativa = chavesSelecionadas.has(c) ? '' : ' desativada';
+    return '<span class="chave-badge' + ativa + '" data-chave="' + escapeHtml(c) + '">rima com ' + escapeHtml(c) + '</span>';
+  }).join('');
+  document.querySelectorAll('#chaves-usadas .chave-badge').forEach(function(badge) {
+    badge.addEventListener('click', function() {
+      var c = badge.dataset.chave;
+      // não deixa desligar a última chave ativa — sempre precisa sobrar pelo menos uma
+      if (chavesSelecionadas.has(c) && chavesSelecionadas.size === 1) return;
+      if (chavesSelecionadas.has(c)) chavesSelecionadas.delete(c); else chavesSelecionadas.add(c);
+      renderChavesUsadas();
+      atualizarResCount();
+      renderGirias(); renderPalavras(); renderNC(); renderUniversos(); renderPop();
+    });
+  });
+}
+
+// Um item "passa" no filtro de chave se pelo menos uma das chaves que ele
+// carrega (a rima que fez ele aparecer) estiver ativa no momento.
+function passaFiltroChave(itemChaves) {
+  if (!itemChaves || itemChaves.size === 0) return true; // sem info de chave, não filtra
+  for (var c of itemChaves) { if (chavesSelecionadas.has(c)) return true; }
+  return false;
+}
+
 async function buscarResultados(chaves, minhaPalavra, meuToken) {
   var varRes = await sb.from('rimas_variacoes')
     .select('palavra, tipo, ref_id, chave, relevancia, votos_total, categoria')
@@ -804,13 +841,21 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   var varData = varRes.data || [];
   console.log('[rimas-debug] buscarResultados("' + minhaPalavra + '") — chaves usadas:', chaves, '| linhas retornadas:', varData.length, varData);
 
-  // Agrupar por palavra+tipo, mantendo maior relevância
+  // Agrupar por palavra+tipo, mantendo maior relevância — mas acumulando TODAS
+  // as chaves que essa palavra carrega (uma mesma palavra pode ter batido por
+  // mais de uma chave), pra dar pra filtrar depois pelo clique nos badges.
   var map = {};
   varData.forEach(function(v) {
     var key = v.palavra + '|' + v.tipo;
-    if (!map[key] || v.relevancia > map[key].relevancia) {
+    if (!map[key]) {
       map[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id,
-        relevancia: v.relevancia || 50, votos: v.votos_total || 0, categoria: v.categoria || null };
+        relevancia: v.relevancia || 50, votos: v.votos_total || 0, categoria: v.categoria || null,
+        chaves: new Set() };
+    }
+    map[key].chaves.add(v.chave);
+    if (v.relevancia > map[key].relevancia) {
+      map[key].relevancia = v.relevancia; map[key].votos = v.votos_total || 0;
+      map[key].ref_id = v.ref_id; map[key].categoria = v.categoria || map[key].categoria;
     }
   });
 
@@ -879,9 +924,15 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   todasPalavras = palavrasDic;
   todosNC = nc;
 
-  var total = girias.length + palavrasDic.length + nc.length;
-  document.getElementById('res-count').textContent = total + ' rimas encontradas';
+  atualizarResCount();
   renderGirias(); renderPalavras(); renderNC();
+}
+
+function atualizarResCount() {
+  var total = todasGirias.filter(function(g) { return passaFiltroChave(g.chaves); }).length +
+    todasPalavras.filter(function(p) { return passaFiltroChave(p.chaves); }).length +
+    todosNC.filter(function(n) { return passaFiltroChave(n.chaves); }).length;
+  document.getElementById('res-count').textContent = total + ' rimas encontradas';
 }
 
 async function carregarTodasCategorias() {
@@ -928,7 +979,7 @@ function adicionarListenerPillDinamica(pill) {
 
 function renderGirias() {
   var grid = document.getElementById('girias-grid');
-  var lista = todasGirias.slice();
+  var lista = todasGirias.slice().filter(function(g) { return passaFiltroChave(g.chaves); });
   document.getElementById('btn-vertodas-girias').style.display = catsSelecionadas.size > 0 ? 'inline-block' : 'none';
   if (catsSelecionadas.size > 0) {
     lista = lista.filter(function(g) {
@@ -975,7 +1026,7 @@ function renderDicPills() {
   if (!pillsEl) return;
   // Categorias presentes nos resultados atuais (excluindo geral e null)
   var catsPresentes = new Set();
-  todasPalavras.forEach(function(p) {
+  todasPalavras.filter(function(p) { return passaFiltroChave(p.chaves); }).forEach(function(p) {
     if (p.categoria && p.categoria !== 'geral') catsPresentes.add(p.categoria);
   });
   if (catsPresentes.size === 0) { pillsEl.style.display = 'none'; return; }
@@ -1004,7 +1055,7 @@ function renderDicPills() {
 
 function renderPalavras() {
   var lista = document.getElementById('palavras-lista');
-  var palavras = todasPalavras.slice();
+  var palavras = todasPalavras.slice().filter(function(p) { return passaFiltroChave(p.chaves); });
 
   // Filtro sílabas
   if (silSelecionada !== 'todas') {
@@ -1046,7 +1097,7 @@ function renderNcPills() {
   if (!pillsEl) return;
   // Descobrir quais categorias existem nos resultados atuais
   var catsPresentes = new Set();
-  todosNC.forEach(function(item) {
+  todosNC.filter(function(item) { return passaFiltroChave(item.chaves); }).forEach(function(item) {
     if (item.categoria) item.categoria.split(',').forEach(function(c) { catsPresentes.add(c.trim()); });
   });
   var cats = ncCategoriasCache.filter(function(c) { return catsPresentes.has(c.slug); });
@@ -1068,14 +1119,15 @@ function renderNcPills() {
 
 function renderNC() {
   var grid = document.getElementById('nc-grid');
-  document.getElementById('count-nc').textContent = '(' + todosNC.length + ')';
-  if (todosNC.length === 0) {
+  var todosNCFiltrados = todosNC.filter(function(item) { return passaFiltroChave(item.chaves); });
+  document.getElementById('count-nc').textContent = '(' + todosNCFiltrados.length + ')';
+  if (todosNCFiltrados.length === 0) {
     document.getElementById('secao-nc').style.display = 'none'; return;
   }
   document.getElementById('secao-nc').style.display = 'block';
   renderNcPills();
 
-  var lista = todosNC.slice();
+  var lista = todosNCFiltrados.slice();
   document.getElementById('btn-vertodas-nc').style.display = ncCatsSelecionadas.size > 0 ? 'inline-block' : 'none';
   if (ncCatsSelecionadas.size > 0) {
     lista = lista.filter(function(item) {
@@ -1129,23 +1181,31 @@ async function carregarUnivSubtipos() {
 
 async function buscarUniversos(chaves, minhaPalavra, meuToken) {
   var res = await sb.from('rimas_variacoes')
-    .select('palavra, ref_id')
+    .select('palavra, ref_id, chave')
     .in('chave', chaves)
     .eq('tipo', 'universo')
     .eq('ativo', true)
     .limit(100);
-  var refIds = Array.from(new Set((res.data || []).map(function(r) { return r.ref_id; }).filter(Boolean)));
+  var chavesPorRef = {};
+  (res.data || []).forEach(function(r) {
+    if (!r.ref_id) return;
+    if (!chavesPorRef[r.ref_id]) chavesPorRef[r.ref_id] = new Set();
+    chavesPorRef[r.ref_id].add(r.chave);
+  });
+  var refIds = Object.keys(chavesPorRef);
   if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosUnivItens = []; renderUniversos(); return; }
   var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
   if (meuToken !== buscaToken) return;
-  todosUnivItens = popRes.data || [];
+  todosUnivItens = (popRes.data || []).map(function(i) {
+    return Object.assign({}, i, { chaves: chavesPorRef[i.id] || new Set() });
+  });
   renderUniversos();
 }
 
 function renderUniversos() {
   var lista = document.getElementById('univ-lista');
-  var itens = todosUnivItens.slice();
+  var itens = todosUnivItens.slice().filter(function(i) { return passaFiltroChave(i.chaves); });
   if (univSubSelecionado !== 'todos') itens = itens.filter(function(i) { return i.subtipo === univSubSelecionado; });
   if (itens.length === 0) {
     lista.innerHTML = '<span class="vazio">Nenhum resultado de universos com essa rima</span>'; return;
@@ -1180,19 +1240,27 @@ async function carregarPopAbas() {
 }
 
 async function buscarPop(chaves, minhaPalavra, meuToken) {
-  var res = await sb.from('rimas_variacoes').select('palavra, ref_id').in('chave', chaves).eq('tipo', 'cultura_pop').eq('ativo', true).limit(100);
-  var refIds = Array.from(new Set((res.data||[]).map(function(r){return r.ref_id;}).filter(Boolean)));
+  var res = await sb.from('rimas_variacoes').select('palavra, ref_id, chave').in('chave', chaves).eq('tipo', 'cultura_pop').eq('ativo', true).limit(100);
+  var chavesPorRef = {};
+  (res.data || []).forEach(function(r) {
+    if (!r.ref_id) return;
+    if (!chavesPorRef[r.ref_id]) chavesPorRef[r.ref_id] = new Set();
+    chavesPorRef[r.ref_id].add(r.chave);
+  });
+  var refIds = Object.keys(chavesPorRef);
   if (meuToken !== buscaToken) return;
   if (refIds.length === 0) { todosPopItens = []; renderPop(); return; }
   var popRes = await sb.from('rimas_cultura_pop').select('id, nome, tipo, subtipo').in('id', refIds).eq('ativo', true);
   if (meuToken !== buscaToken) return;
-  todosPopItens = popRes.data || [];
+  todosPopItens = (popRes.data || []).map(function(i) {
+    return Object.assign({}, i, { chaves: chavesPorRef[i.id] || new Set() });
+  });
   renderPop();
 }
 
 function renderPop() {
   var lista = document.getElementById('pop-lista');
-  var itens = todosPopItens.slice();
+  var itens = todosPopItens.slice().filter(function(i) { return passaFiltroChave(i.chaves); });
   if (popTipoSelecionado !== 'todos') itens = itens.filter(function(i) { return i.tipo === popTipoSelecionado; });
   if (itens.length === 0) { lista.innerHTML = '<span class="vazio">Nenhum item de cultura pop com essa rima</span>'; return; }
   lista.innerHTML = itens.map(function(i) {
