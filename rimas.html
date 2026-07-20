@@ -546,29 +546,6 @@ async function carregarRegras() {
   (excRes.data || []).forEach(function(e) { excecoesCache[e.palavra] = e.chaves; });
 }
 
-function chavesParaBusca(palavra) {
-  var w = palavra.toLowerCase().trim();
-  var chaves = new Set();
-
-  // 1. Exceção cadastrada pra essa palavra específica
-  if (excecoesCache[w]) {
-    excecoesCache[w].forEach(function(c) { chaves.add(c); });
-    return Array.from(chaves);
-  }
-
-  // 2. Verificar regras por terminação (mais longa primeiro)
-  for (var i = 0; i < regrasCache.length; i++) {
-    var r = regrasCache[i];
-    if (w.endsWith(r.terminacao)) {
-      r.chaves.forEach(function(c) { chaves.add(c); });
-      return Array.from(chaves); // para na primeira regra que bate
-    }
-  }
-
-  // 3. Nenhuma regra encontrada — não gera chave local
-  return [];
-}
-
 function temPadraoIngles(w) {
   return /[ck]$|tion$|ing$|ight$|ack$|ick$|man$|ness$|ool$|ake$/.test(w) || !/[áéíóúâêîôûãõàç]/.test(w);
 }
@@ -699,6 +676,7 @@ function gerarVariantesAcento(sufixo) {
 
 async function obterChavesBusca(palavra) {
   var palavraEsc = escapeIlike(palavra);
+  var w = palavra.toLowerCase().trim();
 
   // 1. A palavra já está catalogada (rima cadastrada OU gíria com tag rima-com-X)?
   // ilike sem coringas = igualdade ignorando maiúsculas/minúsculas (Cultura Pop/Universo salvam "Nome Próprio")
@@ -711,52 +689,45 @@ async function obterChavesBusca(palavra) {
   }
   console.log('[rimas-debug] "' + palavra + '" → camada 1 não achou nada (' + (ownRes.data ? ownRes.data.length : 'erro') + ' linhas).');
 
+  // 1.5 Exceção cadastrada pra essa palavra exata — override manual, tem prioridade
+  //     sobre o padrão genérico de terminação.
+  if (excecoesCache[w]) {
+    console.log('[rimas-debug] "' + palavra + '" → camada 1.5 (exceção cadastrada). Chaves:', excecoesCache[w]);
+    return excecoesCache[w].slice();
+  }
+
   // 2. Terminação literal — tenta do maior pro menor: até 5 letras, descendo até 2
   //    (ou até 1 letra pra palavras bem curtas). Precisa tentar tamanhos maiores primeiro,
   //    senão terminações como "eiro"/"eira" (4 letras) acabam batendo em "iro"/"ira" (3 letras)
   //    por engano, quando a palavra digitada não está catalogada.
+  //
+  //    IMPORTANTE: usamos as REGRAS FONÉTICAS do admin (rimas_regras) pra descobrir o
+  //    grupo de uma terminação — não mais "espiar" todas as chaves de uma palavra
+  //    catalogada que bateu por acaso. Motivo: uma palavra pode pertencer a vários
+  //    grupos de rima ao mesmo tempo (ex: "hill" rima em êl/êu E também em ul/io/iu/il,
+  //    são grupos sem nenhuma relação entre si). Um filtro por tamanho de string não
+  //    distingue isso (êl, êu, ul, io, iu, il têm todos 2 caracteres), então misturava
+  //    tudo. As regras do admin já dizem exatamente quais chaves andam juntas
+  //    (ex: terminação "êl" → chaves [êu, êl]), então usamos isso direto.
   var maxSufixo = Math.min(5, palavra.length);
   var minSufixo = palavra.length <= 2 ? palavra.length : 2;
-  var tamanhos = [];
-  for (var t = maxSufixo; t >= minSufixo; t--) tamanhos.push(t);
 
-  for (var i = 0; i < tamanhos.length; i++) {
-    var sufixo = palavra.slice(-tamanhos[i]);
+  for (var t = maxSufixo; t >= minSufixo; t--) {
+    var sufixo = palavra.slice(-t);
     var variantes = gerarVariantesAcento(sufixo);
-    // Busca TODAS as palavras cadastradas que batem com essa terminação — não só a
-    // "mais relevante". Antes o sistema escolhia 1 vencedora (por relevância/votos) e só
-    // usava as chaves dela; se essa vencedora não tivesse todas as variantes cadastradas
-    // (ex: só "eiro" mas não "êro"), a gente perdia variante à toa.
-    var matchRes = await sb.from('rimas_variacoes')
-      .select('palavra, chave')
-      .in('chave', variantes)
-      .eq('ativo', true);
-    if (matchRes.error) console.error('[rimas-debug] erro na camada 2 (terminação "' + sufixo + '") pra "' + palavra + '":', matchRes.error);
-    if (matchRes.data && matchRes.data.length > 0) {
-      var palavrasRef = Array.from(new Set(matchRes.data.map(function(r) { return r.palavra; })));
-      var grupoRes = await sb.from('rimas_variacoes').select('chave').in('palavra', palavrasRef).eq('ativo', true);
-      // Mantém só chaves do mesmo tamanho da terminação buscada — evita herdar
-      // outras chaves das palavras-referência que representem um padrão de rima diferente
-      // (ex: "solar" tem "olar", "olá" e "ar" cadastradas — só "olá" serve pra terminação de 3 letras).
-      // Une as chaves de TODAS as palavras-referência encontradas (não só de uma), pra não
-      // perder variantes que uma referência tem cadastrada e outra não.
-      var grupoChaves = Array.from(new Set(
-        (grupoRes.data || [])
-          .map(function(r) { return r.chave; })
-          .filter(function(c) { return c.length === sufixo.length; })
-      ));
-      if (grupoChaves.length > 0) {
-        console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", via palavras-referência: ' + palavrasRef.join(', ') + '). Chaves:', grupoChaves);
-        return grupoChaves;
-      }
-    }
-  }
 
-  // 3. Último recurso: regras/exceções fonéticas cadastradas manualmente
-  var chavesRegras = chavesParaBusca(palavra);
-  if (chavesRegras.length > 0) {
-    console.log('[rimas-debug] "' + palavra + '" → camada 3 (regras/exceções fonéticas). Chaves:', chavesRegras);
-    return chavesRegras;
+    var regrasBatidas = regrasCache.filter(function(r) {
+      return variantes.indexOf(r.terminacao) !== -1;
+    });
+
+    if (regrasBatidas.length > 0) {
+      var grupoChaves = new Set();
+      regrasBatidas.forEach(function(r) { r.chaves.forEach(function(c) { grupoChaves.add(c); }); });
+      var grupoArr = Array.from(grupoChaves);
+      console.log('[rimas-debug] "' + palavra + '" → camada 2 (terminação "' + sufixo + '", regra(s): ' +
+        regrasBatidas.map(function(r) { return r.terminacao; }).join(', ') + '). Chaves:', grupoArr);
+      return grupoArr;
+    }
   }
 
   console.log('[rimas-debug] "' + palavra + '" → nenhuma camada encontrou nada.');
