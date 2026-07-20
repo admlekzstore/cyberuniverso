@@ -92,12 +92,17 @@
     .chaves-usadas { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
     .propria-match-card { display:inline-flex; align-items:center; gap:8px; background:rgba(245,232,0,.08); border:1px solid rgba(245,232,0,.3); border-radius:10px; padding:8px 16px; font-size:.85rem; color:var(--amarelo); text-decoration:none; transition:all .15s; }
     .propria-match-card:hover { background:rgba(245,232,0,.16); border-color:var(--amarelo); }
-    .chave-badge { font-size:.72rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:2px 8px; font-family:'Fredoka One',sans-serif; cursor:pointer; user-select:none; transition:all .15s; }
+    .chave-badge { font-size:.85rem; background:rgba(0,234,255,.08); border:1px solid rgba(0,234,255,.2); color:var(--ciano); border-radius:6px; padding:3px 10px; font-family:'Fredoka One',sans-serif; cursor:pointer; user-select:none; transition:all .15s; }
     .chave-badge:hover { border-color:var(--ciano); background:rgba(0,234,255,.16); }
     .chave-badge.desativada { opacity:.35; background:transparent; border-color:rgba(224,232,255,.15); color:rgba(224,232,255,.4); }
     .chave-badge.desativada:hover { opacity:.6; }
     .chave-ia { background:rgba(155,77,255,.12); border-color:rgba(155,77,255,.35); color:#b380ff; }
-    .chaves-usadas-dica { font-size:.72rem; color:rgba(224,232,255,.35); margin-top:6px; }
+    .chaves-usadas-dica { font-size:.72rem; color:#fff; opacity:.55; margin-top:6px; }
+    .terminacoes-exatas { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:12px; }
+    .terminacoes-exatas-label { font-size:.72rem; color:rgba(224,232,255,.4); text-transform:uppercase; letter-spacing:1px; margin-right:2px; }
+    .term-exata-badge { font-size:.85rem; background:transparent; border:1px solid rgba(155,77,255,.35); color:#b380ff; border-radius:6px; padding:3px 10px; font-family:'Fredoka One',sans-serif; cursor:pointer; user-select:none; transition:all .15s; }
+    .term-exata-badge:hover { border-color:#b380ff; background:rgba(155,77,255,.12); }
+    .term-exata-badge.ativa { background:rgba(155,77,255,.22); border-color:#b380ff; box-shadow:0 0 10px rgba(155,77,255,.3); }
     .secao { margin-bottom:48px; }
     .secao-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
     .secao-titulo { font-family:'Fredoka One',sans-serif; font-size:1.1rem; color:var(--ciano); text-transform:uppercase; letter-spacing:2px; }
@@ -356,6 +361,7 @@
       <h2 class="resultado-titulo">Rimas com <span id="res-palavra"></span></h2>
       <div class="chaves-usadas" id="chaves-usadas"></div>
       <div class="chaves-usadas-dica" id="chaves-usadas-dica" style="display:none;">clique pra ligar/desligar um tipo de rima</div>
+      <div class="terminacoes-exatas" id="terminacoes-exatas" style="display:none;"></div>
       <div id="propria-palavra-match" style="display:none;margin-top:10px;"></div>
     </div>
     <span class="resultado-count" id="res-count"></span>
@@ -501,6 +507,9 @@ var sb = window._supabase;
 var palavraAtual = '';
 var chavesAtuais = [];
 var chavesSelecionadas = new Set();
+var terminacoesExatasDisponiveis = []; // lista de terminações literais (grafia) calculadas da palavra buscada
+var terminacaoExataAtiva = null; // string ativa, ou null = modo fonético normal (chavesSelecionadas)
+var resultadosFoneticos = { girias: [], palavras: [], nc: [] }; // guarda os resultados do modo fonético pra voltar sem rebuscar
 var buscaToken = 0;
 var todasGirias = [];
 var todasPalavras = [];
@@ -769,12 +778,16 @@ async function buscar(palavra, semPush) {
   document.getElementById('pop-lista').innerHTML = '<div class="vazio">Buscando...</div>';
   document.getElementById('chaves-usadas').innerHTML = '';
   document.getElementById('propria-palavra-match').style.display = 'none';
+  terminacaoExataAtiva = null;
   buscarPalavraPropria(minhaPalavra, meuToken);
 
   var todasChaves = await obterChavesBusca(minhaPalavra);
   if (meuToken !== buscaToken) return; // já tem uma busca mais nova rodando, descarta essa
   chavesAtuais = todasChaves;
   chavesSelecionadas = new Set(todasChaves); // por padrão todas ativas — usuário pode desligar as que não quer
+
+  terminacoesExatasDisponiveis = computeTerminacoesExatas(minhaPalavra);
+  renderTerminacoesExatas();
 
   if (todasChaves.length > 0) {
     renderChavesUsadas();
@@ -805,9 +818,10 @@ async function buscar(palavra, semPush) {
 // que continuam ativas, igual já era feito com as pills de categoria.
 function renderChavesUsadas() {
   document.getElementById('chaves-usadas').innerHTML = chavesAtuais.map(function(c) {
-    var ativa = chavesSelecionadas.has(c) ? '' : ' desativada';
+    var ativa = (chavesSelecionadas.has(c) && !terminacaoExataAtiva) ? '' : ' desativada';
     return '<span class="chave-badge' + ativa + '" data-chave="' + escapeHtml(c) + '">rima com ' + escapeHtml(c) + '</span>';
   }).join('');
+  if (terminacaoExataAtiva) return; // nesse modo, quem manda é a terminação exata — badges só ficam de referência visual
   document.querySelectorAll('#chaves-usadas .chave-badge').forEach(function(badge) {
     badge.addEventListener('click', function() {
       var c = badge.dataset.chave;
@@ -824,9 +838,143 @@ function renderChavesUsadas() {
 // Um item "passa" no filtro de chave se pelo menos uma das chaves que ele
 // carrega (a rima que fez ele aparecer) estiver ativa no momento.
 function passaFiltroChave(itemChaves) {
+  if (terminacaoExataAtiva) return true; // modo terminação exata não usa esse filtro
   if (!itemChaves || itemChaves.size === 0) return true; // sem info de chave, não filtra
   for (var c of itemChaves) { if (chavesSelecionadas.has(c)) return true; }
   return false;
+}
+
+// ── TERMINAÇÃO EXATA (grafia literal, sem passar pelo sistema fonético) ──
+// O sistema de chaves agrupa por SOM (êl/êu juntos, por exemplo), o que é ótimo
+// pra achar rima de verdade, mas pode trazer volume demais quando a chave é comum
+// (ex: "êu" traz todo verbo terminado em -eu: comeu, viveu, desceu...). A
+// terminação exata é o oposto: agrupa por ESCRITA, sem interpretar som nenhum.
+// "vel" traz "ível" e "ável" juntos (porque as duas terminam em "vel" na
+// escrita), mas "ível" sozinho já filtra só quem termina exatamente com "ível".
+function computeTerminacoesExatas(palavra) {
+  var max = Math.min(5, palavra.length);
+  var min = 3; // abaixo disso fica genérico demais pra valer a pena mostrar como aba
+  if (max < min) return [];
+  var out = [];
+  for (var t = max; t >= min; t--) out.push(palavra.slice(-t));
+  return out;
+}
+
+function renderTerminacoesExatas() {
+  var el = document.getElementById('terminacoes-exatas');
+  if (terminacoesExatasDisponiveis.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = '<span class="terminacoes-exatas-label">terminação exata:</span>' +
+    terminacoesExatasDisponiveis.map(function(t) {
+      var ativa = terminacaoExataAtiva === t ? ' ativa' : '';
+      return '<span class="term-exata-badge' + ativa + '" data-term="' + escapeHtml(t) + '">' + escapeHtml(t) + '</span>';
+    }).join('');
+  el.querySelectorAll('.term-exata-badge').forEach(function(badge) {
+    badge.addEventListener('click', function() {
+      var t = badge.dataset.term;
+      if (terminacaoExataAtiva === t) {
+        // clicou de novo na mesma → desliga, volta pro modo fonético normal
+        terminacaoExataAtiva = null;
+        todasGirias = resultadosFoneticos.girias;
+        todasPalavras = resultadosFoneticos.palavras;
+        todosNC = resultadosFoneticos.nc;
+        renderTerminacoesExatas();
+        renderChavesUsadas();
+        atualizarResCount();
+        renderGirias(); renderPalavras(); renderNC();
+      } else {
+        terminacaoExataAtiva = t;
+        // esses filtros dependem de dados (categoria de gíria, sílabas) que a busca por
+        // terminação exata não carrega — reseta pra não sobrar filtro fantasma zerando tudo
+        catsSelecionadas = new Set();
+        ncCatsSelecionadas = new Set();
+        silSelecionada = 'todas';
+        document.querySelectorAll('.pill-categoria.ativa, .pill-nc.ativa').forEach(function(p) { p.classList.remove('ativa'); });
+        document.querySelectorAll('.btn-sil').forEach(function(b) { b.classList.remove('ativo'); });
+        document.querySelector('.btn-sil[data-sil="todas"]').classList.add('ativo');
+        renderTerminacoesExatas();
+        renderChavesUsadas();
+        buscarPorTerminacaoExata(t);
+      }
+    });
+  });
+}
+
+async function buscarPorTerminacaoExata(sufixo) {
+  var meuToken = buscaToken;
+  document.getElementById('girias-grid').innerHTML = '<div class="vazio">Buscando...</div>';
+  document.getElementById('palavras-lista').innerHTML = '<div class="vazio">Buscando...</div>';
+  document.getElementById('nc-grid').innerHTML = '<div class="vazio">Buscando...</div>';
+
+  var res = await sb.from('rimas_variacoes')
+    .select('palavra, tipo, ref_id, relevancia, votos_total, categoria')
+    .ilike('palavra', '%' + escapeIlike(sufixo))
+    .eq('ativo', true)
+    .order('relevancia', { ascending: false })
+    .order('votos_total', { ascending: false })
+    .limit(500);
+  if (meuToken !== buscaToken || terminacaoExataAtiva !== sufixo) return; // busca antiga ou usuário já mudou de aba
+
+  var map = {};
+  (res.data || []).forEach(function(v) {
+    var key = v.palavra + '|' + v.tipo;
+    if (!map[key]) map[key] = { palavra: v.palavra, tipo: v.tipo, ref_id: v.ref_id,
+      relevancia: v.relevancia || 50, votos: v.votos_total || 0, categoria: v.categoria || null };
+  });
+
+  var girias = [], palavrasDic = [], nc = [];
+  Object.values(map).forEach(function(item) {
+    if (item.tipo === 'giria') girias.push(item);
+    else if (item.tipo === 'dicionario') palavrasDic.push(item);
+    else if (item.tipo === 'giria_nao_catalogada') nc.push(item);
+  });
+
+  girias = await resolverSlugsGirias(girias);
+  if (meuToken !== buscaToken || terminacaoExataAtiva !== sufixo) return;
+
+  todasGirias = girias;
+  todasPalavras = palavrasDic;
+  todosNC = nc;
+  atualizarResCount();
+  renderGirias(); renderPalavras(); renderNC();
+}
+
+// Resolve slug + categorias de um array de gírias, seguindo a cadeia
+// ref_id (uuid) → rimas_palavras.giria_id (bigint) → palavras.slug.
+// Usado tanto na busca fonética (chaves) quanto na terminação exata (grafia).
+async function resolverSlugsGirias(girias) {
+  if (girias.length === 0) return girias;
+  var refIds = girias.map(function(g) { return g.ref_id; }).filter(Boolean);
+  if (refIds.length === 0) return girias;
+
+  var rpRes = await sb.from('rimas_palavras').select('id, giria_id').in('id', refIds).eq('eh_giria', true);
+  var giria_id_map = {};
+  (rpRes.data || []).forEach(function(r) { if (r.giria_id) giria_id_map[r.id] = r.giria_id; });
+
+  var bigintIds = Object.values(giria_id_map).filter(Boolean);
+  var slugMap = {}, catsMap = {};
+
+  if (bigintIds.length > 0) {
+    var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', bigintIds);
+    (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
+
+    var catsRes = await sb.from('palavras_categorias').select('palavra_id, categoria_id, subcategoria_id').in('palavra_id', bigintIds);
+    (catsRes.data || []).forEach(function(pc) {
+      if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = { catIds: [], subIds: [] };
+      if (pc.categoria_id) catsMap[pc.palavra_id].catIds.push(pc.categoria_id);
+      if (pc.subcategoria_id) catsMap[pc.palavra_id].subIds.push(pc.subcategoria_id);
+    });
+  }
+
+  return girias.map(function(g) {
+    var gid = giria_id_map[g.ref_id];
+    var c = gid ? (catsMap[gid] || { catIds: [], subIds: [] }) : { catIds: [], subIds: [] };
+    return Object.assign({}, g, {
+      slug: gid ? (slugMap[gid] || g.palavra) : g.palavra,
+      catIds: c.catIds,
+      subIds: c.subIds
+    });
+  });
 }
 
 async function buscarResultados(chaves, minhaPalavra, meuToken) {
@@ -867,43 +1015,7 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   });
 
   // Buscar slugs e categorias das gírias
-  if (girias.length > 0) {
-    var refIds = girias.map(function(g) { return g.ref_id; }).filter(Boolean);
-    if (refIds.length > 0) {
-      // Buscar giria_id (bigint) em rimas_palavras usando o ref_id (uuid)
-      var rpRes = await sb.from('rimas_palavras').select('id, giria_id').in('id', refIds).eq('eh_giria', true);
-      var giria_id_map = {};
-      (rpRes.data || []).forEach(function(r) {
-        if (r.giria_id) giria_id_map[r.id] = r.giria_id;
-      });
-
-      var bigintIds = Object.values(giria_id_map).filter(Boolean);
-      var slugMap = {};
-      var catsMap = {};
-
-      if (bigintIds.length > 0) {
-        var slugRes = await sb.from('palavras').select('id, slug, termo').in('id', bigintIds);
-        (slugRes.data || []).forEach(function(p) { slugMap[p.id] = p.slug || p.termo; });
-
-        var catsRes = await sb.from('palavras_categorias').select('palavra_id, categoria_id, subcategoria_id').in('palavra_id', bigintIds);
-        (catsRes.data || []).forEach(function(pc) {
-          if (!catsMap[pc.palavra_id]) catsMap[pc.palavra_id] = { catIds: [], subIds: [] };
-          if (pc.categoria_id) catsMap[pc.palavra_id].catIds.push(pc.categoria_id);
-          if (pc.subcategoria_id) catsMap[pc.palavra_id].subIds.push(pc.subcategoria_id);
-        });
-      }
-
-      girias = girias.map(function(g) {
-        var gid = giria_id_map[g.ref_id];
-        var c = gid ? (catsMap[gid] || { catIds: [], subIds: [] }) : { catIds: [], subIds: [] };
-        return Object.assign({}, g, {
-          slug: gid ? (slugMap[gid] || g.palavra) : g.palavra,
-          catIds: c.catIds,
-          subIds: c.subIds
-        });
-      });
-    }
-  }
+  girias = await resolverSlugsGirias(girias);
 
   // Buscar num_silabas das palavras
   if (palavrasDic.length > 0) {
@@ -923,6 +1035,7 @@ async function buscarResultados(chaves, minhaPalavra, meuToken) {
   todasGirias = girias;
   todasPalavras = palavrasDic;
   todosNC = nc;
+  resultadosFoneticos = { girias: girias, palavras: palavrasDic, nc: nc };
 
   atualizarResCount();
   renderGirias(); renderPalavras(); renderNC();
