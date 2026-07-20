@@ -853,7 +853,12 @@ function passaFiltroChave(itemChaves) {
 // escrita), mas "ível" sozinho já filtra só quem termina exatamente com "ível".
 function computeTerminacoesExatas(palavra) {
   var max = Math.min(5, palavra.length);
-  var min = 3; // abaixo disso fica genérico demais pra valer a pena mostrar como aba
+  // Piso de 3 letras evita aba genérica demais quando é só um PEDAÇO de uma palavra
+  // maior (ex: não mostrar "ll" pra "hill"). Mas se a palavra digitada já é menor
+  // que isso (ex: "eu", 2 letras), não tem generalidade nenhuma nela — é a palavra
+  // inteira, é o mais específico possível — então nesse caso o piso desce até o
+  // tamanho da própria palavra, senão o "eu" nunca ganharia aba nenhuma.
+  var min = palavra.length < 3 ? palavra.length : 3;
   if (max < min) return [];
   var out = [];
   for (var t = max; t >= min; t--) out.push(palavra.slice(-t));
