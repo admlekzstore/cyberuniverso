@@ -14,7 +14,7 @@
     { termo: 'vida',     href: 'rimas-com-vida.html',     pronta: true  },
     { termo: 'mais',     href: 'rimas-com-mais.html',     pronta: true  },
     { termo: 'amor',     href: 'rimas-com-amor.html',     pronta: false },
-    { termo: 'mundo',    href: 'rimas-com-mundo.html',    pronta: false },
+    { termo: 'mundo',    href: 'rimas-com-mundo.html',    pronta: true  },
     { termo: 'você',     href: 'rimas-com-voce.html',     pronta: false },
     { termo: 'dia',      href: 'rimas-com-dia.html',      pronta: false },
     { termo: 'coração',  href: 'rimas-com-coracao.html',  pronta: false },
