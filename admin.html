@@ -452,10 +452,10 @@
         </div>
         <div id="imp-secao-conteudo" style="display:none;padding:20px;">
           <div style="font-size:12px;color:#4a6fa5;margin-bottom:16px;">
-            Cole uma lista de palavras (uma por linha) que compartilham a(s) mesma(s) chave(s) de rima. Só cadastra
-            <strong>Dicionário</strong> e <strong>Gírias NC</strong> — Cultura Pop e Universos continuam manuais porque
-            têm mais campo pra preencher com cuidado. Duplicata (mesma palavra+chave já cadastrada) é ignorada
-            automaticamente, não corre risco de bagunçar o que já existe.
+            Cole uma lista de palavras (uma por linha) que compartilham a(s) mesma(s) chave(s) de rima.
+            Pra <strong>Cultura Pop</strong> e <strong>Universo</strong>, cada nome novo cria automaticamente o item em
+            <em>rimas_cultura_pop</em> com a categoria/subcategoria escolhida abaixo — se o nome já existir lá, só reaproveita.
+            Duplicata (mesma palavra+chave já cadastrada) é ignorada automaticamente, não corre risco de bagunçar o que já existe.
           </div>
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -469,6 +469,8 @@
               <select id="imp-tipo" class="busca-tabela" style="width:100%;" onchange="toggleImpTipo()">
                 <option value="dicionario">Dicionário</option>
                 <option value="giria_nao_catalogada">✦ Gíria NC (não catalogada)</option>
+                <option value="cultura_pop">Cultura Pop</option>
+                <option value="universo">🌌 Universo</option>
               </select>
             </div>
           </div>
@@ -479,6 +481,36 @@
               <div id="imp-nc-cats" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;">
                 <span style="color:#4a6fa5;font-size:12px;">Carregando categorias...</span>
               </div>
+            </div>
+          </div>
+
+          <div id="imp-cp-wrap" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(155,77,255,0.08);border:1px solid rgba(155,77,255,0.25);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="display:block;font-size:11px;font-weight:800;color:#b380ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">CATEGORIA <span style="color:#4a6fa5;font-size:10px;text-transform:none;">(vale pra toda a lista)</span></label>
+                <select id="imp-cp-tipo" class="busca-tabela" style="width:100%;">
+                  <option value="">Carregando...</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:11px;font-weight:800;color:#b380ff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">SUBCATEGORIA</label>
+                <select id="imp-cp-sub" class="busca-tabela" style="width:100%;">
+                  <option value="">Carregando...</option>
+                </select>
+              </div>
+              <div style="grid-column:1/-1;font-size:11px;color:#4a6fa5;">
+                ✦ Cada nome novo da lista vira um item em <em>rimas_cultura_pop</em> com essa categoria/subcategoria; se já existir (mesmo nome), só reaproveita.
+              </div>
+            </div>
+          </div>
+
+          <div id="imp-univ-wrap" style="display:none;margin-bottom:16px;">
+            <div style="background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.2);border-radius:10px;padding:16px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#00eaff;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">UNIVERSO <span style="color:#4a6fa5;font-size:10px;text-transform:none;">(vale pra toda a lista)</span></label>
+              <select id="imp-univ-sub" class="busca-tabela" style="width:100%;">
+                <option value="">Carregando...</option>
+              </select>
+              <div style="font-size:11px;color:#4a6fa5;margin-top:6px;">✦ Cada nome novo da lista cria automaticamente em <em>rimas_cultura_pop</em> com tipo='universo'.</div>
             </div>
           </div>
 
@@ -1553,7 +1585,25 @@ function toggleImpSecao() {
 function toggleImpTipo() {
   const tipo = document.getElementById('imp-tipo').value
   document.getElementById('imp-nc-wrap').style.display = tipo === 'giria_nao_catalogada' ? 'block' : 'none'
+  document.getElementById('imp-cp-wrap').style.display = tipo === 'cultura_pop' ? 'block' : 'none'
+  document.getElementById('imp-univ-wrap').style.display = tipo === 'universo' ? 'block' : 'none'
   if (tipo === 'giria_nao_catalogada') renderImpNcCatsPills()
+  if (tipo === 'cultura_pop') renderImpCpSelects()
+  if (tipo === 'universo') renderImpUnivSelect()
+}
+
+function renderImpCpSelects() {
+  const selTipo = document.getElementById('imp-cp-tipo')
+  const selSub = document.getElementById('imp-cp-sub')
+  if (!cpCatsCache.length && !cpSubsCache.length) { carregarCpOpcoes().then(renderImpCpSelects); return }
+  if (selTipo) selTipo.innerHTML = cpCatsCache.map(c => `<option value="${c.slug}">${c.emoji || ''} ${c.nome}</option>`).join('')
+  if (selSub) selSub.innerHTML = cpSubsCache.map(c => `<option value="${c.slug}">${c.emoji || ''} ${c.nome}</option>`).join('')
+}
+
+function renderImpUnivSelect() {
+  const sel = document.getElementById('imp-univ-sub')
+  if (!univSubsCache.length) { carregarUniversos().then(renderImpUnivSelect); return }
+  sel.innerHTML = univSubsCache.map(s => `<option value="${s.slug}">${s.emoji || '🌌'} ${s.nome}</option>`).join('')
 }
 
 function renderImpNcCatsPills() {
@@ -1615,6 +1665,17 @@ async function preVisualizarImportacao() {
   if (!chavesPadrao.length) {
     msg.style.color = 'var(--vermelho)'; msg.textContent = '⚠️ Preencha a(s) chave(s) padrão.'; return
   }
+
+  const usaPop = tipo === 'cultura_pop' || tipo === 'universo'
+  if (usaPop) {
+    const subCat = tipo === 'universo' ? document.getElementById('imp-univ-sub').value : document.getElementById('imp-cp-sub').value
+    if (!subCat) {
+      msg.style.color = 'var(--vermelho)'
+      msg.textContent = '⚠️ Selecione ' + (tipo === 'universo' ? 'o universo' : 'categoria e subcategoria') + ' antes de pré-visualizar.'
+      return
+    }
+  }
+
   const linhas = parseLinhasImportacao(bruto, chavesPadrao)
   if (!linhas.length) {
     msg.style.color = 'var(--vermelho)'; msg.textContent = '⚠️ Cole ao menos uma palavra.'; return
@@ -1629,24 +1690,44 @@ async function preVisualizarImportacao() {
   })
 
   const palavrasUnicas = Array.from(new Set(registros.map(r => r.palavra)))
+  // Cultura Pop/Universo guardam o nome em formato Título ("Corinthians"), não minúsculo
+  const palavrasComparar = Array.from(new Set(registros.map(r => usaPop ? capitalizarTitulo(r.palavra) : r.palavra)))
+
   const { data: existentes, error } = await sb.from('rimas_variacoes')
-    .select('palavra, chave').eq('tipo', tipo).eq('ativo', true).in('palavra', palavrasUnicas)
+    .select('palavra, chave').eq('tipo', tipo).eq('ativo', true).in('palavra', palavrasComparar)
   if (error) { msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro ao consultar: ' + error.message; return }
 
   const existenteSet = new Set((existentes || []).map(e => e.palavra + '|' + e.chave))
+
+  // Pra Cultura Pop/Universo, também checa quais nomes já existem em rimas_cultura_pop
+  // (ignorando maiúsculas/minúsculas) — os que não existirem viram item novo automaticamente
+  // na hora de importar.
+  let popNovos = []
+  if (usaPop) {
+    const { data: popExistentes } = await sb.from('rimas_cultura_pop').select('nome').eq('ativo', true)
+    const popSetLower = new Set((popExistentes || []).map(p => p.nome.toLowerCase()))
+    popNovos = palavrasComparar.filter(p => !popSetLower.has(p.toLowerCase()))
+  }
+
   importacaoPreview = registros
 
   const tbody = document.getElementById('imp-preview-tbody')
   tbody.innerHTML = registros.map(function(r) {
-    var jaExiste = existenteSet.has(r.palavra + '|' + r.chave)
-    return '<tr><td>' + escapeHtml(r.palavra) + '</td><td>' + escapeHtml(r.chave) + '</td><td>' +
+    var palavraFinal = usaPop ? capitalizarTitulo(r.palavra) : r.palavra
+    var jaExiste = existenteSet.has(palavraFinal + '|' + r.chave)
+    return '<tr><td>' + escapeHtml(palavraFinal) + '</td><td>' + escapeHtml(r.chave) + '</td><td>' +
       (jaExiste ? '<span style="color:#4a6fa5;">já existe</span>' : '<span style="color:#3ddc84;">✓ novo</span>') +
       '</td></tr>'
   }).join('')
 
-  const novos = registros.filter(r => !existenteSet.has(r.palavra + '|' + r.chave)).length
-  document.getElementById('imp-resumo').textContent =
-    registros.length + ' linha(s) no total, ' + palavrasUnicas.length + ' palavra(s) única(s) — ' + novos + ' nova(s), ' + (registros.length - novos) + ' já cadastrada(s).'
+  const novos = registros.filter(function(r) {
+    return !existenteSet.has((usaPop ? capitalizarTitulo(r.palavra) : r.palavra) + '|' + r.chave)
+  }).length
+  var resumo = registros.length + ' linha(s) no total, ' + palavrasUnicas.length + ' palavra(s) única(s) — ' + novos + ' nova(s) rima(s), ' + (registros.length - novos) + ' já cadastrada(s).'
+  if (usaPop) {
+    resumo += ' ' + popNovos.length + ' item(ns) novo(s) serão criados em Cultura Pop/Universo, ' + (palavrasComparar.length - popNovos.length) + ' já existem e serão reaproveitados.'
+  }
+  document.getElementById('imp-resumo').textContent = resumo
   document.getElementById('imp-preview-wrap').style.display = 'block'
 }
 
@@ -1658,9 +1739,50 @@ async function importarEmMassa() {
   const tipo = document.getElementById('imp-tipo').value
   const categoriaNC = tipo === 'giria_nao_catalogada' && impNcCategoriasSelecionadas.length
     ? impNcCategoriasSelecionadas.join(',') : null
+  const usaPop = tipo === 'cultura_pop' || tipo === 'universo'
+
+  // nome (minúsculo) → id em rimas_cultura_pop — só usado quando usaPop
+  let popMap = {}
+
+  if (usaPop) {
+    const subTipo = tipo === 'universo' ? 'universo' : document.getElementById('imp-cp-tipo').value
+    const subCat  = tipo === 'universo' ? document.getElementById('imp-univ-sub').value : document.getElementById('imp-cp-sub').value
+    if (!subCat) {
+      msg.style.color = 'var(--vermelho)'
+      msg.textContent = '⚠️ Selecione ' + (tipo === 'universo' ? 'o universo' : 'categoria e subcategoria') + ' antes de importar.'
+      return
+    }
+
+    const { data: popExistentes, error: errPop } = await sb.from('rimas_cultura_pop').select('id, nome').eq('ativo', true)
+    if (errPop) { msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro ao consultar Cultura Pop: ' + errPop.message; return }
+    ;(popExistentes || []).forEach(p => { popMap[p.nome.toLowerCase()] = p.id })
+
+    const palavrasUnicasTitulo = Array.from(new Set(importacaoPreview.map(r => capitalizarTitulo(r.palavra))))
+    const faltando = palavrasUnicasTitulo.filter(nome => !popMap[nome.toLowerCase()])
+
+    if (faltando.length > 0) {
+      const novosRegistros = faltando.map(function(nome) {
+        const linhaOrig = importacaoPreview.find(r => capitalizarTitulo(r.palavra) === nome)
+        return {
+          nome,
+          tipo: subTipo,
+          subtipo: subCat,
+          chave_fonetica: (linhaOrig && linhaOrig.chave) || '',
+          chave_ortografica: nome.toLowerCase().slice(-4),
+          fonte: 'manual',
+          ativo: true
+        }
+      })
+      const { data: criados, error: errCriar } = await sb.from('rimas_cultura_pop').insert(novosRegistros).select('id, nome')
+      if (errCriar) { msg.style.color = 'var(--vermelho)'; msg.textContent = '❌ Erro ao criar itens em Cultura Pop: ' + errCriar.message; return }
+      ;(criados || []).forEach(p => { popMap[p.nome.toLowerCase()] = p.id })
+    }
+  }
 
   const registros = importacaoPreview.map(function(r) {
-    return { palavra: r.palavra, chave: r.chave, tipo: tipo, criado_por: 'manual', categoria: categoriaNC, ativo: true }
+    const palavraFinal = usaPop ? capitalizarTitulo(r.palavra) : r.palavra
+    const refId = usaPop ? (popMap[palavraFinal.toLowerCase()] || null) : null
+    return { palavra: palavraFinal, chave: r.chave, tipo: tipo, ref_id: refId, criado_por: 'manual', categoria: categoriaNC, ativo: true }
   })
 
   const { error } = await sb.from('rimas_variacoes')
