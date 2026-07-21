@@ -779,6 +779,7 @@ async function buscar(palavra, semPush) {
   document.getElementById('chaves-usadas').innerHTML = '';
   document.getElementById('propria-palavra-match').style.display = 'none';
   terminacaoExataAtiva = null;
+  resultadosFoneticos = { girias: [], palavras: [], nc: [] };
   buscarPalavraPropria(minhaPalavra, meuToken);
 
   var todasChaves = await obterChavesBusca(minhaPalavra);
@@ -795,6 +796,14 @@ async function buscar(palavra, semPush) {
   }
 
   if (todasChaves.length === 0) {
+    // Não achou chave fonética cadastrada (a terminação não bate com nenhuma regra
+    // do admin) — mas se existe alguma terminação exata (grafia literal) disponível,
+    // ativa ela direto em vez de mostrar "nada encontrado" e obrigar a pessoa a
+    // clicar. Só cai no "nenhuma rima" mesmo se nem terminação exata sobrar.
+    if (terminacoesExatasDisponiveis.length > 0) {
+      ativarTerminacaoExata(terminacoesExatasDisponiveis[0]);
+      return;
+    }
     document.getElementById('girias-grid').innerHTML = '<div class="vazio">Nenhuma rima encontrada!</div>';
     document.getElementById('palavras-lista').innerHTML = '';
     document.getElementById('nc-grid').innerHTML = '';
@@ -877,32 +886,38 @@ function renderTerminacoesExatas() {
   el.querySelectorAll('.term-exata-badge').forEach(function(badge) {
     badge.addEventListener('click', function() {
       var t = badge.dataset.term;
-      if (terminacaoExataAtiva === t) {
-        // clicou de novo na mesma → desliga, volta pro modo fonético normal
-        terminacaoExataAtiva = null;
-        todasGirias = resultadosFoneticos.girias;
-        todasPalavras = resultadosFoneticos.palavras;
-        todosNC = resultadosFoneticos.nc;
-        renderTerminacoesExatas();
-        renderChavesUsadas();
-        atualizarResCount();
-        renderGirias(); renderPalavras(); renderNC();
-      } else {
-        terminacaoExataAtiva = t;
-        // esses filtros dependem de dados (categoria de gíria, sílabas) que a busca por
-        // terminação exata não carrega — reseta pra não sobrar filtro fantasma zerando tudo
-        catsSelecionadas = new Set();
-        ncCatsSelecionadas = new Set();
-        silSelecionada = 'todas';
-        document.querySelectorAll('.pill-categoria.ativa, .pill-nc.ativa').forEach(function(p) { p.classList.remove('ativa'); });
-        document.querySelectorAll('.btn-sil').forEach(function(b) { b.classList.remove('ativo'); });
-        document.querySelector('.btn-sil[data-sil="todas"]').classList.add('ativo');
-        renderTerminacoesExatas();
-        renderChavesUsadas();
-        buscarPorTerminacaoExata(t);
-      }
+      if (terminacaoExataAtiva === t) desativarTerminacaoExata();
+      else ativarTerminacaoExata(t);
     });
   });
+}
+
+function ativarTerminacaoExata(t) {
+  terminacaoExataAtiva = t;
+  // esses filtros dependem de dados (categoria de gíria, sílabas) que a busca por
+  // terminação exata não carrega — reseta pra não sobrar filtro fantasma zerando tudo
+  catsSelecionadas = new Set();
+  ncCatsSelecionadas = new Set();
+  silSelecionada = 'todas';
+  document.querySelectorAll('.pill-categoria.ativa, .pill-nc.ativa').forEach(function(p) { p.classList.remove('ativa'); });
+  document.querySelectorAll('.btn-sil').forEach(function(b) { b.classList.remove('ativo'); });
+  var btnTodas = document.querySelector('.btn-sil[data-sil="todas"]');
+  if (btnTodas) btnTodas.classList.add('ativo');
+  renderTerminacoesExatas();
+  renderChavesUsadas();
+  buscarPorTerminacaoExata(t);
+}
+
+function desativarTerminacaoExata() {
+  // clicou de novo na mesma aba → desliga, volta pro modo fonético normal
+  terminacaoExataAtiva = null;
+  todasGirias = resultadosFoneticos.girias;
+  todasPalavras = resultadosFoneticos.palavras;
+  todosNC = resultadosFoneticos.nc;
+  renderTerminacoesExatas();
+  renderChavesUsadas();
+  atualizarResCount();
+  renderGirias(); renderPalavras(); renderNC();
 }
 
 async function buscarPorTerminacaoExata(sufixo) {
