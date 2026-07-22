@@ -84,7 +84,7 @@ main{max-width:960px; margin:0 auto; padding:0 20px 60px; position:relative; z-i
 .breadcrumb a:hover{text-decoration:underline;}
 
 /* -------- Hero -------- */
-.hero{padding:36px 0 24px; text-align:center;}
+.hero{padding:56px 0 24px; text-align:center;}
 .eyebrow{
   font-family:'Fredoka One', sans-serif;
   color:var(--cyan);
