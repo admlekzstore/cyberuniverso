@@ -29,8 +29,8 @@ body.tema-amor .starfield-canvas {
 body.tema-amor h1.glitch .accent {
   color: var(--accent-2);
   text-shadow:
-    0 0 8px var(--accent-2),
-    0 0 22px rgba(255,110,199,0.6);
+    0 0 3px rgba(255,110,199,0.7),
+    0 0 8px rgba(255,110,199,0.35);
 }
 
 body.tema-amor .hero-stats .stat-pill {
@@ -57,7 +57,15 @@ body.tema-amor .chip:hover {
 }
 
 body.tema-amor .chip.link {
-  color: var(--accent-2);
+  color: #4db8ff;
+  text-decoration: underline;
+  text-decoration-color: rgba(77,184,255,0.5);
+}
+
+body.tema-amor .chip.link:hover {
+  color: #7dcaff;
+  border-color: #4db8ff;
+  box-shadow: 0 0 10px rgba(77,184,255,0.55);
 }
 
 /* ---------- Blocos de rima ---------- */
