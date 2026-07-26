@@ -1,0 +1,137 @@
+/* =========================================================
+   TEMA: rimas-com-amor.css
+   Overlay visual "cyber-romance" — só ativa com <body class="tema-amor">
+   Não sobrescreve rimas-com.css, só empilha por cima.
+   Paleta: vermelho neon (#ff2e4d), rosa-choque (#ff6ec7), vinho profundo (#2b0510)
+   Assinatura: divisor "monitor cardíaco" (linha de pulso tipo ECG) entre seções
+   ========================================================= */
+
+body.tema-amor {
+  --accent: #ff2e4d;
+  --accent-2: #ff6ec7;
+  --wine: #2b0510;
+}
+
+/* Fundo estrelado ganha um glow vermelho/rosa em vez de ciano */
+body.tema-amor .starfield .glow {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,46,77,0.35), transparent 55%),
+    radial-gradient(circle at 75% 65%, rgba(255,110,199,0.25), transparent 60%);
+}
+
+body.tema-amor .starfield-canvas {
+  filter: hue-rotate(-140deg) saturate(1.3);
+}
+
+/* ---------- Título / Hero ---------- */
+body.tema-amor h1.glitch {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  animation: none; /* desliga o glitch padrão, entra o pulso */
+  text-shadow:
+    0 0 8px var(--accent),
+    0 0 22px rgba(255,46,77,0.55);
+}
+
+body.tema-amor h1.glitch .accent {
+  color: var(--accent-2);
+  -webkit-text-stroke: 0;
+}
+
+body.tema-amor .hero-stats .stat-pill {
+  border-color: var(--accent);
+  color: #ffd7e2;
+  background: rgba(255,46,77,0.12);
+}
+
+body.tema-amor .hero-stats .stat-pill.yellow {
+  border-color: var(--accent-2);
+  background: rgba(255,110,199,0.12);
+}
+
+/* ---------- Chips ---------- */
+body.tema-amor .chip {
+  border-color: rgba(255,46,77,0.45);
+  transition: box-shadow .25s ease, border-color .25s ease, transform .15s ease;
+}
+
+body.tema-amor .chip:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(255,46,77,0.55);
+  transform: translateY(-1px);
+}
+
+body.tema-amor .chip.link {
+  color: var(--accent-2);
+}
+
+/* ---------- Blocos de rima ---------- */
+body.tema-amor .rima-block.exata .signal-dot,
+body.tema-amor .rima-block.aproximada .signal-dot {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+body.tema-amor .match-badge {
+  background: rgba(255,46,77,0.15);
+  border-color: var(--accent);
+  color: #ffd7e2;
+}
+
+/* ---------- Divisor "monitor cardíaco" (assinatura visual) ---------- */
+.heartbeat-divider {
+  width: 100%;
+  height: 46px;
+  margin: 2.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.heartbeat-divider svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.heartbeat-divider path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(255,46,77,0.8));
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: pulse-draw 3.2s ease-in-out infinite;
+}
+
+@keyframes pulse-draw {
+  0%   { stroke-dashoffset: 1000; opacity: .35; }
+  55%  { stroke-dashoffset: 0;    opacity: 1; }
+  100% { stroke-dashoffset: -1000; opacity: .35; }
+}
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .heartbeat-divider path { animation: none; stroke-dashoffset: 0; opacity: .8; }
+  body.tema-amor .chip:hover { transform: none; }
+}
+
+/* ---------- Palavrões (mantém padrão vermelho, só reforça o glow) ---------- */
+body.tema-amor .palavroes-details summary .rotulo-fechado {
+  text-shadow: 0 0 6px rgba(255,46,77,0.6);
+}
+
+/* ---------- CTA final ---------- */
+body.tema-amor .cta-button {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none;
+  box-shadow: 0 0 16px rgba(255,46,77,0.5);
+}
+
+body.tema-amor .related-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(255,46,77,0.4);
+}
