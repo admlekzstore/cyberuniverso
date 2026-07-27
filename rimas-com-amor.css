@@ -58,8 +58,7 @@ body.tema-amor .chip:hover {
 
 body.tema-amor .chip.link {
   color: #4db8ff;
-  text-decoration: underline;
-  text-decoration-color: rgba(77,184,255,0.5);
+  text-decoration: none;
 }
 
 body.tema-amor .chip.link:hover {
