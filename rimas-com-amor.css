@@ -69,7 +69,8 @@ body.tema-amor .chip.link:hover {
 
 /* ---------- Categorias com cor própria nesta página ---------- */
 body.tema-amor .category[data-tipo="parque"] h3 {
-  color: #5c7aff;
+  color: #6d8bff;
+  text-shadow: 0 0 3px rgba(109,139,255,0.5);
 }
 
 body.tema-amor .category[data-tipo="parque"] .chip {
