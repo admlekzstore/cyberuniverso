@@ -68,9 +68,13 @@ body.tema-amor .chip.link:hover {
 }
 
 /* ---------- Categorias com cor própria nesta página ---------- */
+body.tema-amor .category[data-tipo="parque"] h3 {
+  color: #5c7aff;
+}
+
 body.tema-amor .category[data-tipo="parque"] .chip {
   border-color: #3b5bff;
-  color: #adbaff;
+  color: #fff;
 }
 
 body.tema-amor .category[data-tipo="parque"] .chip:hover {
@@ -78,9 +82,13 @@ body.tema-amor .category[data-tipo="parque"] .chip:hover {
   box-shadow: 0 0 10px rgba(59,91,255,0.6);
 }
 
+body.tema-amor .category[data-tipo="cyberpunk"] h3 {
+  color: #39ff14;
+}
+
 body.tema-amor .category[data-tipo="cyberpunk"] .chip {
   border-color: #39ff14;
-  color: #b8ffb0;
+  color: #fff;
 }
 
 body.tema-amor .category[data-tipo="cyberpunk"] .chip:hover {
